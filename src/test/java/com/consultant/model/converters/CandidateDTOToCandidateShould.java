@@ -16,9 +16,9 @@ public class CandidateDTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         String linkedinUrl = "linkedinUrl";
         candidateDTO.setLinkedinUrl(linkedinUrl);
-        Candidate author = this.candidateDTOToCandidate.convert(candidateDTO);
+        Candidate candidate = this.candidateDTOToCandidate.convert(candidateDTO);
 
-        assertEquals(author.getLinkedinUrl(),linkedinUrl);
+        assertEquals(candidate.getLinkedinUrl(),linkedinUrl);
     }
 
     @Test

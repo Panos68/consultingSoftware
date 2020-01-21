@@ -3,6 +3,7 @@ package com.consultant.model.services.impl;
 import com.consultant.model.Candidate;
 import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.exception.CandidateAlreadyExistsException;
+import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.CandidateRepository;
 import com.consultant.model.services.CandidateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class CandidateServiceImpl implements CandidateService {
     private Optional<Candidate> getExistingCandidateById(Long id) throws Exception {
         Optional<Candidate> existingCandidate = candidateRepository.findById(id);
         if (!existingCandidate.isPresent()) {
-            throw new Exception("The id provided doesn't match any candidate");
+            throw new NoMatchException("The id provided doesn't match any candidate");
         }
 
         return existingCandidate;
