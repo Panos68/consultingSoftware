@@ -1,4 +1,4 @@
-package com.consultant.model;
+package com.consultant.model.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

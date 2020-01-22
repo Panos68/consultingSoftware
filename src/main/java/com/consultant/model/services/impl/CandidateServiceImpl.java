@@ -1,6 +1,6 @@
 package com.consultant.model.services.impl;
 
-import com.consultant.model.Candidate;
+import com.consultant.model.entities.Candidate;
 import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.exception.CandidateAlreadyExistsException;
 import com.consultant.model.exception.NoMatchException;
