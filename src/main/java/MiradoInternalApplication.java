@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 public class MiradoInternalApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MiradoInternalApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MiradoInternalApplication.class, args);
+    }
 
 }
