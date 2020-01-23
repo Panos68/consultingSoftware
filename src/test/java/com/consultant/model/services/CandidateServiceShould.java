@@ -2,7 +2,7 @@ package com.consultant.model.services;
 
 import com.consultant.model.entities.Candidate;
 import com.consultant.model.dto.CandidateDTO;
-import com.consultant.model.exception.CandidateAlreadyExistsException;
+import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.CandidateRepository;
 import com.consultant.model.services.impl.CandidateServiceImpl;
@@ -81,7 +81,7 @@ public class CandidateServiceShould {
         verify(candidateRepository, times(1)).saveAndFlush(candidate1);
     }
 
-    @Test(expected = CandidateAlreadyExistsException.class)
+    @Test(expected = EntityAlreadyExists.class)
     public void throwExceptionWhenCreatingCandidateWithSameLinkedIn() throws Exception {
         String linkedInUrl = "linkedinUrl";
         candidate1.setLinkedinUrl(linkedInUrl);

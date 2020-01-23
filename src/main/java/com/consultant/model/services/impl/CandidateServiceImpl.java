@@ -2,7 +2,7 @@ package com.consultant.model.services.impl;
 
 import com.consultant.model.entities.Candidate;
 import com.consultant.model.dto.CandidateDTO;
-import com.consultant.model.exception.CandidateAlreadyExistsException;
+import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.CandidateRepository;
 import com.consultant.model.services.CandidateService;
@@ -44,7 +44,7 @@ public class CandidateServiceImpl implements CandidateService {
     public void createCandidate(CandidateDTO candidateDTO) throws Exception {
         Optional<Candidate> existingCandidate = candidateRepository.findByLinkedinUrl(candidateDTO.getLinkedinUrl());
         if (existingCandidate.isPresent()) {
-            throw new CandidateAlreadyExistsException("Candidate already exists");
+            throw new EntityAlreadyExists("Candidate already exists");
         }
 
         final Candidate candidate = conversionService.convert(candidateDTO, Candidate.class);
