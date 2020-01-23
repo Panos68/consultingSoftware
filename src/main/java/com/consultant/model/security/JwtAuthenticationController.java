@@ -19,7 +19,7 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationUser user) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationUser user) throws WrongValidationException {
         userDetailsService.authenticateUser(user);
         final String token = jwtTokenUtil.generateToken(user.getUsername());
         return ResponseEntity.ok(new JwtResponse(token));

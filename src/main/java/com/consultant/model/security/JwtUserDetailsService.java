@@ -28,10 +28,10 @@ public class JwtUserDetailsService implements UserDetailsService {
         return new User(authenticationUser.getUsername(), passwordEncoder.encode(authenticationUser.getPassword()),authenticationUser.getAuthorities());
     }
 
-    public void authenticateUser(AuthenticationUser user) throws Exception {
+    public void authenticateUser(AuthenticationUser user) throws WrongValidationException {
         AuthenticationUser authenticationUser = getAuthenticationUser(user.getUsername());
         if (!authenticationUser.getPassword().equals(user.getPassword())){
-            throw new Exception("Incorrect credentials");
+            throw new WrongValidationException("Incorrect credentials");
         }
     }
 

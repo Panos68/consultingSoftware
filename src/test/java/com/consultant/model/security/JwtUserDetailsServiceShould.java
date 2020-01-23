@@ -24,15 +24,14 @@ public class JwtUserDetailsServiceShould {
     @Mock
     PasswordEncoder passwordEncoder;
 
-    String correctUsername = "correctUsername";
+    private String correctUsername = "correctUsername";
 
 
-    String correctPassword = "correctPassword";
+    private String correctPassword = "correctPassword";
 
-    AuthenticationUser authenticationUser = new AuthenticationUser();
+    private AuthenticationUser authenticationUser = new AuthenticationUser();
 
-    AuthenticationUser savedUser = new AuthenticationUser();
-
+    private AuthenticationUser savedUser = new AuthenticationUser();
 
     @Before
     public void setUp() {
@@ -65,7 +64,7 @@ public class JwtUserDetailsServiceShould {
         jwtUserDetailsService.authenticateUser(authenticationUser);
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = WrongValidationException.class)
     public void throwErrorOnIncorrectAuthentication() throws Exception {
         String inCorrectPassword = "incorrectPassword";
         authenticationUser.setPassword(inCorrectPassword);
