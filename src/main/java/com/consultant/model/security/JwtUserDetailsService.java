@@ -12,9 +12,9 @@ import java.util.Optional;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
-    AuthenticationUserRepository authenticationUserRepository;
+    private AuthenticationUserRepository authenticationUserRepository;
 
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public JwtUserDetailsService(AuthenticationUserRepository authenticationUserRepository,PasswordEncoder passwordEncoder) {
