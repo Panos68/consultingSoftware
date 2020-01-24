@@ -1,29 +1,19 @@
 package com.consultant.model.entities;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity
-@Table(name = "clients")
 @Data
-@NoArgsConstructor
-public class Client {
-
+@MappedSuperclass
+abstract public class AbstractClient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Column
     String name;
-
-    @Column
-    Integer consultantsAssigned;
-
-    @Column
-    String mainTechnologies;
 
     @Column
     String mainPersonName;

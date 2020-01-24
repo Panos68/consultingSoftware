@@ -1,13 +1,13 @@
 package com.consultant.model.repositories;
 
-import com.consultant.model.entities.Client;
+import com.consultant.model.entities.ClientCompany;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface ClientRepository extends JpaRepository<Client, Long> {
+public interface ClientCompanyRepository extends JpaRepository<ClientCompany, Long> {
 
-    Optional<Client> findByName(String name);
+    Optional<ClientCompany> findByName(String name);
 }

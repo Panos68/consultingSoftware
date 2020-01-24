@@ -5,15 +5,11 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class ClientDTO {
+public abstract class AbstractClientDTO {
 
     private Long id;
 
     private String name;
-
-    private Integer consultantsAssigned;
-
-    private String mainTechnologies;
 
     private String mainPersonName;
 

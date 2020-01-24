@@ -1,4 +1,4 @@
-package com.consultant.model.converters;
+package com.consultant.model.converters.candidate;
 
 import com.consultant.model.entities.Candidate;
 import com.consultant.model.dto.CandidateDTO;
@@ -6,7 +6,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CandidateToCandidateDTO implements Converter<Candidate, CandidateDTO> {
+public class CandidateToDTO implements Converter<Candidate, CandidateDTO> {
 
     @Override
     public CandidateDTO convert(Candidate candidate) {
