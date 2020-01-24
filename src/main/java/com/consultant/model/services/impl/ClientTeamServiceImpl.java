@@ -2,6 +2,7 @@ package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.ClientTeamDTO;
 import com.consultant.model.entities.ClientTeam;
+import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ClientTeamRepository;
 import com.consultant.model.services.ClientCompanyService;
@@ -46,24 +47,37 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     @Override
     public void createTeam(ClientTeamDTO clientTeamDTO) throws NoMatchException {
         final ClientTeam clientTeam = conversionService.convert(clientTeamDTO, ClientTeam.class);
-        clientCompanyService.assignTeamToCompany(clientTeam,clientTeamDTO.getClientId());
+        clientCompanyService.assignTeamToCompany(clientTeam, clientTeamDTO.getClientId());
         clientTeamRepository.saveAndFlush(clientTeam);
     }
 
     @Override
     public void editTeam(ClientTeamDTO clientTeamDTO) throws NoMatchException {
-        Optional<ClientTeam> existingClient = getExistingTeamById(clientTeamDTO.getId());
+        ClientTeam existingClient = getExistingTeamById(clientTeamDTO.getId());
 
-        ClientTeam updatedClientTeam = updateTeam(existingClient.get(), clientTeamDTO);
+        ClientTeam updatedClientTeam = updateTeam(existingClient, clientTeamDTO);
 
         clientTeamRepository.saveAndFlush(updatedClientTeam);
     }
 
     @Override
     public void deleteTeam(Long id) throws NoMatchException {
-        Optional<ClientTeam> existingTeam = getExistingTeamById(id);
+        ClientTeam existingTeam = getExistingTeamById(id);
 
-        clientTeamRepository.delete(existingTeam.get());
+        clientTeamRepository.delete(existingTeam);
+    }
+
+    @Override
+    public void assignConsultantToTeam(Consultant consultant, Long teamId) throws NoMatchException {
+        ClientTeam clientTeam = getExistingTeamById(teamId);
+        clientTeam.getConsultants().add(consultant);
+        clientTeamRepository.saveAndFlush(clientTeam);
+    }
+
+    @Override
+    public ClientTeam getAssignedTeamOfConsultant(Long consultantId) {
+        ClientTeam clientTeam = clientTeamRepository.findByConsultantId(consultantId);
+        return clientTeam;
     }
 
     private ClientTeam updateTeam(ClientTeam existingClientTeam, ClientTeamDTO clientTeamDTO) {
@@ -75,17 +89,17 @@ public class ClientTeamServiceImpl implements ClientTeamService {
         existingClientTeam.setMainPersonEmail(clientTeamDTO.getMainPersonEmail());
         existingClientTeam.setMainPersonName(clientTeamDTO.getMainPersonName());
         existingClientTeam.setMainPersonPhone(clientTeamDTO.getMainPersonPhone());
-        existingClientTeam.setConsultantsAssigned(clientTeamDTO.getConsultantsAssigned());
+        existingClientTeam.setConsultants(clientTeamDTO.getConsultants());
         existingClientTeam.setMainTechnologies(clientTeamDTO.getMainTechnologies());
         return existingClientTeam;
     }
 
-    private Optional<ClientTeam> getExistingTeamById(Long id) throws NoMatchException {
+    private ClientTeam getExistingTeamById(Long id) throws NoMatchException {
         Optional<ClientTeam> existingTeam = clientTeamRepository.findById(id);
         if (!existingTeam.isPresent()) {
             throw new NoMatchException("The id provided doesn't match any team");
         }
 
-        return existingTeam;
+        return existingTeam.get();
     }
 }

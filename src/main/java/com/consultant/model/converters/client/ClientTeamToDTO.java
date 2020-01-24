@@ -12,7 +12,7 @@ public class ClientTeamToDTO implements Converter<ClientTeam, ClientTeamDTO> {
         ClientTeamDTO clientTeamDTO = new ClientTeamDTO();
         clientTeamDTO.setName(clientTeam.getName());
         clientTeamDTO.setId(clientTeam.getId());
-        clientTeamDTO.setConsultantsAssigned(clientTeam.getConsultantsAssigned());
+        clientTeamDTO.setConsultants(clientTeam.getConsultants());
         clientTeamDTO.setLastInteractedBy(clientTeam.getLastInteractedBy());
         clientTeamDTO.setLastInteractedWith(clientTeam.getLastInteractedWith());
         clientTeamDTO.setLastInteractionDate(clientTeam.getLastInteractionDate());
@@ -20,6 +20,7 @@ public class ClientTeamToDTO implements Converter<ClientTeam, ClientTeamDTO> {
         clientTeamDTO.setMainPersonName(clientTeam.getMainPersonName());
         clientTeamDTO.setMainPersonPhone(clientTeam.getMainPersonPhone());
         clientTeamDTO.setMainTechnologies(clientTeam.getMainTechnologies());
+
         return clientTeamDTO;
     }
 }

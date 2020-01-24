@@ -11,8 +11,7 @@ public class DTOtoClientTeam implements Converter<ClientTeamDTO, ClientTeam> {
     public ClientTeam convert(ClientTeamDTO clientTeamDTO) {
         ClientTeam clientTeam = new ClientTeam();
         clientTeam.setName(clientTeamDTO.getName());
-        clientTeam.setId(clientTeamDTO.getId());
-        clientTeam.setConsultantsAssigned(clientTeamDTO.getConsultantsAssigned());
+        clientTeam.setConsultants(clientTeamDTO.getConsultants());
         clientTeam.setLastInteractedBy(clientTeamDTO.getLastInteractedBy());
         clientTeam.setLastInteractedWith(clientTeamDTO.getLastInteractedWith());
         clientTeam.setLastInteractionDate(clientTeamDTO.getLastInteractionDate());
@@ -20,6 +19,10 @@ public class DTOtoClientTeam implements Converter<ClientTeamDTO, ClientTeam> {
         clientTeam.setMainPersonName(clientTeamDTO.getMainPersonName());
         clientTeam.setMainPersonPhone(clientTeamDTO.getMainPersonPhone());
         clientTeam.setMainTechnologies(clientTeamDTO.getMainTechnologies());
+        if (clientTeamDTO.getId() != null) {
+            clientTeam.setId(clientTeamDTO.getId());
+        }
+
         return clientTeam;
     }
 }

@@ -20,6 +20,7 @@ public class CandidateToDTO implements Converter<Candidate, CandidateDTO> {
          candidateDTO.setLocation(candidate.getLocation());
          candidateDTO.setSource(candidate.getSource());
          candidateDTO.setId(candidate.getId());
+
         return candidateDTO;
     }
 }

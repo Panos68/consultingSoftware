@@ -11,8 +11,8 @@ public class DTOtoClientCompany implements Converter<ClientCompanyDTO, ClientCom
     @Override
     public ClientCompany convert(ClientCompanyDTO clientCompanyDTO) {
         ClientCompany clientCompany = new ClientCompany();
+
         clientCompany.setName(clientCompanyDTO.getName());
-        clientCompany.setId(clientCompanyDTO.getId());
         clientCompany.setLastInteractedBy(clientCompanyDTO.getLastInteractedBy());
         clientCompany.setLastInteractedWith(clientCompanyDTO.getLastInteractedWith());
         clientCompany.setLastInteractionDate(clientCompanyDTO.getLastInteractionDate());
@@ -20,6 +20,10 @@ public class DTOtoClientCompany implements Converter<ClientCompanyDTO, ClientCom
         clientCompany.setMainPersonName(clientCompanyDTO.getMainPersonName());
         clientCompany.setMainPersonPhone(clientCompanyDTO.getMainPersonPhone());
         clientCompany.setClientTeams(clientCompanyDTO.getClientTeams());
+        if (clientCompanyDTO.getId() != null) {
+            clientCompany.setId(clientCompanyDTO.getId());
+        }
+
         return clientCompany;
     }
 }

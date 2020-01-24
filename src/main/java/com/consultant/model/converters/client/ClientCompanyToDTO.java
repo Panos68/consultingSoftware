@@ -19,6 +19,7 @@ public class ClientCompanyToDTO implements Converter<ClientCompany, ClientCompan
         clientCompanyDTO.setMainPersonName(clientCompany.getMainPersonName());
         clientCompanyDTO.setMainPersonPhone(clientCompany.getMainPersonPhone());
         clientCompanyDTO.setClientTeams(clientCompany.getClientTeams());
+
         return clientCompanyDTO;
     }
 }

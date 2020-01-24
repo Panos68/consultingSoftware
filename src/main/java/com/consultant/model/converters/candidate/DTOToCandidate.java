@@ -23,6 +23,7 @@ public class DTOToCandidate implements Converter<CandidateDTO, Candidate> {
         if (candidateDTOId != null) {
             candidate.setId(candidateDTOId);
         }
+
         return candidate;
     }
 }
