@@ -62,16 +62,16 @@ public class CandidateServiceShould {
     public void returnListOfAllExistingCandidates() throws Exception {
         candidateList.add(candidate1);
         candidateList.add(candidate2);
-        Set<CandidateDTO> authorsDTO = candidateService.getAllCandidates();
-        Assert.assertThat(authorsDTO.size(), is(2));
+        Set<CandidateDTO> clientDTOS = candidateService.getAllCandidates();
+        Assert.assertThat(clientDTOS.size(), is(2));
     }
 
     @Test
-    public void returnEmptyListIfThereAreNoAuthors() throws Exception {
+    public void returnEmptyListIfThereAreNoCandidates() throws Exception {
         when(candidateRepository.findAll()).thenReturn(candidateList);
-        Set<CandidateDTO> authorsDTO = candidateService.getAllCandidates();
+        Set<CandidateDTO> clientDTOS = candidateService.getAllCandidates();
 
-        Assert.assertThat(authorsDTO.isEmpty(), is(true));
+        Assert.assertThat(clientDTOS.isEmpty(), is(true));
     }
 
     @Test
@@ -119,8 +119,6 @@ public class CandidateServiceShould {
         candidateDTO.setId(candidateId);
         Mockito.when(candidateRepository.findById(candidateId)).thenReturn(Optional.empty());
         candidateService.editCandidate(candidateDTO);
-
-        verify(candidateRepository, times(1)).saveAndFlush(candidate1);
     }
 
 }
