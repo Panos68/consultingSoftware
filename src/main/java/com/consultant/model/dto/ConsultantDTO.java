@@ -34,5 +34,5 @@ public class ConsultantDTO {
 
     String teamName;
 
-    String companyName;
+    String clientName;
 }

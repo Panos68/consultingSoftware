@@ -25,7 +25,7 @@ public class ConsultantToDTO implements Converter<Consultant, ConsultantDTO> {
         consultantDTO.setSigned(consultant.getSigned());
         consultantDTO.setOther(consultant.getOther());
         consultantDTO.setTeamName(consultant.getTeamName());
-        consultantDTO.setCompanyName(consultant.getCompanyName());
+        consultantDTO.setClientName(consultant.getClientName());
         return consultantDTO;
     }
 }

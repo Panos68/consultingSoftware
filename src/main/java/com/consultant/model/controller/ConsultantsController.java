@@ -20,22 +20,22 @@ public class ConsultantsController {
     }
 
     @GetMapping
-    public ResponseEntity<Set<ConsultantDTO>> getAllTeams(){
+    public ResponseEntity<Set<ConsultantDTO>> getAllConsultants(){
         return ResponseEntity.ok(consultantsService.getAllConsultants());
     }
 
     @PostMapping
-    public void createCompany(@RequestBody ConsultantDTO consultantDTO) throws Exception {
+    public void createConsultant(@RequestBody ConsultantDTO consultantDTO) throws Exception {
         consultantsService.createConsultant(consultantDTO);
     }
 
     @PutMapping
-    public void editCompany(@RequestBody ConsultantDTO consultantDTO) throws Exception {
+    public void editConsultant(@RequestBody ConsultantDTO consultantDTO) throws Exception {
         consultantsService.editConsultant(consultantDTO);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteCompany(@PathVariable Long id) throws Exception {
+    public void deleteConsultant(@PathVariable Long id) throws Exception {
         consultantsService.deleteConsultant(id);
     }
 }

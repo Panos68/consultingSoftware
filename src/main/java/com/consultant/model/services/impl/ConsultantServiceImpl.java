@@ -1,12 +1,12 @@
 package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.ConsultantDTO;
-import com.consultant.model.entities.ClientCompany;
+import com.consultant.model.entities.Client;
 import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
-import com.consultant.model.services.ClientCompanyService;
+import com.consultant.model.services.ClientService;
 import com.consultant.model.services.ClientTeamService;
 import com.consultant.model.services.ConsultantsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,36 +27,36 @@ public class ConsultantServiceImpl implements ConsultantsService {
 
     ClientTeamService clientTeamService;
 
-    ClientCompanyService clientCompanyService;
+    ClientService clientService;
 
     @Autowired
     public ConsultantServiceImpl(ConsultantRepository consultantRepository, ConversionService conversionService, ClientTeamService clientTeamService,
-                                 ClientCompanyService clientCompanyService) {
+                                 ClientService clientService) {
         this.consultantRepository = consultantRepository;
         this.conversionService = conversionService;
         this.clientTeamService = clientTeamService;
-        this.clientCompanyService = clientCompanyService;
+        this.clientService = clientService;
     }
 
     @Override
     public Set<ConsultantDTO> getAllConsultants() {
-        List<Consultant> clientCompanyList = consultantRepository.findAll();
-        Set<ConsultantDTO> clientCompanyDTOS = new HashSet<>();
-        clientCompanyList.forEach(consultant -> {
-            setTeamAndCompanyOfConsultant(consultant);
+        List<Consultant> consultantsList = consultantRepository.findAll();
+        Set<ConsultantDTO> consultantsDTOS = new HashSet<>();
+        consultantsList.forEach(consultant -> {
+            setTeamAndClientOfConsultant(consultant);
             final ConsultantDTO consultantDTO = conversionService.convert(consultant, ConsultantDTO.class);
-            clientCompanyDTOS.add(consultantDTO);
+            consultantsDTOS.add(consultantDTO);
         });
 
-        return clientCompanyDTOS;
+        return consultantsDTOS;
     }
 
-    private void setTeamAndCompanyOfConsultant(Consultant consultant) {
+    private void setTeamAndClientOfConsultant(Consultant consultant) {
         Optional<ClientTeam> consultantTeam = clientTeamService.getAssignedTeamOfConsultant(consultant.getId());
         if (consultantTeam.isPresent()) {
             consultant.setTeamName(consultantTeam.get().getName());
-            Optional<ClientCompany> companyOfTeam = clientCompanyService.getCompanyOfTeam(consultantTeam.get().getId());
-            companyOfTeam.ifPresent(clientCompany -> consultant.setCompanyName(clientCompany.getName()));
+            Optional<Client> clientOfTeam = clientService.getClientOfTeam(consultantTeam.get().getId());
+            clientOfTeam.ifPresent(client -> consultant.setClientName(client.getName()));
         }
     }
 

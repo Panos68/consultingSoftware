@@ -1,12 +1,12 @@
 package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.ClientTeamDTO;
-import com.consultant.model.entities.ClientCompany;
+import com.consultant.model.entities.Client;
 import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ClientTeamRepository;
-import com.consultant.model.services.ClientCompanyService;
+import com.consultant.model.services.ClientService;
 import com.consultant.model.services.ClientTeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -22,14 +22,14 @@ public class ClientTeamServiceImpl implements ClientTeamService {
 
     ClientTeamRepository clientTeamRepository;
 
-    ClientCompanyService clientCompanyService;
+    ClientService clientService;
 
     ConversionService conversionService;
 
     @Autowired
-    public ClientTeamServiceImpl(ClientTeamRepository clientTeamRepository, ClientCompanyService clientCompanyService, ConversionService conversionService) {
+    public ClientTeamServiceImpl(ClientTeamRepository clientTeamRepository, ClientService clientService, ConversionService conversionService) {
         this.clientTeamRepository = clientTeamRepository;
-        this.clientCompanyService = clientCompanyService;
+        this.clientService = clientService;
         this.conversionService = conversionService;
     }
 
@@ -38,7 +38,7 @@ public class ClientTeamServiceImpl implements ClientTeamService {
         List<ClientTeam> clientTeamsList = clientTeamRepository.findAll();
         Set<ClientTeamDTO> clientTeamsDTOS = new HashSet<>();
         clientTeamsList.forEach(team -> {
-            setCompanyOfTeam(team);
+            setClientOfTeam(team);
             final ClientTeamDTO clientTeamDTO = conversionService.convert(team, ClientTeamDTO.class);
             clientTeamsDTOS.add(clientTeamDTO);
         });
@@ -46,11 +46,11 @@ public class ClientTeamServiceImpl implements ClientTeamService {
         return clientTeamsDTOS;
     }
 
-    private void setCompanyOfTeam(ClientTeam team) {
-        Optional<ClientCompany> companyOfTeam = clientCompanyService.getCompanyOfTeam(team.getId());
-        if(companyOfTeam.isPresent()){
-            team.setClientId(companyOfTeam.get().getId());
-            team.setClientName(companyOfTeam.get().getName());
+    private void setClientOfTeam(ClientTeam team) {
+        Optional<Client> clientOfTeam = clientService.getClientOfTeam(team.getId());
+        if(clientOfTeam.isPresent()){
+            team.setClientId(clientOfTeam.get().getId());
+            team.setClientName(clientOfTeam.get().getName());
         }
     }
 
@@ -58,7 +58,7 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     public void createTeam(ClientTeamDTO clientTeamDTO) throws NoMatchException {
         final ClientTeam clientTeam = conversionService.convert(clientTeamDTO, ClientTeam.class);
 
-        assignTeamToCompany(clientTeamDTO.getClientId(), clientTeam);
+        assignTeamToClient(clientTeamDTO.getClientId(), clientTeam);
     }
 
     /**
@@ -69,9 +69,9 @@ public class ClientTeamServiceImpl implements ClientTeamService {
      * @param clientTeam the updated team to assign and save
      * @throws NoMatchException
      */
-    private void assignTeamToCompany(Long clientId, ClientTeam clientTeam) throws NoMatchException {
+    private void assignTeamToClient(Long clientId, ClientTeam clientTeam) throws NoMatchException {
         if (clientId != null) {
-            clientCompanyService.assignTeamToCompany(clientTeam, clientId);
+            clientService.assignTeamToClient(clientTeam, clientId);
         } else {
             clientTeamRepository.saveAndFlush(clientTeam);
         }
@@ -83,7 +83,7 @@ public class ClientTeamServiceImpl implements ClientTeamService {
 
         ClientTeam updatedClientTeam = updateTeam(existingClient, clientTeamDTO);
 
-        assignTeamToCompany(clientTeamDTO.getClientId(), updatedClientTeam);
+        assignTeamToClient(clientTeamDTO.getClientId(), updatedClientTeam);
     }
 
     @Override

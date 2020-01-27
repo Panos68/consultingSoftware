@@ -6,6 +6,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ClientCompanyDTO extends AbstractClientDTO{
+public class ClientDTO extends AbstractClientDTO{
     private List<ClientTeam> clientTeams;
 }

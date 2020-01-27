@@ -53,5 +53,5 @@ public class Consultant {
     String teamName;
 
     @Transient
-    String companyName;
+    String clientName;
 }

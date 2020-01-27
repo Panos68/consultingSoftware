@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "clients")
 @NoArgsConstructor
 @Data
-public class ClientCompany extends AbstractClient {
+public class Client extends AbstractClient {
 
     @OneToMany (cascade = CascadeType.ALL)
     @JoinColumn(name = "client.id")
