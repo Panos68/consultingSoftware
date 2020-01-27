@@ -11,7 +11,7 @@ public interface ClientTeamRepository extends JpaRepository<ClientTeam, Long> {
  @Query(value = "SELECT * FROM CLIENT_TEAMS ct" +
                  "JOIN CONSULTANTS c" +
                  "ON c.team_id=ct.id " +
-                 "WHERE u.status = ?1",
+                 "WHERE c.id = ?1",
          nativeQuery = true)
  ClientTeam findByConsultantId(Long consultantId);
 }

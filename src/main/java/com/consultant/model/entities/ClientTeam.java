@@ -12,13 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class ClientTeam extends AbstractClient {
-    @Column
-    Integer consultantsAssigned;
 
     @Column
-    String mainTechnologies;
+    private String mainTechnologies;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "team.id")
     private List<Consultant> consultants = new ArrayList<>();
+
 }
