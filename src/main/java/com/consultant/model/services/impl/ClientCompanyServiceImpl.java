@@ -72,11 +72,9 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
 
     @Override
     public void assignTeamToCompany(ClientTeam clientTeam, Long companyId) throws NoMatchException {
-        if (companyId != null) {
-            ClientCompany existingClient = getExistingClientById(companyId);
-            existingClient.getClientTeams().add(clientTeam);
-            clientCompanyRepository.saveAndFlush(existingClient);
-        }
+        ClientCompany existingClient = getExistingClientById(companyId);
+        existingClient.getClientTeams().add(clientTeam);
+        clientCompanyRepository.saveAndFlush(existingClient);
     }
 
     private ClientCompany updateClient(ClientCompany existingClientCompany, ClientCompanyDTO clientCompanyDTO) {

@@ -25,17 +25,17 @@ public class ClientTeamsController {
     }
 
     @PostMapping
-    public void createCompany(@RequestBody ClientTeamDTO clientTeamDTO) throws Exception {
+    public void createTeam(@RequestBody ClientTeamDTO clientTeamDTO) throws Exception {
         clientTeamService.createTeam(clientTeamDTO);
     }
 
     @PutMapping
-    public void editCompany(@RequestBody ClientTeamDTO clientTeamDTO) throws Exception {
+    public void editTeam(@RequestBody ClientTeamDTO clientTeamDTO) throws Exception {
         clientTeamService.editTeam(clientTeamDTO);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteCompany(@PathVariable Long id) throws Exception {
+    public void deleteTeam(@PathVariable Long id) throws Exception {
         clientTeamService.deleteTeam(id);
     }
 }

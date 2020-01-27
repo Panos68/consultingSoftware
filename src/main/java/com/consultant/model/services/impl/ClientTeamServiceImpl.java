@@ -47,8 +47,23 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     @Override
     public void createTeam(ClientTeamDTO clientTeamDTO) throws NoMatchException {
         final ClientTeam clientTeam = conversionService.convert(clientTeamDTO, ClientTeam.class);
-        clientCompanyService.assignTeamToCompany(clientTeam, clientTeamDTO.getClientId());
-        clientTeamRepository.saveAndFlush(clientTeam);
+
+        assignTeamToCompany(clientTeamDTO.getClientId(), clientTeam);
+    }
+
+    /**
+     * Checks if an id was sent to be saved for the team. If exists it assigns the team to that company, if not it just
+     * saves the updated team.
+     * @param clientId
+     * @param clientTeam
+     * @throws NoMatchException
+     */
+    private void assignTeamToCompany(Long clientId, ClientTeam clientTeam) throws NoMatchException {
+        if (clientId != null) {
+            clientCompanyService.assignTeamToCompany(clientTeam, clientId);
+        } else {
+            clientTeamRepository.saveAndFlush(clientTeam);
+        }
     }
 
     @Override
@@ -57,7 +72,7 @@ public class ClientTeamServiceImpl implements ClientTeamService {
 
         ClientTeam updatedClientTeam = updateTeam(existingClient, clientTeamDTO);
 
-        clientTeamRepository.saveAndFlush(updatedClientTeam);
+        assignTeamToCompany(clientTeamDTO.getClientId(), updatedClientTeam);
     }
 
     @Override
