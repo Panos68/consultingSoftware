@@ -3,7 +3,7 @@ package com.consultant.model.entities;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @MappedSuperclass
@@ -25,7 +25,7 @@ abstract public class AbstractClient {
     String mainPersonPhone;
 
     @Column
-    Date lastInteractionDate;
+    LocalDate lastInteractionDate;
 
     @Column
     String lastInteractedWith;

@@ -2,7 +2,8 @@ package com.consultant.model.dto;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 
 @Data
 public class ConsultantDTO {
@@ -20,11 +21,11 @@ public class ConsultantDTO {
 
     Integer discount;
 
-    Date contractStarted;
+    LocalDate contractStarted;
 
-    Date contractEnding;
+    LocalDate contractEnding;
 
-    Date updatedContractEnding;
+    LocalDate updatedContractEnding;
 
     Boolean signed;
 
