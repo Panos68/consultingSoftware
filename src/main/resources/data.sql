@@ -1,0 +1,1 @@
+INSERT INTO users (ID, USERNAME, PASSWORD) VALUES (1, 'panos', '123')
