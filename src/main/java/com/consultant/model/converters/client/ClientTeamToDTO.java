@@ -20,6 +20,8 @@ public class ClientTeamToDTO implements Converter<ClientTeam, ClientTeamDTO> {
         clientTeamDTO.setMainPersonName(clientTeam.getMainPersonName());
         clientTeamDTO.setMainPersonPhone(clientTeam.getMainPersonPhone());
         clientTeamDTO.setMainTechnologies(clientTeam.getMainTechnologies());
+        clientTeamDTO.setClientId(clientTeam.getClientId());
+        clientTeamDTO.setClientName(clientTeam.getClientName());
 
         return clientTeamDTO;
     }

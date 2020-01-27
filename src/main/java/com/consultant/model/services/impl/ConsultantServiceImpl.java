@@ -1,9 +1,12 @@
 package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.entities.Client;
+import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
+import com.consultant.model.services.ClientService;
 import com.consultant.model.services.ClientTeamService;
 import com.consultant.model.services.ConsultantsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,30 +27,44 @@ public class ConsultantServiceImpl implements ConsultantsService {
 
     ClientTeamService clientTeamService;
 
+    ClientService clientService;
+
     @Autowired
-    public ConsultantServiceImpl(ConsultantRepository consultantRepository, ConversionService conversionService, ClientTeamService clientTeamService) {
+    public ConsultantServiceImpl(ConsultantRepository consultantRepository, ConversionService conversionService, ClientTeamService clientTeamService,
+                                 ClientService clientService) {
         this.consultantRepository = consultantRepository;
         this.conversionService = conversionService;
         this.clientTeamService = clientTeamService;
+        this.clientService = clientService;
     }
 
     @Override
     public Set<ConsultantDTO> getAllConsultants() {
-        List<Consultant> clientCompanyList = consultantRepository.findAll();
-        Set<ConsultantDTO> clientCompanyDTOS = new HashSet<>();
-        clientCompanyList.forEach(consultant -> {
+        List<Consultant> consultantsList = consultantRepository.findAll();
+        Set<ConsultantDTO> consultantsDTOS = new HashSet<>();
+        consultantsList.forEach(consultant -> {
+            setTeamAndClientOfConsultant(consultant);
             final ConsultantDTO consultantDTO = conversionService.convert(consultant, ConsultantDTO.class);
-            clientCompanyDTOS.add(consultantDTO);
+            consultantsDTOS.add(consultantDTO);
         });
 
-        return clientCompanyDTOS;
+        return consultantsDTOS;
+    }
+
+    private void setTeamAndClientOfConsultant(Consultant consultant) {
+        Optional<ClientTeam> consultantTeam = clientTeamService.getAssignedTeamOfConsultant(consultant.getId());
+        if (consultantTeam.isPresent()) {
+            consultant.setTeamName(consultantTeam.get().getName());
+            Optional<Client> clientOfTeam = clientService.getClientOfTeam(consultantTeam.get().getId());
+            clientOfTeam.ifPresent(client -> consultant.setClientName(client.getName()));
+        }
     }
 
     @Override
     public void createConsultant(ConsultantDTO consultantDTO) throws NoMatchException {
         final Consultant consultant = conversionService.convert(consultantDTO, Consultant.class);
-        clientTeamService.assignConsultantToTeam(consultant, consultantDTO.getTeamId());
-        consultantRepository.saveAndFlush(consultant);
+
+        assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
     }
 
     @Override
@@ -56,9 +73,7 @@ public class ConsultantServiceImpl implements ConsultantsService {
 
         Consultant updatedConsultant = updateConsultant(existingConsultant, consultantDTO);
 
-        clientTeamService.assignConsultantToTeam(existingConsultant, consultantDTO.getTeamId());
-
-        consultantRepository.saveAndFlush(updatedConsultant);
+        assignConsultantToTeam(consultantDTO.getTeamId(), updatedConsultant);
     }
 
     private Consultant updateConsultant(Consultant existingConsultant, ConsultantDTO consultantDTO) {
@@ -91,5 +106,21 @@ public class ConsultantServiceImpl implements ConsultantsService {
         }
 
         return existingConsultant.get();
+    }
+
+    /**
+     * Checks if an id was sent to be saved for the consultant. If exists it assigns the consultant to that team, if not it just
+     * saves the updated consultant.
+     *
+     * @param teamId     the id of the team to be assigned to
+     * @param consultant the updated consultant to be saved
+     * @throws NoMatchException
+     */
+    private void assignConsultantToTeam(Long teamId, Consultant consultant) throws NoMatchException {
+        if (teamId != null) {
+            clientTeamService.assignConsultantToTeam(consultant, teamId);
+        } else {
+            consultantRepository.saveAndFlush(consultant);
+        }
     }
 }

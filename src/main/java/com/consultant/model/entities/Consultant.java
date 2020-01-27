@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -35,17 +35,23 @@ public class Consultant {
     Integer discount;
 
     @Column
-    Date contractStarted;
+    LocalDate contractStarted;
 
     @Column
-    Date contractEnding;
+    LocalDate contractEnding;
 
     @Column
-    Date updatedContractEnding;
+    LocalDate updatedContractEnding;
 
     @Column
     Boolean signed;
 
     @Column
     String other;
+
+    @Transient
+    String teamName;
+
+    @Transient
+    String clientName;
 }

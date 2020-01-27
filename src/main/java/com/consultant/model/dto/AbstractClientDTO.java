@@ -2,7 +2,7 @@ package com.consultant.model.dto;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public abstract class AbstractClientDTO {
@@ -17,7 +17,7 @@ public abstract class AbstractClientDTO {
 
     private String mainPersonPhone;
 
-    private Date lastInteractionDate;
+    private LocalDate lastInteractionDate;
 
     private String lastInteractedWith;
 

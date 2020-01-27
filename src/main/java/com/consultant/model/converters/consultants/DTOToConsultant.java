@@ -24,6 +24,8 @@ public class DTOToConsultant implements Converter<ConsultantDTO, Consultant> {
         consultant.setUpdatedContractEnding(consultantDTO.getUpdatedContractEnding());
         consultant.setSigned(consultantDTO.getSigned());
         consultant.setOther(consultantDTO.getOther());
+        consultant.setTeamName(consultantDTO.getTeamName());
+        consultant.setClientName(consultantDTO.getClientName());
 
         return consultant;
     }
