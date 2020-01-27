@@ -46,8 +46,8 @@ public class ConsultantServiceImpl implements ConsultantsService {
     @Override
     public void createConsultant(ConsultantDTO consultantDTO) throws NoMatchException {
         final Consultant consultant = conversionService.convert(consultantDTO, Consultant.class);
-        clientTeamService.assignConsultantToTeam(consultant, consultantDTO.getTeamId());
-        consultantRepository.saveAndFlush(consultant);
+
+        assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
     }
 
     @Override
@@ -56,9 +56,7 @@ public class ConsultantServiceImpl implements ConsultantsService {
 
         Consultant updatedConsultant = updateConsultant(existingConsultant, consultantDTO);
 
-        clientTeamService.assignConsultantToTeam(existingConsultant, consultantDTO.getTeamId());
-
-        consultantRepository.saveAndFlush(updatedConsultant);
+        assignConsultantToTeam(consultantDTO.getTeamId(), updatedConsultant);
     }
 
     private Consultant updateConsultant(Consultant existingConsultant, ConsultantDTO consultantDTO) {
@@ -91,5 +89,21 @@ public class ConsultantServiceImpl implements ConsultantsService {
         }
 
         return existingConsultant.get();
+    }
+
+    /**
+     * Checks if an id was sent to be saved for the consultant. If exists it assigns the consultant to that team, if not it just
+     * saves the updated consultant.
+     *
+     * @param teamId the id of the team to be assigned to
+     * @param consultant the updated consultant to be saved
+     * @throws NoMatchException
+     */
+    private void assignConsultantToTeam(Long teamId, Consultant consultant) throws NoMatchException {
+        if (teamId != null) {
+            clientTeamService.assignConsultantToTeam(consultant, teamId);
+        } else {
+            consultantRepository.saveAndFlush(consultant);
+        }
     }
 }

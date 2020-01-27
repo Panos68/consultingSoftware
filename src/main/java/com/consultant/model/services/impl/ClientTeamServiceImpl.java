@@ -54,8 +54,8 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     /**
      * Checks if an id was sent to be saved for the team. If exists it assigns the team to that company, if not it just
      * saves the updated team.
-     * @param clientId
-     * @param clientTeam
+     * @param clientId the client id to be assigned to
+     * @param clientTeam the updated team to assign and save
      * @throws NoMatchException
      */
     private void assignTeamToCompany(Long clientId, ClientTeam clientTeam) throws NoMatchException {
