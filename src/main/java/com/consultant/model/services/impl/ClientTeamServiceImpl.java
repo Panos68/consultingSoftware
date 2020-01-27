@@ -1,6 +1,7 @@
 package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.ClientTeamDTO;
+import com.consultant.model.entities.ClientCompany;
 import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
@@ -34,14 +35,23 @@ public class ClientTeamServiceImpl implements ClientTeamService {
 
     @Override
     public Set<ClientTeamDTO> getAllTeams() {
-        List<ClientTeam> clientCompanyList = clientTeamRepository.findAll();
-        Set<ClientTeamDTO> clientCompanyDTOS = new HashSet<>();
-        clientCompanyList.forEach(client -> {
-            final ClientTeamDTO clientCompanyDTO = conversionService.convert(client, ClientTeamDTO.class);
-            clientCompanyDTOS.add(clientCompanyDTO);
+        List<ClientTeam> clientTeamsList = clientTeamRepository.findAll();
+        Set<ClientTeamDTO> clientTeamsDTOS = new HashSet<>();
+        clientTeamsList.forEach(team -> {
+            setCompanyOfTeam(team);
+            final ClientTeamDTO clientTeamDTO = conversionService.convert(team, ClientTeamDTO.class);
+            clientTeamsDTOS.add(clientTeamDTO);
         });
 
-        return clientCompanyDTOS;
+        return clientTeamsDTOS;
+    }
+
+    private void setCompanyOfTeam(ClientTeam team) {
+        Optional<ClientCompany> companyOfTeam = clientCompanyService.getCompanyOfTeam(team.getId());
+        if(companyOfTeam.isPresent()){
+            team.setClientId(companyOfTeam.get().getId());
+            team.setClientName(companyOfTeam.get().getName());
+        }
     }
 
     @Override
@@ -54,7 +64,8 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     /**
      * Checks if an id was sent to be saved for the team. If exists it assigns the team to that company, if not it just
      * saves the updated team.
-     * @param clientId the client id to be assigned to
+     *
+     * @param clientId   the client id to be assigned to
      * @param clientTeam the updated team to assign and save
      * @throws NoMatchException
      */

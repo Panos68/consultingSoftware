@@ -20,4 +20,9 @@ public class ClientTeam extends AbstractClient {
     @JoinColumn(name = "team.id")
     private List<Consultant> consultants = new ArrayList<>();
 
+    @Transient
+    private Long clientId;
+
+    @Transient
+    private String clientName;
 }

@@ -12,4 +12,6 @@ public class ClientTeamDTO extends AbstractClientDTO {
     String mainTechnologies;
 
     Long clientId;
+
+    String clientName;
 }

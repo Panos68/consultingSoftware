@@ -77,6 +77,11 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
         clientCompanyRepository.saveAndFlush(existingClient);
     }
 
+    @Override
+    public Optional<ClientCompany> getCompanyOfTeam(Long teamId) {
+        return clientCompanyRepository.findByTeamId(teamId);
+    }
+
     private ClientCompany updateClient(ClientCompany existingClientCompany, ClientCompanyDTO clientCompanyDTO) {
         existingClientCompany.setName(clientCompanyDTO.getName());
         existingClientCompany.setId(clientCompanyDTO.getId());
