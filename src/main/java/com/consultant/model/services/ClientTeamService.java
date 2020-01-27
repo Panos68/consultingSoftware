@@ -5,6 +5,7 @@ import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface ClientTeamService {
@@ -22,5 +23,5 @@ public interface ClientTeamService {
      * @param consultantId the id of the consultant
      * @return the id of the consultant team
      */
-    ClientTeam getAssignedTeamOfConsultant(Long consultantId);
+    Optional<ClientTeam> getAssignedTeamOfConsultant(Long consultantId);
 }

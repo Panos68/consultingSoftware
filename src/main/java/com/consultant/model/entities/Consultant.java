@@ -48,4 +48,10 @@ public class Consultant {
 
     @Column
     String other;
+
+    @Transient
+    String teamName;
+
+    @Transient
+    String companyName;
 }

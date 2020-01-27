@@ -31,4 +31,8 @@ public class ConsultantDTO {
     String other;
 
     Long teamId;
+
+    String teamName;
+
+    String companyName;
 }

@@ -1,9 +1,12 @@
 package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.entities.ClientCompany;
+import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
+import com.consultant.model.services.ClientCompanyService;
 import com.consultant.model.services.ClientTeamService;
 import com.consultant.model.services.ConsultantsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,15 @@ public class ConsultantServiceImpl implements ConsultantsService {
 
     ClientTeamService clientTeamService;
 
+    ClientCompanyService clientCompanyService;
+
     @Autowired
-    public ConsultantServiceImpl(ConsultantRepository consultantRepository, ConversionService conversionService, ClientTeamService clientTeamService) {
+    public ConsultantServiceImpl(ConsultantRepository consultantRepository, ConversionService conversionService, ClientTeamService clientTeamService,
+                                 ClientCompanyService clientCompanyService) {
         this.consultantRepository = consultantRepository;
         this.conversionService = conversionService;
         this.clientTeamService = clientTeamService;
+        this.clientCompanyService = clientCompanyService;
     }
 
     @Override
@@ -36,11 +43,21 @@ public class ConsultantServiceImpl implements ConsultantsService {
         List<Consultant> clientCompanyList = consultantRepository.findAll();
         Set<ConsultantDTO> clientCompanyDTOS = new HashSet<>();
         clientCompanyList.forEach(consultant -> {
+            setTeamAndCompanyOfConsultant(consultant);
             final ConsultantDTO consultantDTO = conversionService.convert(consultant, ConsultantDTO.class);
             clientCompanyDTOS.add(consultantDTO);
         });
 
         return clientCompanyDTOS;
+    }
+
+    private void setTeamAndCompanyOfConsultant(Consultant consultant) {
+        Optional<ClientTeam> consultantTeam = clientTeamService.getAssignedTeamOfConsultant(consultant.getId());
+        if (consultantTeam.isPresent()) {
+            consultant.setTeamName(consultantTeam.get().getName());
+            Optional<ClientCompany> companyOfTeam = clientCompanyService.getCompanyOfTeam(consultantTeam.get().getId());
+            companyOfTeam.ifPresent(clientCompany -> consultant.setCompanyName(clientCompany.getName()));
+        }
     }
 
     @Override
@@ -95,7 +112,7 @@ public class ConsultantServiceImpl implements ConsultantsService {
      * Checks if an id was sent to be saved for the consultant. If exists it assigns the consultant to that team, if not it just
      * saves the updated consultant.
      *
-     * @param teamId the id of the team to be assigned to
+     * @param teamId     the id of the team to be assigned to
      * @param consultant the updated consultant to be saved
      * @throws NoMatchException
      */

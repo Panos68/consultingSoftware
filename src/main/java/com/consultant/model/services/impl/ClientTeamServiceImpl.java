@@ -101,8 +101,8 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     }
 
     @Override
-    public ClientTeam getAssignedTeamOfConsultant(Long consultantId) {
-        ClientTeam clientTeam = clientTeamRepository.findByConsultantId(consultantId);
+    public Optional<ClientTeam> getAssignedTeamOfConsultant(Long consultantId) {
+        Optional<ClientTeam> clientTeam = clientTeamRepository.findByConsultantId(consultantId);
         return clientTeam;
     }
 

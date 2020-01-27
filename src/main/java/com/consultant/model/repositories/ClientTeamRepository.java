@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ClientTeamRepository extends JpaRepository<ClientTeam, Long> {
 
@@ -13,5 +15,5 @@ public interface ClientTeamRepository extends JpaRepository<ClientTeam, Long> {
                  "ON c.team_id=ct.id " +
                  "WHERE c.id = ?1",
          nativeQuery = true)
- ClientTeam findByConsultantId(Long consultantId);
+ Optional<ClientTeam> findByConsultantId(Long consultantId);
 }
