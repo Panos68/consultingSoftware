@@ -7,10 +7,12 @@ import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ClientRepository;
 import com.consultant.model.services.impl.ClientServiceImpl;
+import com.consultant.model.services.impl.ClientTeamServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -30,7 +32,11 @@ public class ClientServiceShould {
     @Mock
     private ConversionService conversionService;
 
-    private ClientService clientService;
+    @Mock
+    private ClientTeamServiceImpl clientTeamService;
+
+    @InjectMocks
+    private ClientServiceImpl clientService;
 
     private Long clientId = 1L;
 
@@ -48,8 +54,6 @@ public class ClientServiceShould {
 
     @Before
     public void setUp() {
-        clientService = new ClientServiceImpl(clientRepository, conversionService);
-
         client1.setId(clientId);
 
         when(clientRepository.findAll()).thenReturn(clientList);

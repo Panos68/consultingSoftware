@@ -12,26 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ClientTeamServiceImpl implements ClientTeamService {
 
+    @Autowired
     ClientTeamRepository clientTeamRepository;
 
+    @Autowired
     ClientService clientService;
 
-    ConversionService conversionService;
-
     @Autowired
-    public ClientTeamServiceImpl(ClientTeamRepository clientTeamRepository, ClientService clientService, ConversionService conversionService) {
-        this.clientTeamRepository = clientTeamRepository;
-        this.clientService = clientService;
-        this.conversionService = conversionService;
-    }
+    ConversionService conversionService;
 
     @Override
     public Set<ClientTeamDTO> getAllTeams() {
@@ -89,7 +82,8 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     @Override
     public void deleteTeam(Long id) throws NoMatchException {
         ClientTeam existingTeam = getExistingTeamById(id);
-
+        existingTeam.setConsultants(Collections.emptyList());
+        clientTeamRepository.saveAndFlush(existingTeam);
         clientTeamRepository.delete(existingTeam);
     }
 

@@ -7,6 +7,7 @@ import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ClientRepository;
 import com.consultant.model.services.ClientService;
+import com.consultant.model.services.ClientTeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -19,16 +20,14 @@ import java.util.Set;
 @Service
 public class ClientServiceImpl implements ClientService {
 
+    @Autowired
     ClientRepository clientRepository;
 
+    @Autowired
     ConversionService conversionService;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, ConversionService conversionService) {
-        this.clientRepository = clientRepository;
-        this.conversionService = conversionService;
-    }
-
+    ClientTeamService clientTeamService;
 
     @Override
     public Set<ClientDTO> getAllClients() {
@@ -66,6 +65,14 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void deleteClient(Long id) throws NoMatchException {
         Client existingClient = getExistingClientById(id);
+        List<ClientTeam> clientTeams = existingClient.getClientTeams();
+        clientTeams.forEach(clientTeam -> {
+            try {
+                clientTeamService.deleteTeam(clientTeam.getId());
+            } catch (NoMatchException e) {
+                e.printStackTrace();
+            }
+        });
 
         clientRepository.delete(existingClient);
     }
