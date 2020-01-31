@@ -29,9 +29,6 @@ public class CandidateServiceShould {
     @Mock
     private CandidateRepository candidateRepository;
 
-    @Mock
-    private ConversionService conversionService;
-
     private CandidateService candidateService;
 
     private Long candidateId = 1L;
@@ -46,16 +43,13 @@ public class CandidateServiceShould {
 
     @Before
     public void setUp() {
-        candidateService = new CandidateServiceImpl(candidateRepository, conversionService);
+        candidateService = new CandidateServiceImpl(candidateRepository);
 
         candidate1 = new Candidate();
         candidate1.setId(candidateId);
         when(candidateRepository.findAll()).thenReturn(candidateList);
 
         candidateDTO = new CandidateDTO();
-        when(conversionService.convert(candidateDTO, Candidate.class)).thenReturn(candidate1);
-        when(conversionService.convert(candidate1, CandidateDTO.class)).thenReturn(candidateDTO);
-
     }
 
     @Test
@@ -76,6 +70,8 @@ public class CandidateServiceShould {
 
     @Test
     public void saveToRepositoryWhenCreatingCandidate() throws Exception {
+        candidateDTO = new CandidateDTO();
+        candidateDTO.setId(candidateId);
         candidateService.createCandidate(candidateDTO);
 
         verify(candidateRepository, times(1)).saveAndFlush(candidate1);

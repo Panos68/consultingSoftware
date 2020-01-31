@@ -1,5 +1,6 @@
 package com.consultant.model.services.impl;
 
+import com.consultant.model.converters.candidate.CandidateMapper;
 import com.consultant.model.entities.Candidate;
 import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.exception.EntityAlreadyExists;
@@ -20,12 +21,10 @@ public class CandidateServiceImpl implements CandidateService {
 
     CandidateRepository candidateRepository;
 
-    ConversionService conversionService;
 
     @Autowired
-    public CandidateServiceImpl(CandidateRepository candidateRepository, ConversionService conversionService) {
+    public CandidateServiceImpl(CandidateRepository candidateRepository) {
         this.candidateRepository = candidateRepository;
-        this.conversionService = conversionService;
     }
 
     @Override
@@ -33,7 +32,8 @@ public class CandidateServiceImpl implements CandidateService {
         List<Candidate> candidateList = candidateRepository.findAll();
         Set<CandidateDTO> candidateDTOS = new HashSet<>();
         candidateList.forEach(candidate -> {
-            final CandidateDTO candidateDTO = conversionService.convert(candidate, CandidateDTO.class);
+            CandidateDTO candidateDTO = CandidateMapper.INSTANCE.candidateToCandidateDTO( candidate );
+
             candidateDTOS.add(candidateDTO);
         });
 
@@ -46,8 +46,7 @@ public class CandidateServiceImpl implements CandidateService {
         if (existingCandidate.isPresent()) {
             throw new EntityAlreadyExists("Candidate already exists");
         }
-
-        final Candidate candidate = conversionService.convert(candidateDTO, Candidate.class);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         candidateRepository.saveAndFlush(candidate);
     }

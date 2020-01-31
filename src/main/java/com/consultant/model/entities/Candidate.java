@@ -9,7 +9,8 @@ import javax.persistence.*;
 @Data
 public class Candidate {
 
-     public Candidate() {
+    public Candidate() {
+
     }
 
     @Id

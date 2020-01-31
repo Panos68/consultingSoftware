@@ -1,8 +1,8 @@
 package com.consultant.model.converters;
 
-import com.consultant.model.converters.candidate.DTOToCandidate;
-import com.consultant.model.entities.Candidate;
+import com.consultant.model.converters.candidate.CandidateMapper;
 import com.consultant.model.dto.CandidateDTO;
+import com.consultant.model.entities.Candidate;
 import org.junit.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,14 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DTOToCandidateShould {
 
-    private com.consultant.model.converters.candidate.DTOToCandidate DTOToCandidate = new DTOToCandidate();
 
     @Test
     public void keepLinkedinUrlAfterConversion(){
         CandidateDTO candidateDTO = new CandidateDTO();
         String linkedinUrl = "linkedinUrl";
         candidateDTO.setLinkedinUrl(linkedinUrl);
-        Candidate candidate = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         assertEquals(candidate.getLinkedinUrl(),linkedinUrl);
     }
@@ -27,7 +26,7 @@ public class DTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         String source = "source";
         candidateDTO.setSource(source);
-        Candidate candidate = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         assertEquals(candidate.getSource(),source);
     }
@@ -37,7 +36,7 @@ public class DTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         String location = "location";
         candidateDTO.setLocation(location);
-        Candidate candidate = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         assertEquals(candidate.getLocation(),location);
     }
@@ -47,7 +46,7 @@ public class DTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         String diverese = "diverese";
         candidateDTO.setDiverse(diverese);
-        Candidate candidate = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         assertEquals(candidate.getDiverse(),diverese);
     }
@@ -57,7 +56,7 @@ public class DTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         String company = "company";
         candidateDTO.setCompany(company);
-        Candidate candidate = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         assertEquals(candidate.getCompany(),company);
     }
@@ -67,7 +66,7 @@ public class DTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         String role = "role";
         candidateDTO.setRole(role);
-        Candidate candidate = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         assertEquals(candidate.getRole(),role);
     }
@@ -77,9 +76,9 @@ public class DTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         String comment = "comment";
         candidateDTO.setComment(comment);
-        Candidate authcandidater = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
-        assertEquals(authcandidater.getComment(),comment);
+        assertEquals(candidate.getComment(),comment);
     }
 
     @Test
@@ -87,7 +86,7 @@ public class DTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         Long id = 1L;
         candidateDTO.setId(id);
-        Candidate candidate = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         assertEquals(candidate.getId(),id);
     }
@@ -97,7 +96,7 @@ public class DTOToCandidateShould {
         CandidateDTO candidateDTO = new CandidateDTO();
         String consultant = "consultant";
         candidateDTO.setConsultant(consultant);
-        Candidate candidate = this.DTOToCandidate.convert(candidateDTO);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
         assertEquals(candidate.getConsultant(),consultant);
     }
