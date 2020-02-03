@@ -1,7 +1,7 @@
 package com.consultant.model.controller;
 
 import com.consultant.model.dto.ConsultantDTO;
-import com.consultant.model.services.ConsultantsService;
+import com.consultant.model.services.ConsultantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,30 +12,30 @@ import java.util.Set;
 @RequestMapping("/consultants")
 public class ConsultantsController {
 
-    private ConsultantsService consultantsService;
+    private ConsultantService consultantService;
 
     @Autowired
-    public ConsultantsController(ConsultantsService consultantsService) {
-        this.consultantsService = consultantsService;
+    public ConsultantsController(ConsultantService consultantService) {
+        this.consultantService = consultantService;
     }
 
     @GetMapping
     public ResponseEntity<Set<ConsultantDTO>> getAllConsultants(){
-        return ResponseEntity.ok(consultantsService.getAllConsultants());
+        return ResponseEntity.ok(consultantService.getAllConsultants());
     }
 
     @PostMapping
     public void createConsultant(@RequestBody ConsultantDTO consultantDTO) throws Exception {
-        consultantsService.createConsultant(consultantDTO);
+        consultantService.createConsultant(consultantDTO);
     }
 
     @PutMapping
     public void editConsultant(@RequestBody ConsultantDTO consultantDTO) throws Exception {
-        consultantsService.editConsultant(consultantDTO);
+        consultantService.editConsultant(consultantDTO);
     }
 
     @DeleteMapping(value = "/{id}")
     public void deleteConsultant(@PathVariable Long id) throws Exception {
-        consultantsService.deleteConsultant(id);
+        consultantService.deleteConsultant(id);
     }
 }

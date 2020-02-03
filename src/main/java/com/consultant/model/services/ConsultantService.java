@@ -5,7 +5,7 @@ import com.consultant.model.exception.NoMatchException;
 
 import java.util.Set;
 
-public interface ConsultantsService {
+public interface ConsultantService {
     Set<ConsultantDTO> getAllConsultants();
 
     void createConsultant(ConsultantDTO consultantDTO) throws NoMatchException;

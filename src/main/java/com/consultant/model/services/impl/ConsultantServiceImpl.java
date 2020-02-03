@@ -9,7 +9,7 @@ import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
 import com.consultant.model.services.ClientService;
 import com.consultant.model.services.ClientTeamService;
-import com.consultant.model.services.ConsultantsService;
+import com.consultant.model.services.ConsultantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class ConsultantServiceImpl implements ConsultantsService {
+public class ConsultantServiceImpl implements ConsultantService {
 
     ConsultantRepository consultantRepository;
 
