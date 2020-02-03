@@ -46,8 +46,6 @@ public class ClientServiceShould {
 
     private ClientDTO clientDTO1 = new ClientDTO();
 
-    private ClientDTO clientDTO2 = new ClientDTO();
-
     private ClientTeam clientTeam = new ClientTeam();
 
     @Before
@@ -116,7 +114,7 @@ public class ClientServiceShould {
     }
 
     @Test(expected = NoMatchException.class)
-    public void throwNoMatchExceptionWhenUpdatingNonExistingCandidate() throws Exception {
+    public void throwNoMatchExceptionWhenUpdatingNonExistingClient() throws Exception {
         clientDTO1.setLastInteractedBy("name");
         clientDTO1.setId(clientId);
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
@@ -124,13 +122,13 @@ public class ClientServiceShould {
     }
 
     @Test
-    public void saveToRepositoryWhenAssigningTeamToExistingCandidate() throws Exception {
+    public void saveToRepositoryWhenAssigningTeamToExistingClient() throws Exception {
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.ofNullable(client1));
         clientService.assignTeamToClient(clientTeam,clientId);
     }
 
     @Test(expected = NoMatchException.class)
-    public void throwNoMatchExceptionWhenAssigningTeamToNonExistingCandidate() throws Exception {
+    public void throwNoMatchExceptionWhenAssigningTeamToNonExistingClient() throws Exception {
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
         clientService.assignTeamToClient(clientTeam,clientId);
     }
