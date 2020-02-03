@@ -36,6 +36,8 @@ public class ClientServiceShould {
 
     private Long clientId = 1L;
 
+    private Long teamId = 1L;
+
     private Client client1 = new Client();
 
     private Client client2 = new Client();
@@ -119,5 +121,25 @@ public class ClientServiceShould {
         clientDTO1.setId(clientId);
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
         clientService.editClient(clientDTO1);
+    }
+
+    @Test
+    public void saveToRepositoryWhenAssigningTeamToExistingCandidate() throws Exception {
+        Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.ofNullable(client1));
+        clientService.assignTeamToClient(clientTeam,clientId);
+    }
+
+    @Test(expected = NoMatchException.class)
+    public void throwNoMatchExceptionWhenAssigningTeamToNonExistingCandidate() throws Exception {
+        Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
+        clientService.assignTeamToClient(clientTeam,clientId);
+    }
+
+    @Test
+    public void returnAssignedClientOfTeam() {
+        clientTeam.setId(teamId);
+        Mockito.when(clientRepository.findByTeamId(teamId)).thenReturn(Optional.ofNullable(client1));
+        Optional<Client> clientOfTeam = clientService.getClientOfTeam(teamId);
+        Assert.assertEquals(client1,clientOfTeam.get());
     }
 }
