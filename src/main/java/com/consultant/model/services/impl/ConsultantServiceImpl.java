@@ -1,5 +1,6 @@
 package com.consultant.model.services.impl;
 
+import com.consultant.model.converters.consultants.ConsultantMapper;
 import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.entities.Client;
 import com.consultant.model.entities.ClientTeam;
@@ -10,7 +11,6 @@ import com.consultant.model.services.ClientService;
 import com.consultant.model.services.ClientTeamService;
 import com.consultant.model.services.ConsultantsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -23,17 +23,14 @@ public class ConsultantServiceImpl implements ConsultantsService {
 
     ConsultantRepository consultantRepository;
 
-    ConversionService conversionService;
-
     ClientTeamService clientTeamService;
 
     ClientService clientService;
 
     @Autowired
-    public ConsultantServiceImpl(ConsultantRepository consultantRepository, ConversionService conversionService, ClientTeamService clientTeamService,
+    public ConsultantServiceImpl(ConsultantRepository consultantRepository, ClientTeamService clientTeamService,
                                  ClientService clientService) {
         this.consultantRepository = consultantRepository;
-        this.conversionService = conversionService;
         this.clientTeamService = clientTeamService;
         this.clientService = clientService;
     }
@@ -44,7 +41,7 @@ public class ConsultantServiceImpl implements ConsultantsService {
         Set<ConsultantDTO> consultantsDTOS = new HashSet<>();
         consultantsList.forEach(consultant -> {
             setTeamAndClientOfConsultant(consultant);
-            final ConsultantDTO consultantDTO = conversionService.convert(consultant, ConsultantDTO.class);
+            final ConsultantDTO consultantDTO = ConsultantMapper.INSTANCE.consultantToConsultantDTO(consultant);
             consultantsDTOS.add(consultantDTO);
         });
 
@@ -62,7 +59,7 @@ public class ConsultantServiceImpl implements ConsultantsService {
 
     @Override
     public void createConsultant(ConsultantDTO consultantDTO) throws NoMatchException {
-        final Consultant consultant = conversionService.convert(consultantDTO, Consultant.class);
+        final Consultant consultant = ConsultantMapper.INSTANCE.consultantDTOToConsultant(consultantDTO);
 
         assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
     }
