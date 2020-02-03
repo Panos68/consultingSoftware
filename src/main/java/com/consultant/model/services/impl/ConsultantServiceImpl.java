@@ -1,6 +1,6 @@
 package com.consultant.model.services.impl;
 
-import com.consultant.model.converters.consultants.ConsultantMapper;
+import com.consultant.model.mappers.ConsultantMapper;
 import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.entities.Client;
 import com.consultant.model.entities.ClientTeam;

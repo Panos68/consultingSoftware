@@ -1,6 +1,6 @@
 package com.consultant.model.services.impl;
 
-import com.consultant.model.converters.candidate.CandidateMapper;
+import com.consultant.model.mappers.CandidateMapper;
 import com.consultant.model.entities.Candidate;
 import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.exception.EntityAlreadyExists;
@@ -8,7 +8,6 @@ import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.CandidateRepository;
 import com.consultant.model.services.CandidateService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;

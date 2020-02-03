@@ -16,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.convert.ConversionService;
 
 import java.util.*;
 
@@ -28,9 +27,6 @@ public class ClientServiceShould {
 
     @Mock
     private ClientRepository clientRepository;
-
-    @Mock
-    private ConversionService conversionService;
 
     @Mock
     private ClientTeamServiceImpl clientTeamService;
@@ -57,8 +53,6 @@ public class ClientServiceShould {
         client1.setId(clientId);
 
         when(clientRepository.findAll()).thenReturn(clientList);
-        when(conversionService.convert(clientDTO1, Client.class)).thenReturn(client1);
-        when(conversionService.convert(client1, ClientDTO.class)).thenReturn(clientDTO1);
     }
 
     @Test
@@ -68,8 +62,6 @@ public class ClientServiceShould {
         clientList.add(client1);
 
         clientList.add(client2);
-        when(conversionService.convert(client2, ClientDTO.class)).thenReturn(clientDTO2);
-
         Set<ClientDTO> clientDTOS = clientService.getAllClients();
         Assert.assertThat(clientDTOS.size(), is(2));
     }

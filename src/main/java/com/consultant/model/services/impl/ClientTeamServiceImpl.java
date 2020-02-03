@@ -5,11 +5,11 @@ import com.consultant.model.entities.Client;
 import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
+import com.consultant.model.mappers.AbstractClientMapper;
 import com.consultant.model.repositories.ClientTeamRepository;
 import com.consultant.model.services.ClientService;
 import com.consultant.model.services.ClientTeamService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,16 +23,13 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     @Autowired
     ClientService clientService;
 
-    @Autowired
-    ConversionService conversionService;
-
     @Override
     public Set<ClientTeamDTO> getAllTeams() {
         List<ClientTeam> clientTeamsList = clientTeamRepository.findAll();
         Set<ClientTeamDTO> clientTeamsDTOS = new HashSet<>();
         clientTeamsList.forEach(team -> {
             setClientOfTeam(team);
-            final ClientTeamDTO clientTeamDTO = conversionService.convert(team, ClientTeamDTO.class);
+            final ClientTeamDTO clientTeamDTO = AbstractClientMapper.INSTANCE.clientTeamToClientTeamDTO(team);
             clientTeamsDTOS.add(clientTeamDTO);
         });
 
@@ -41,7 +38,7 @@ public class ClientTeamServiceImpl implements ClientTeamService {
 
     private void setClientOfTeam(ClientTeam team) {
         Optional<Client> clientOfTeam = clientService.getClientOfTeam(team.getId());
-        if(clientOfTeam.isPresent()){
+        if (clientOfTeam.isPresent()) {
             team.setClientId(clientOfTeam.get().getId());
             team.setClientName(clientOfTeam.get().getName());
         }
@@ -49,7 +46,7 @@ public class ClientTeamServiceImpl implements ClientTeamService {
 
     @Override
     public void createTeam(ClientTeamDTO clientTeamDTO) throws NoMatchException {
-        final ClientTeam clientTeam = conversionService.convert(clientTeamDTO, ClientTeam.class);
+        ClientTeam clientTeam = AbstractClientMapper.INSTANCE.clientTeamDTOToClientTeam(clientTeamDTO);
 
         assignTeamToClient(clientTeamDTO.getClientId(), clientTeam);
     }

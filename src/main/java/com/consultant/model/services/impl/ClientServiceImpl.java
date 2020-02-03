@@ -5,11 +5,11 @@ import com.consultant.model.entities.Client;
 import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
+import com.consultant.model.mappers.AbstractClientMapper;
 import com.consultant.model.repositories.ClientRepository;
 import com.consultant.model.services.ClientService;
 import com.consultant.model.services.ClientTeamService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -24,9 +24,6 @@ public class ClientServiceImpl implements ClientService {
     ClientRepository clientRepository;
 
     @Autowired
-    ConversionService conversionService;
-
-    @Autowired
     ClientTeamService clientTeamService;
 
     @Override
@@ -34,7 +31,7 @@ public class ClientServiceImpl implements ClientService {
         List<Client> clientList = clientRepository.findAll();
         Set<ClientDTO> clientDTOS = new HashSet<>();
         clientList.forEach(client -> {
-            final ClientDTO clientDTO = conversionService.convert(client, ClientDTO.class);
+            final ClientDTO clientDTO = AbstractClientMapper.INSTANCE.clientToClientDTO(client);
             clientDTOS.add(clientDTO);
         });
 
@@ -47,8 +44,7 @@ public class ClientServiceImpl implements ClientService {
         if (existingClient.isPresent()) {
             throw new EntityAlreadyExists("Client company already exists");
         }
-
-        final Client client = conversionService.convert(clientDTO, Client.class);
+        final Client client = AbstractClientMapper.INSTANCE.clientDTOToClient(clientDTO);
 
         clientRepository.saveAndFlush(client);
     }

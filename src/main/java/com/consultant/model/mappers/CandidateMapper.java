@@ -1,4 +1,4 @@
-package com.consultant.model.converters.candidate;
+package com.consultant.model.mappers;
 
 import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.entities.Candidate;

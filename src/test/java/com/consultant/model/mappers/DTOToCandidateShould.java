@@ -1,6 +1,5 @@
-package com.consultant.model.converters;
+package com.consultant.model.mappers;
 
-import com.consultant.model.converters.candidate.CandidateMapper;
 import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.entities.Candidate;
 import org.junit.Test;

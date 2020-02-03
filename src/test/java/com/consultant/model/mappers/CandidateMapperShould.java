@@ -1,16 +1,15 @@
-package com.consultant.model.converters;
+package com.consultant.model.mappers;
 
-import com.consultant.model.converters.candidate.CandidateMapper;
 import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.entities.Candidate;
 import org.junit.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CandidateToDTOTest {
+public class CandidateMapperShould {
 
     @Test
-    public void keepLinkedinUrlAfterConversion(){
+    public void keepLinkedinUrlAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         String linkedinUrl = "linkedinUrl";
         candidate.setLinkedinUrl(linkedinUrl);
@@ -21,7 +20,7 @@ public class CandidateToDTOTest {
     }
 
     @Test
-    public void keepSourceAfterConversion(){
+    public void keepSourceAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         String source = "source";
         candidate.setSource(source);
@@ -32,7 +31,7 @@ public class CandidateToDTOTest {
     }
 
     @Test
-    public void keepLocationAfterConversion(){
+    public void keepLocationAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         String location = "location";
         candidate.setLocation(location);
@@ -43,7 +42,7 @@ public class CandidateToDTOTest {
     }
 
     @Test
-    public void keepDiverseAfterConversion(){
+    public void keepDiverseAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         String diverese = "diverese";
         candidate.setDiverse(diverese);
@@ -54,7 +53,7 @@ public class CandidateToDTOTest {
     }
 
     @Test
-    public void keepCompanyAfterConversion(){
+    public void keepCompanyAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         String company = "company";
         candidate.setCompany(company);
@@ -65,7 +64,7 @@ public class CandidateToDTOTest {
     }
 
     @Test
-    public void keepRoleAfterConversion(){
+    public void keepRoleAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         String role = "role";
         candidate.setRole(role);
@@ -76,7 +75,7 @@ public class CandidateToDTOTest {
     }
 
     @Test
-    public void keepCommentAfterConversion(){
+    public void keepCommentAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         String comment = "comment";
         candidate.setComment(comment);
@@ -87,7 +86,7 @@ public class CandidateToDTOTest {
     }
 
     @Test
-    public void keepIdAfterConversion(){
+    public void keepIdAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         Long id = 1L;
         candidate.setId(id);
@@ -97,7 +96,7 @@ public class CandidateToDTOTest {
     }
 
     @Test
-    public void keepConsultantAfterConversion(){
+    public void keepConsultantAfterConvertingToDTO(){
         Candidate candidate = new Candidate();
         String consultant = "consultant";
         candidate.setConsultant(consultant);
