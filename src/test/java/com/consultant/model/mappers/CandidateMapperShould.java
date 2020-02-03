@@ -106,4 +106,94 @@ public class CandidateMapperShould {
         assertEquals(candidateDTO.getConsultant(),consultant);
     }
 
+    @Test
+    public void keepLinkedinUrlAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        String linkedinUrl = "linkedinUrl";
+        candidateDTO.setLinkedinUrl(linkedinUrl);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getLinkedinUrl(),linkedinUrl);
+    }
+
+    @Test
+    public void keepSourceAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        String source = "source";
+        candidateDTO.setSource(source);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getSource(),source);
+    }
+
+    @Test
+    public void keepLocationAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        String location = "location";
+        candidateDTO.setLocation(location);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getLocation(),location);
+    }
+
+    @Test
+    public void keepDiverseAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        String diverese = "diverese";
+        candidateDTO.setDiverse(diverese);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getDiverse(),diverese);
+    }
+
+    @Test
+    public void keepCompanyAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        String company = "company";
+        candidateDTO.setCompany(company);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getCompany(),company);
+    }
+
+    @Test
+    public void keepRoleAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        String role = "role";
+        candidateDTO.setRole(role);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getRole(),role);
+    }
+
+    @Test
+    public void keepCommentAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        String comment = "comment";
+        candidateDTO.setComment(comment);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getComment(),comment);
+    }
+
+    @Test
+    public void keepIdAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        Long id = 1L;
+        candidateDTO.setId(id);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getId(),id);
+    }
+
+    @Test
+    public void keepConsultantAfterConvertingDTO(){
+        CandidateDTO candidateDTO = new CandidateDTO();
+        String consultant = "consultant";
+        candidateDTO.setConsultant(consultant);
+        Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
+
+        assertEquals(candidate.getConsultant(),consultant);
+    }
+
 }
