@@ -2,6 +2,7 @@ package com.consultant.model.services;
 
 import com.consultant.model.dto.UserDTO;
 import com.consultant.model.entities.User;
+import com.consultant.model.entities.Vacation;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.UserRepository;
@@ -14,10 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.*;
@@ -40,6 +38,8 @@ public class UserServiceShould {
 
     private UserDTO userDTO = new UserDTO();
 
+    private Vacation vacation = new Vacation();
+
     @Before
     public void setUp() {
         userService = new UserServiceImpl(userRepository);
@@ -55,13 +55,16 @@ public class UserServiceShould {
     public void returnListOfAllExistingUsers() {
         userList.add(user1);
         userList.add(user2);
+
         Set<UserDTO> userDTOS = userService.getAllUsers();
+
         Assert.assertThat(userDTOS.size(), is(2));
     }
 
     @Test
     public void returnEmptyListIfThereAreNoUsers() {
         when(userRepository.findAll()).thenReturn(userList);
+
         Set<UserDTO> userDTOS = userService.getAllUsers();
 
         Assert.assertThat(userDTOS.isEmpty(), is(true));
@@ -71,6 +74,7 @@ public class UserServiceShould {
     public void saveToRepositoryWhenCreatingUser() {
         userDTO = new UserDTO();
         userDTO.setId(userId);
+
         userService.createUser(userDTO);
 
         verify(userRepository, times(1)).saveAndFlush(user1);
@@ -82,37 +86,83 @@ public class UserServiceShould {
         user1.setUsername(username);
         userDTO.setUsername(username);
         Mockito.when(userRepository.findByUsername(username)).thenReturn(Optional.ofNullable(user1));
+
         userService.createUser(userDTO);
     }
 
     @Test
     public void deleteInRepositoryWhenDeletingExistingUser() throws NoMatchException {
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user1));
+
         userService.deleteUser(userId);
 
         verify(userRepository, times(1)).delete(user1);
     }
 
     @Test(expected = NoMatchException.class)
-    public void throwExceptionWhenDeletingNonExistingCandidate() throws NoMatchException {
+    public void throwExceptionWhenDeletingNonExistingUser() throws NoMatchException {
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
         userService.deleteUser(userId);
     }
 
     @Test
-    public void updateOnEditingExistingCandidate() throws NoMatchException {
+    public void updateOnEditingExistingUser() throws NoMatchException {
         userDTO.setPassword("updated");
         userDTO.setId(userId);
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user1));
+
         userService.editUser(userDTO);
 
         verify(userRepository, times(1)).saveAndFlush(user1);
     }
 
     @Test(expected = NoMatchException.class)
-    public void throwExceptionWhenUpdatingNonExistingCandidate() throws NoMatchException {
+    public void throwExceptionWhenUpdatingNonExistingUser() throws NoMatchException {
         userDTO.setPassword("updated");
         userDTO.setId(userId);
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
         userService.editUser(userDTO);
+    }
+
+    @Test
+    public void saveToRepositoryWhenUpdatingVacations() throws NoMatchException {
+        vacation.setUserId(userId);
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user1));
+
+        userService.updateUserVacations(vacation);
+
+        verify(userRepository, times(1)).saveAndFlush(user1);
+    }
+
+    @Test(expected = NoMatchException.class)
+    public void throwExceptionWhenUpdatingVacationsOfNonExistingUser() throws NoMatchException {
+        vacation.setUserId(userId);
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        userService.updateUserVacations(vacation);
+    }
+
+    @Test
+    public void returnUserWhenSearchingVacation() throws NoMatchException {
+        Long vacationId = 1L;
+        vacation.setUserId(userId);
+        vacation.setId(vacationId);
+        Mockito.when(userRepository.findByVacationId(vacationId)).thenReturn(Optional.ofNullable(user1));
+
+        User user = userService.getUserByVacationId(vacationId);
+
+        Assert.assertEquals(user1,user);
+    }
+
+    @Test(expected = NoMatchException.class)
+    public void throwExceptionWhenSearchingOfVacationOfNonExistingUser() throws NoMatchException {
+        Long vacationId = 1L;
+        vacation.setUserId(userId);
+        vacation.setId(vacationId);
+        Mockito.when(userRepository.findByVacationId(vacationId)).thenReturn(Optional.empty());
+
+        userService.getUserByVacationId(vacationId);
     }
 }
