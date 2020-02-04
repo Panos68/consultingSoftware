@@ -2,6 +2,7 @@ package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.UserDTO;
 import com.consultant.model.entities.User;
+import com.consultant.model.entities.Vacation;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.UserMapper;
@@ -69,8 +70,27 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(existingUser);
     }
 
+    @Override
+    public void updateUserVacations(Vacation vacation) throws NoMatchException {
+        User existingUser = getExistingUserById(vacation.getUserId());
+        existingUser.getVacations().add(vacation);
+        userRepository.saveAndFlush(existingUser);
+    }
+
+    @Override
+    public User getUserByVacationId(Long vacationId) throws NoMatchException {
+        Optional<User> existingUser = userRepository.findByVacationId(vacationId);
+
+        return getUser(existingUser);
+    }
+
     private User getExistingUserById(Long id) throws NoMatchException {
         Optional<User> existingUser = userRepository.findById(id);
+
+        return getUser(existingUser);
+    }
+
+    private User getUser(Optional<User> existingUser) throws NoMatchException {
         if (!existingUser.isPresent()) {
             throw new NoMatchException("The id provided doesn't match any user");
         }
