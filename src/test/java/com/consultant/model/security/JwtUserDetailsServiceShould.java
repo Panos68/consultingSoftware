@@ -1,5 +1,7 @@
 package com.consultant.model.security;
 
+import com.consultant.model.entities.User;
+import com.consultant.model.repositories.UserRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,10 +9,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -19,23 +24,25 @@ public class JwtUserDetailsServiceShould {
     private JwtUserDetailsService jwtUserDetailsService;
 
     @Mock
-    AuthenticationUserRepository authenticationUserRepository;
+    private UserRepository userRepository;
 
     @Mock
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     private String correctUsername = "correctUsername";
 
 
     private String correctPassword = "correctPassword";
 
-    private AuthenticationUser authenticationUser = new AuthenticationUser();
+    private SimpleGrantedAuthority adminRole = new SimpleGrantedAuthority("admin");
 
-    private AuthenticationUser savedUser = new AuthenticationUser();
+    private User user = new User();
+
+    private User savedUser = new User();
 
     @Before
     public void setUp() {
-        jwtUserDetailsService = new JwtUserDetailsService(authenticationUserRepository,passwordEncoder);
+        jwtUserDetailsService = new JwtUserDetailsService(userRepository,passwordEncoder);
         savedUser.setUsername(correctUsername);
         savedUser.setPassword(correctPassword);
         Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("encodedPassword");
@@ -43,32 +50,35 @@ public class JwtUserDetailsServiceShould {
 
     @Test
     public void loadUserOnExistingUsername() {
-        authenticationUser.setUsername(correctUsername);
-        Mockito.when(authenticationUserRepository.findByUsername(authenticationUser.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
-        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationUser.getUsername());
+        user.setUsername(correctUsername);
+        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(user.getUsername());
         Assert.assertEquals(userDetails.getUsername(), correctUsername);
     }
 
     @Test(expected = UsernameNotFoundException.class)
     public void throwErrorOnNonExistingUsername() {
         String incorrectUsername = "incorrectUsername";
-        authenticationUser.setUsername(incorrectUsername);
-        Mockito.when(authenticationUserRepository.findByUsername(authenticationUser.getUsername())).thenReturn(Optional.empty());
-        jwtUserDetailsService.loadUserByUsername(authenticationUser.getUsername());
+        user.setUsername(incorrectUsername);
+        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+        jwtUserDetailsService.loadUserByUsername(user.getUsername());
     }
 
     @Test
-    public void notThrowErrorOnCorrectAuthentication() throws Exception {
-        authenticationUser.setPassword(correctPassword);
-        Mockito.when(authenticationUserRepository.findByUsername(authenticationUser.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
-        jwtUserDetailsService.authenticateUser(authenticationUser);
+    public void returnAuthoritiesOnCorrectAuthentication() throws Exception {
+        user.setPassword(correctPassword);
+        user.getRoles().add(adminRole.toString());
+
+        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
+        Collection<? extends GrantedAuthority> grantedAuthorities = jwtUserDetailsService.authenticateUserAndReturnAuthorities(user);
+        Assert.assertTrue( user.getAuthorities().contains(adminRole));
     }
 
     @Test(expected = WrongValidationException.class)
     public void throwErrorOnIncorrectAuthentication() throws Exception {
         String inCorrectPassword = "incorrectPassword";
-        authenticationUser.setPassword(inCorrectPassword);
-        Mockito.when(authenticationUserRepository.findByUsername(authenticationUser.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
-        jwtUserDetailsService.authenticateUser(authenticationUser);
+        user.setPassword(inCorrectPassword);
+        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
+        jwtUserDetailsService.authenticateUserAndReturnAuthorities(user);
     }
 }

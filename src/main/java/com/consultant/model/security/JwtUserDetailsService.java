@@ -1,42 +1,46 @@
 package com.consultant.model.security;
 
+import com.consultant.model.entities.User;
+import com.consultant.model.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
-    private AuthenticationUserRepository authenticationUserRepository;
+    private UserRepository userRepository;
 
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public JwtUserDetailsService(AuthenticationUserRepository authenticationUserRepository,PasswordEncoder passwordEncoder) {
-        this.authenticationUserRepository = authenticationUserRepository;
+    public JwtUserDetailsService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AuthenticationUser authenticationUser = getAuthenticationUser(username);
-        return new User(authenticationUser.getUsername(), passwordEncoder.encode(authenticationUser.getPassword()),authenticationUser.getAuthorities());
+        User user = getAuthenticationUser(username);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), passwordEncoder.encode(user.getPassword()), user.getAuthorities());
     }
 
-    public void authenticateUser(AuthenticationUser user) throws WrongValidationException {
-        AuthenticationUser authenticationUser = getAuthenticationUser(user.getUsername());
+    public Collection<? extends GrantedAuthority> authenticateUserAndReturnAuthorities(User user) throws WrongValidationException {
+        User authenticationUser = getAuthenticationUser(user.getUsername());
         if (!authenticationUser.getPassword().equals(user.getPassword())){
             throw new WrongValidationException("Incorrect credentials");
         }
+        return authenticationUser.getAuthorities();
     }
 
-    private AuthenticationUser getAuthenticationUser(String  userName) {
-        Optional<AuthenticationUser> authenticationUser = authenticationUserRepository.findByUsername(userName);
+    private User getAuthenticationUser(String  userName) {
+        Optional<User> authenticationUser = userRepository.findByUsername(userName);
         if (!authenticationUser.isPresent()){
             throw new UsernameNotFoundException("No existing user with that name");
         }

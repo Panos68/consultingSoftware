@@ -1,12 +1,11 @@
 package com.consultant.model.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class CandidateDTO {
-
-    public CandidateDTO() {
-    }
 
     private Long id;
 

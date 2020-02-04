@@ -1,4 +1,4 @@
-package com.consultant.model.security;
+package com.consultant.model.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,12 +19,12 @@ import static java.util.stream.Collectors.toList;
 @Entity
 @Table(name="users")
 @Data
-@Builder
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
-public class AuthenticationUser implements UserDetails {
+public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @NotEmpty
