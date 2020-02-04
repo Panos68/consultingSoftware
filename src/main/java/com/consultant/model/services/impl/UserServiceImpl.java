@@ -2,6 +2,7 @@ package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.UserDTO;
 import com.consultant.model.entities.User;
+import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.UserMapper;
 import com.consultant.model.repositories.UserRepository;
@@ -38,6 +39,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUser(UserDTO userDTO) {
+        Optional<User> existingUser = userRepository.findByUsername(userDTO.getUsername());
+        if (existingUser.isPresent()) {
+            throw new EntityAlreadyExists("User already exists");
+        }
         final User user = UserMapper.INSTANCE.userDTOToUser(userDTO);
 
         userRepository.saveAndFlush(user);

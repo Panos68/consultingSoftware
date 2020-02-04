@@ -56,16 +56,16 @@ public class CandidateServiceShould {
     public void returnListOfAllExistingCandidates() throws Exception {
         candidateList.add(candidate1);
         candidateList.add(candidate2);
-        Set<CandidateDTO> clientDTOS = candidateService.getAllCandidates();
-        Assert.assertThat(clientDTOS.size(), is(2));
+        Set<CandidateDTO> candidateDTOS = candidateService.getAllCandidates();
+        Assert.assertThat(candidateDTOS.size(), is(2));
     }
 
     @Test
     public void returnEmptyListIfThereAreNoCandidates() throws Exception {
         when(candidateRepository.findAll()).thenReturn(candidateList);
-        Set<CandidateDTO> clientDTOS = candidateService.getAllCandidates();
+        Set<CandidateDTO> candidateDTOS = candidateService.getAllCandidates();
 
-        Assert.assertThat(clientDTOS.isEmpty(), is(true));
+        Assert.assertThat(candidateDTOS.isEmpty(), is(true));
     }
 
     @Test
