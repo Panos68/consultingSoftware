@@ -10,12 +10,12 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/teams")
-public class ClientTeamsController {
+public class ClientTeamController {
 
     private ClientTeamService clientTeamService;
 
     @Autowired
-    public ClientTeamsController(ClientTeamService clientTeamService) {
+    public ClientTeamController(ClientTeamService clientTeamService) {
         this.clientTeamService = clientTeamService;
     }
 

@@ -10,12 +10,12 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/vacations")
-public class VacationsController {
+public class VacationController {
 
     VacationService vacationService;
 
     @Autowired
-    public VacationsController(VacationService vacationService) {
+    public VacationController(VacationService vacationService) {
         this.vacationService = vacationService;
     }
 

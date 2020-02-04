@@ -10,12 +10,12 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/clients")
-public class ClientsController {
+public class ClientController {
 
     private ClientService clientService;
 
     @Autowired
-    public ClientsController(ClientService clientService) {
+    public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
 
