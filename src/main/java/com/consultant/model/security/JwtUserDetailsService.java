@@ -1,5 +1,6 @@
 package com.consultant.model.security;
 
+import com.consultant.model.dto.UserDTO;
 import com.consultant.model.entities.User;
 import com.consultant.model.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,9 @@ public class JwtUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(user.getUsername(), passwordEncoder.encode(user.getPassword()), user.getAuthorities());
     }
 
-    public Collection<? extends GrantedAuthority> authenticateUserAndReturnAuthorities(User user) throws WrongValidationException {
-        User authenticationUser = getAuthenticationUser(user.getUsername());
-        if (!authenticationUser.getPassword().equals(user.getPassword())){
+    public Collection<? extends GrantedAuthority> authenticateUserAndReturnAuthorities(UserDTO userDTO) throws WrongValidationException {
+        User authenticationUser = getAuthenticationUser(userDTO.getUsername());
+        if (!authenticationUser.getPassword().equals(userDTO.getPassword())){
             throw new WrongValidationException("Incorrect credentials");
         }
         return authenticationUser.getAuthorities();

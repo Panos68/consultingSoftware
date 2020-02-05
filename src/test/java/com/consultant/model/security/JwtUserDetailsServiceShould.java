@@ -1,5 +1,6 @@
 package com.consultant.model.security;
 
+import com.consultant.model.dto.UserDTO;
 import com.consultant.model.entities.User;
 import com.consultant.model.repositories.UserRepository;
 import org.junit.Assert;
@@ -38,6 +39,8 @@ public class JwtUserDetailsServiceShould {
 
     private User user = new User();
 
+    private UserDTO userDTO = new UserDTO();
+
     private User savedUser = new User();
 
     @Before
@@ -66,12 +69,13 @@ public class JwtUserDetailsServiceShould {
 
     @Test
     public void returnAuthoritiesOnCorrectAuthentication() throws Exception {
-        user.setPassword(correctPassword);
-        user.getRoles().add(adminRole.toString());
+        userDTO.setPassword(correctPassword);
+        userDTO.setUsername(correctUsername);
+        savedUser.getRoles().add(adminRole.toString());
 
-        Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
-        Collection<? extends GrantedAuthority> grantedAuthorities = jwtUserDetailsService.authenticateUserAndReturnAuthorities(user);
-        Assert.assertTrue( user.getAuthorities().contains(adminRole));
+        Mockito.when(userRepository.findByUsername(userDTO.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
+        Collection<? extends GrantedAuthority> grantedAuthorities = jwtUserDetailsService.authenticateUserAndReturnAuthorities(userDTO);
+        Assert.assertTrue(grantedAuthorities.contains(adminRole));
     }
 
     @Test(expected = WrongValidationException.class)
@@ -79,6 +83,6 @@ public class JwtUserDetailsServiceShould {
         String inCorrectPassword = "incorrectPassword";
         user.setPassword(inCorrectPassword);
         Mockito.when(userRepository.findByUsername(user.getUsername())).thenReturn(java.util.Optional.ofNullable(savedUser));
-        jwtUserDetailsService.authenticateUserAndReturnAuthorities(user);
+        jwtUserDetailsService.authenticateUserAndReturnAuthorities(userDTO);
     }
 }

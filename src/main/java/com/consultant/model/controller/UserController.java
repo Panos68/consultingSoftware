@@ -29,9 +29,9 @@ public class UserController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody User user) throws WrongValidationException {
-        Collection<? extends GrantedAuthority> grantedAuthorities = userDetailsService.authenticateUserAndReturnAuthorities(user);
-        final String token = jwtTokenUtil.generateToken(user.getUsername());
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserDTO userDTO) throws WrongValidationException {
+        Collection<? extends GrantedAuthority> grantedAuthorities = userDetailsService.authenticateUserAndReturnAuthorities(userDTO);
+        final String token = jwtTokenUtil.generateToken(userDTO.getUsername());
         return ResponseEntity.ok(new JwtResponse(token, grantedAuthorities));
     }
 
