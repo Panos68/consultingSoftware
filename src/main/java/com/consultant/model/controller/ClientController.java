@@ -1,7 +1,7 @@
 package com.consultant.model.controller;
 
 import com.consultant.model.dto.ClientDTO;
-import com.consultant.model.services.ClientService;
+import com.consultant.model.services.impl.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,21 +21,21 @@ public class ClientController {
 
     @GetMapping
     public ResponseEntity<Set<ClientDTO>> getAllClients(){
-        return ResponseEntity.ok(clientService.getAllClients());
+        return ResponseEntity.ok(clientService.getAll());
     }
 
     @PostMapping
     public void createClient(@RequestBody ClientDTO clientDTO) throws Exception {
-        clientService.createClient(clientDTO);
+        clientService.create(clientDTO);
     }
 
     @PutMapping
     public void editClient(@RequestBody ClientDTO clientDTO) throws Exception {
-        clientService.editClient(clientDTO);
+        clientService.edit(clientDTO);
     }
 
     @DeleteMapping(value = "/{id}")
     public void deleteClient(@PathVariable Long id) throws Exception {
-        clientService.deleteClient(id);
+        clientService.delete(id);
     }
 }

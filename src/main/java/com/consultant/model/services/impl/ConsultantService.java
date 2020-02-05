@@ -7,9 +7,7 @@ import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
-import com.consultant.model.services.ClientService;
-import com.consultant.model.services.ClientTeamService;
-import com.consultant.model.services.ConsultantService;
+import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class ConsultantServiceImpl implements ConsultantService {
+public class ConsultantService implements BasicOperationsService<ConsultantDTO> {
 
     ConsultantRepository consultantRepository;
 
@@ -28,15 +26,15 @@ public class ConsultantServiceImpl implements ConsultantService {
     ClientService clientService;
 
     @Autowired
-    public ConsultantServiceImpl(ConsultantRepository consultantRepository, ClientTeamService clientTeamService,
-                                 ClientService clientService) {
+    public ConsultantService(ConsultantRepository consultantRepository, ClientTeamService clientTeamService,
+                             ClientService clientService) {
         this.consultantRepository = consultantRepository;
         this.clientTeamService = clientTeamService;
         this.clientService = clientService;
     }
 
     @Override
-    public Set<ConsultantDTO> getAllConsultants() {
+    public Set<ConsultantDTO> getAll() {
         List<Consultant> consultantsList = consultantRepository.findAll();
         Set<ConsultantDTO> consultantsDTOS = new HashSet<>();
         consultantsList.forEach(consultant -> {
@@ -48,6 +46,29 @@ public class ConsultantServiceImpl implements ConsultantService {
         return consultantsDTOS;
     }
 
+    @Override
+    public void create(ConsultantDTO consultantDTO) throws NoMatchException {
+        final Consultant consultant = ConsultantMapper.INSTANCE.consultantDTOToConsultant(consultantDTO);
+
+        assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
+    }
+
+    @Override
+    public void edit(ConsultantDTO consultantDTO) throws NoMatchException {
+        Consultant existingConsultant = getExistingConsultantById(consultantDTO.getId());
+
+        Consultant updatedConsultant = updateConsultant(existingConsultant, consultantDTO);
+
+        assignConsultantToTeam(consultantDTO.getTeamId(), updatedConsultant);
+    }
+
+    @Override
+    public void delete(Long id) throws NoMatchException {
+        Consultant existingConsultant = getExistingConsultantById(id);
+        consultantRepository.delete(existingConsultant);
+    }
+
+
     private void setTeamAndClientOfConsultant(Consultant consultant) {
         Optional<ClientTeam> consultantTeam = clientTeamService.getAssignedTeamOfConsultant(consultant.getId());
         if (consultantTeam.isPresent()) {
@@ -55,22 +76,6 @@ public class ConsultantServiceImpl implements ConsultantService {
             Optional<Client> clientOfTeam = clientService.getClientOfTeam(consultantTeam.get().getId());
             clientOfTeam.ifPresent(client -> consultant.setClientName(client.getName()));
         }
-    }
-
-    @Override
-    public void createConsultant(ConsultantDTO consultantDTO) throws NoMatchException {
-        final Consultant consultant = ConsultantMapper.INSTANCE.consultantDTOToConsultant(consultantDTO);
-
-        assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
-    }
-
-    @Override
-    public void editConsultant(ConsultantDTO consultantDTO) throws NoMatchException {
-        Consultant existingConsultant = getExistingConsultantById(consultantDTO.getId());
-
-        Consultant updatedConsultant = updateConsultant(existingConsultant, consultantDTO);
-
-        assignConsultantToTeam(consultantDTO.getTeamId(), updatedConsultant);
     }
 
     private Consultant updateConsultant(Consultant existingConsultant, ConsultantDTO consultantDTO) {
@@ -88,12 +93,6 @@ public class ConsultantServiceImpl implements ConsultantService {
         existingConsultant.setOther(consultantDTO.getOther());
 
         return existingConsultant;
-    }
-
-    @Override
-    public void deleteConsultant(Long id) throws NoMatchException {
-        Consultant existingConsultant = getExistingConsultantById(id);
-        consultantRepository.delete(existingConsultant);
     }
 
     private Consultant getExistingConsultantById(Long id) throws NoMatchException {

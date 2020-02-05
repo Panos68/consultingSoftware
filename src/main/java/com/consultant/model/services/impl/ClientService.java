@@ -7,8 +7,7 @@ import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.AbstractClientMapper;
 import com.consultant.model.repositories.ClientRepository;
-import com.consultant.model.services.ClientService;
-import com.consultant.model.services.ClientTeamService;
+import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class ClientServiceImpl implements ClientService {
+public class ClientService implements BasicOperationsService<ClientDTO> {
 
     @Autowired
     ClientRepository clientRepository;
@@ -27,7 +26,7 @@ public class ClientServiceImpl implements ClientService {
     ClientTeamService clientTeamService;
 
     @Override
-    public Set<ClientDTO> getAllClients() {
+    public Set<ClientDTO> getAll() {
         List<Client> clientList = clientRepository.findAll();
         Set<ClientDTO> clientDTOS = new HashSet<>();
         clientList.forEach(client -> {
@@ -39,7 +38,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void createClient(ClientDTO clientDTO) {
+    public void create(ClientDTO clientDTO) throws NoMatchException {
         Optional<Client> existingClient = clientRepository.findByName(clientDTO.getName());
         if (existingClient.isPresent()) {
             throw new EntityAlreadyExists("Client company already exists");
@@ -50,7 +49,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void editClient(ClientDTO clientDTO) throws NoMatchException {
+    public void edit(ClientDTO clientDTO) throws NoMatchException {
         Client existingClient = getExistingClientById(clientDTO.getId());
 
         Client updatedClient = updateClient(existingClient, clientDTO);
@@ -59,12 +58,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void deleteClient(Long id) throws NoMatchException {
+    public void delete(Long id) throws NoMatchException {
         Client existingClient = getExistingClientById(id);
         List<ClientTeam> clientTeams = existingClient.getClientTeams();
         clientTeams.forEach(clientTeam -> {
             try {
-                clientTeamService.deleteTeam(clientTeam.getId());
+                clientTeamService.delete(clientTeam.getId());
             } catch (NoMatchException e) {
                 e.printStackTrace();
             }
@@ -73,13 +72,16 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.delete(existingClient);
     }
 
-    @Override
     public void assignTeamToClient(ClientTeam clientTeam, Long clientId) throws NoMatchException {
         Client existingClient = getExistingClientById(clientId);
         existingClient.getClientTeams().add(clientTeam);
         setLastInteraction(clientTeam, existingClient);
 
         clientRepository.saveAndFlush(existingClient);
+    }
+
+    public Optional<Client> getClientOfTeam(Long teamId) {
+        return clientRepository.findByTeamId(teamId);
     }
 
     private void setLastInteraction(ClientTeam clientTeam, Client existingClient) {
@@ -89,11 +91,6 @@ public class ClientServiceImpl implements ClientService {
             existingClient.setLastInteractedBy(clientTeam.getLastInteractedBy());
             existingClient.setLastInteractionDate(clientTeam.getLastInteractionDate());
         }
-    }
-
-    @Override
-    public Optional<Client> getClientOfTeam(Long teamId) {
-        return clientRepository.findByTeamId(teamId);
     }
 
     private Client updateClient(Client existingClient, ClientDTO clientDTO) {

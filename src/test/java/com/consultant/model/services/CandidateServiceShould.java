@@ -5,7 +5,7 @@ import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.CandidateRepository;
-import com.consultant.model.services.impl.CandidateServiceImpl;
+import com.consultant.model.services.impl.CandidateService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.convert.ConversionService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class CandidateServiceShould {
 
     @Before
     public void setUp() {
-        candidateService = new CandidateServiceImpl(candidateRepository);
+        candidateService = new CandidateService(candidateRepository);
 
         candidate1 = new Candidate();
         candidate1.setId(candidateId);
@@ -56,14 +55,14 @@ public class CandidateServiceShould {
     public void returnListOfAllExistingCandidates() throws Exception {
         candidateList.add(candidate1);
         candidateList.add(candidate2);
-        Set<CandidateDTO> candidateDTOS = candidateService.getAllCandidates();
+        Set<CandidateDTO> candidateDTOS = candidateService.getAll();
         Assert.assertThat(candidateDTOS.size(), is(2));
     }
 
     @Test
     public void returnEmptyListIfThereAreNoCandidates() throws Exception {
         when(candidateRepository.findAll()).thenReturn(candidateList);
-        Set<CandidateDTO> candidateDTOS = candidateService.getAllCandidates();
+        Set<CandidateDTO> candidateDTOS = candidateService.getAll();
 
         Assert.assertThat(candidateDTOS.isEmpty(), is(true));
     }
@@ -72,7 +71,7 @@ public class CandidateServiceShould {
     public void saveToRepositoryWhenCreatingCandidate() throws Exception {
         candidateDTO = new CandidateDTO();
         candidateDTO.setId(candidateId);
-        candidateService.createCandidate(candidateDTO);
+        candidateService.create(candidateDTO);
 
         verify(candidateRepository, times(1)).saveAndFlush(candidate1);
     }
@@ -83,20 +82,20 @@ public class CandidateServiceShould {
         candidate1.setLinkedinUrl(linkedInUrl);
         candidateDTO.setLinkedinUrl(linkedInUrl);
         Mockito.when(candidateRepository.findByLinkedinUrl(linkedInUrl)).thenReturn(Optional.ofNullable(candidate1));
-        candidateService.createCandidate(candidateDTO);
+        candidateService.create(candidateDTO);
     }
 
     @Test
     public void deleteInRepositoryWhenDeletingExistingCandidate() throws Exception {
         Mockito.when(candidateRepository.findById(candidateId)).thenReturn(Optional.ofNullable(candidate1));
-        candidateService.deleteCandidate(candidateId);
+        candidateService.delete(candidateId);
 
         verify(candidateRepository, times(1)).delete(candidate1);
     }
 
     @Test(expected = NoMatchException.class)
     public void throwExceptionWhenDeletingNonExistingCandidate() throws Exception {
-        candidateService.deleteCandidate(candidateId);
+        candidateService.delete(candidateId);
     }
 
     @Test
@@ -104,7 +103,7 @@ public class CandidateServiceShould {
         candidateDTO.setComment("updated");
         candidateDTO.setId(candidateId);
         Mockito.when(candidateRepository.findById(candidateId)).thenReturn(Optional.ofNullable(candidate1));
-        candidateService.editCandidate(candidateDTO);
+        candidateService.edit(candidateDTO);
 
         verify(candidateRepository, times(1)).saveAndFlush(candidate1);
     }
@@ -114,7 +113,7 @@ public class CandidateServiceShould {
         candidateDTO.setComment("updated");
         candidateDTO.setId(candidateId);
         Mockito.when(candidateRepository.findById(candidateId)).thenReturn(Optional.empty());
-        candidateService.editCandidate(candidateDTO);
+        candidateService.edit(candidateDTO);
     }
 
 }

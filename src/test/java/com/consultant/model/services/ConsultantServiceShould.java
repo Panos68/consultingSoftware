@@ -4,7 +4,9 @@ import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
-import com.consultant.model.services.impl.ConsultantServiceImpl;
+import com.consultant.model.services.impl.ClientService;
+import com.consultant.model.services.impl.ClientTeamService;
+import com.consultant.model.services.impl.ConsultantService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +47,7 @@ public class ConsultantServiceShould {
 
     @Before
     public void setUp() {
-        consultantService = new ConsultantServiceImpl(consultantRepository,clientTeamService,clientService);
+        consultantService = new ConsultantService(consultantRepository,clientTeamService,clientService);
 
         consultant1.setId(consultantId);
 
@@ -57,21 +59,21 @@ public class ConsultantServiceShould {
         consultantList.add(consultant1);
         consultantList.add(consultant2);
 
-        Set<ConsultantDTO> consultantDTOS = consultantService.getAllConsultants();
+        Set<ConsultantDTO> consultantDTOS = consultantService.getAll();
         Assert.assertThat(consultantDTOS.size(), is(2));
     }
 
     @Test
     public void returnEmptyListIfThereAreNoConsultants() {
         when(consultantRepository.findAll()).thenReturn(Collections.emptyList());
-        Set<ConsultantDTO> consultantDTOS = consultantService.getAllConsultants();
+        Set<ConsultantDTO> consultantDTOS = consultantService.getAll();
 
         Assert.assertThat(consultantDTOS.isEmpty(), is(true));
     }
 
     @Test
     public void saveToRepositoryWhenCreatingConsultant() throws NoMatchException {
-        consultantService.createConsultant(consultantDTO);
+        consultantService.create(consultantDTO);
 
         verify(consultantRepository, times(1)).saveAndFlush(Mockito.any());
     }
@@ -79,14 +81,14 @@ public class ConsultantServiceShould {
     @Test
     public void deleteInRepositoryWhenDeletingExistingConsultant() throws Exception {
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.ofNullable(consultant1));
-        consultantService.deleteConsultant(consultantId);
+        consultantService.delete(consultantId);
 
         verify(consultantRepository, times(1)).delete(consultant1);
     }
 
     @Test(expected = NoMatchException.class)
     public void throwNoMatchExceptionWhenDeletingNonExistingConsultant() throws Exception {
-        consultantService.deleteConsultant(consultantId);
+        consultantService.delete(consultantId);
     }
 
     @Test
@@ -94,7 +96,7 @@ public class ConsultantServiceShould {
         consultantDTO.setPrice(100);
         consultantDTO.setId(consultantId);
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.ofNullable(consultant1));
-        consultantService.editConsultant(consultantDTO);
+        consultantService.edit(consultantDTO);
 
         verify(consultantRepository, times(1)).saveAndFlush(consultant1);
     }
@@ -105,6 +107,6 @@ public class ConsultantServiceShould {
         consultantDTO.setId(consultantId);
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.empty());
 
-        consultantService.editConsultant(consultantDTO);
+        consultantService.edit(consultantDTO);
     }
 }

@@ -1,9 +1,11 @@
 package com.consultant.model.controller;
 
 import com.consultant.model.dto.UserDTO;
-import com.consultant.model.entities.User;
-import com.consultant.model.security.*;
-import com.consultant.model.services.UserService;
+import com.consultant.model.security.JwtResponse;
+import com.consultant.model.security.JwtTokenUtil;
+import com.consultant.model.security.JwtUserDetailsService;
+import com.consultant.model.security.WrongValidationException;
+import com.consultant.model.services.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,21 +39,21 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Set<UserDTO>> getAllUsers(){
-        return ResponseEntity.ok(userService.getAllUsers());
+        return ResponseEntity.ok(userService.getAll());
     }
 
     @PostMapping
     public void createUser(@RequestBody UserDTO userDTO) throws Exception {
-        userService.createUser(userDTO);
+        userService.create(userDTO);
     }
 
     @PutMapping
     public void editTeam(@RequestBody UserDTO userDTO) throws Exception {
-        userService.editUser(userDTO);
+        userService.edit(userDTO);
     }
 
     @DeleteMapping(value = "/{id}")
     public void deleteTeam(@PathVariable Long id) throws Exception {
-        userService.deleteUser(id);
+        userService.delete(id);
     }
 }

@@ -5,6 +5,7 @@ import com.consultant.model.entities.User;
 import com.consultant.model.entities.Vacation;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.VacationRepository;
+import com.consultant.model.services.impl.UserService;
 import com.consultant.model.services.impl.VacationService;
 import org.junit.Assert;
 import org.junit.Before;

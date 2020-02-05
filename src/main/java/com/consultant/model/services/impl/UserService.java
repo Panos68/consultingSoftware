@@ -7,7 +7,7 @@ import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.UserMapper;
 import com.consultant.model.repositories.UserRepository;
-import com.consultant.model.services.UserService;
+import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,29 +17,30 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserService implements BasicOperationsService<UserDTO> {
 
     UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @Override
-    public Set<UserDTO> getAllUsers() {
-        List<User> usersList = userRepository.findAll();
-        Set<UserDTO> userDTOS = new HashSet<>();
-        usersList.forEach(user -> {
-            final UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
-            userDTOS.add(userDTO);
-        });
 
-        return userDTOS;
+    @Override
+    public Set<UserDTO> getAll() {
+            List<User> usersList = userRepository.findAll();
+            Set<UserDTO> userDTOS = new HashSet<>();
+            usersList.forEach(user -> {
+                final UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
+                userDTOS.add(userDTO);
+            });
+
+            return userDTOS;
     }
 
     @Override
-    public void createUser(UserDTO userDTO) {
+    public void create(UserDTO userDTO) throws EntityAlreadyExists {
         Optional<User> existingUser = userRepository.findByUsername(userDTO.getUsername());
         if (existingUser.isPresent()) {
             throw new EntityAlreadyExists("User already exists");
@@ -50,10 +51,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(UserDTO userDTO) throws NoMatchException {
+    public void edit(UserDTO userDTO) throws NoMatchException {
         User existingUser = getExistingUserById(userDTO.getId());
 
         updateUser(existingUser, userDTO);
+    }
+
+    @Override
+    public void delete(Long id) throws NoMatchException {
+        User existingUser = getExistingUserById(id);
+
+        userRepository.delete(existingUser);
+    }
+
+    public void updateUserVacations(Vacation vacation) throws NoMatchException {
+        User existingUser = getExistingUserById(vacation.getUserId());
+        existingUser.getVacations().add(vacation);
+        userRepository.saveAndFlush(existingUser);
+    }
+
+    public User getUserByVacationId(Long vacationId) throws NoMatchException {
+        Optional<User> existingUser = userRepository.findByVacationId(vacationId);
+
+        return getUser(existingUser);
     }
 
     private void updateUser(User existingUser, UserDTO userDTO) {
@@ -62,26 +82,6 @@ public class UserServiceImpl implements UserService {
         existingUser.setUsername(userDTO.getUsername());
 
         userRepository.saveAndFlush(existingUser);
-    }
-
-    @Override
-    public void deleteUser(Long id) throws NoMatchException {
-        User existingUser = getExistingUserById(id);
-        userRepository.delete(existingUser);
-    }
-
-    @Override
-    public void updateUserVacations(Vacation vacation) throws NoMatchException {
-        User existingUser = getExistingUserById(vacation.getUserId());
-        existingUser.getVacations().add(vacation);
-        userRepository.saveAndFlush(existingUser);
-    }
-
-    @Override
-    public User getUserByVacationId(Long vacationId) throws NoMatchException {
-        Optional<User> existingUser = userRepository.findByVacationId(vacationId);
-
-        return getUser(existingUser);
     }
 
     private User getExistingUserById(Long id) throws NoMatchException {

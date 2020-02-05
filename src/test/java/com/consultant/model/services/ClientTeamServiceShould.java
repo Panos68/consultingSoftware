@@ -5,8 +5,8 @@ import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ClientTeamRepository;
-import com.consultant.model.services.impl.ClientServiceImpl;
-import com.consultant.model.services.impl.ClientTeamServiceImpl;
+import com.consultant.model.services.impl.ClientService;
+import com.consultant.model.services.impl.ClientTeamService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +29,10 @@ public class ClientTeamServiceShould {
     private ClientTeamRepository clientTeamRepository;
 
     @Mock
-    private ClientServiceImpl clientService;
+    private ClientService clientService;
 
     @InjectMocks
-    private ClientTeamServiceImpl clientTeamService;
+    private ClientTeamService clientTeamService;
 
     private Long clientId = 1L;
 
@@ -64,21 +64,21 @@ public class ClientTeamServiceShould {
         clientTeamList.add(clientTeam1);
         clientTeamList.add(clientTeam2);
 
-        Set<ClientTeamDTO> clientTeamsDTOS = clientTeamService.getAllTeams();
+        Set<ClientTeamDTO> clientTeamsDTOS = clientTeamService.getAll();
         Assert.assertThat(clientTeamsDTOS.size(), is(2));
     }
 
     @Test
     public void returnEmptyListIfThereAreNoTeams() {
         when(clientTeamRepository.findAll()).thenReturn(clientTeamList);
-        Set<ClientTeamDTO> clientTeamsDTOS = clientTeamService.getAllTeams();
+        Set<ClientTeamDTO> clientTeamsDTOS = clientTeamService.getAll();
 
         Assert.assertThat(clientTeamsDTOS.isEmpty(), is(true));
     }
 
     @Test
     public void saveToRepositoryWhenCreatingTeam() throws NoMatchException {
-        clientTeamService.createTeam(clientTeamDTO);
+        clientTeamService.create(clientTeamDTO);
 
         verify(clientTeamRepository, times(1)).saveAndFlush(clientTeam1);
     }
@@ -86,14 +86,14 @@ public class ClientTeamServiceShould {
     @Test
     public void deleteInRepositoryWhenDeletingExistingTeam() throws Exception {
         Mockito.when(clientTeamRepository.findById(teamId)).thenReturn(Optional.ofNullable(clientTeam1));
-        clientTeamService.deleteTeam(clientId);
+        clientTeamService.delete(clientId);
 
         verify(clientTeamRepository, times(1)).delete(clientTeam1);
     }
 
     @Test(expected = NoMatchException.class)
     public void throwNoMatchExceptionWhenDeletingNonExistingTeam() throws Exception {
-        clientTeamService.deleteTeam(teamId);
+        clientTeamService.delete(teamId);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class ClientTeamServiceShould {
         clientTeamDTO.setLastInteractedBy("name");
         clientTeamDTO.setId(clientId);
         Mockito.when(clientTeamRepository.findById(clientId)).thenReturn(Optional.ofNullable(clientTeam1));
-        clientTeamService.editTeam(clientTeamDTO);
+        clientTeamService.edit(clientTeamDTO);
 
         verify(clientTeamRepository, times(1)).saveAndFlush(clientTeam1);
     }
@@ -111,7 +111,7 @@ public class ClientTeamServiceShould {
         clientTeamDTO.setLastInteractedBy("name");
         clientTeamDTO.setId(clientId);
         Mockito.when(clientTeamRepository.findById(clientId)).thenReturn(Optional.empty());
-        clientTeamService.editTeam(clientTeamDTO);
+        clientTeamService.edit(clientTeamDTO);
     }
 
     @Test

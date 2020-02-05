@@ -7,7 +7,6 @@ import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.VacationMapper;
 import com.consultant.model.repositories.VacationRepository;
 import com.consultant.model.services.BasicOperationsService;
-import com.consultant.model.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

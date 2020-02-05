@@ -7,15 +7,14 @@ import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.AbstractClientMapper;
 import com.consultant.model.repositories.ClientTeamRepository;
-import com.consultant.model.services.ClientService;
-import com.consultant.model.services.ClientTeamService;
+import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-public class ClientTeamServiceImpl implements ClientTeamService {
+public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> {
 
     @Autowired
     ClientTeamRepository clientTeamRepository;
@@ -24,7 +23,7 @@ public class ClientTeamServiceImpl implements ClientTeamService {
     ClientService clientService;
 
     @Override
-    public Set<ClientTeamDTO> getAllTeams() {
+    public Set<ClientTeamDTO> getAll() {
         List<ClientTeam> clientTeamsList = clientTeamRepository.findAll();
         Set<ClientTeamDTO> clientTeamsDTOS = new HashSet<>();
         clientTeamsList.forEach(team -> {
@@ -36,19 +35,49 @@ public class ClientTeamServiceImpl implements ClientTeamService {
         return clientTeamsDTOS;
     }
 
+    @Override
+    public void create(ClientTeamDTO clientTeamDTO) throws NoMatchException {
+        ClientTeam clientTeam = AbstractClientMapper.INSTANCE.clientTeamDTOToClientTeam(clientTeamDTO);
+
+        assignTeamToClient(clientTeamDTO.getClientId(), clientTeam);
+    }
+
+    @Override
+    public void edit(ClientTeamDTO clientTeamDTO) throws NoMatchException {
+        ClientTeam existingTeam = getExistingTeamById(clientTeamDTO.getId());
+
+        ClientTeam updatedClientTeam = updateTeam(existingTeam, clientTeamDTO);
+
+        assignTeamToClient(clientTeamDTO.getClientId(), updatedClientTeam);
+    }
+
+    @Override
+    public void delete(Long id) throws NoMatchException {
+        ClientTeam existingTeam = getExistingTeamById(id);
+
+        existingTeam.setConsultants(Collections.emptyList());
+        clientTeamRepository.saveAndFlush(existingTeam);
+
+        clientTeamRepository.delete(existingTeam);
+    }
+
+    public void assignConsultantToTeam(Consultant consultant, Long teamId) throws NoMatchException {
+        ClientTeam clientTeam = getExistingTeamById(teamId);
+        clientTeam.getConsultants().add(consultant);
+        clientTeamRepository.saveAndFlush(clientTeam);
+    }
+
+    public Optional<ClientTeam> getAssignedTeamOfConsultant(Long consultantId) {
+        Optional<ClientTeam> clientTeam = clientTeamRepository.findByConsultantId(consultantId);
+        return clientTeam;
+    }
+
     private void setClientOfTeam(ClientTeam team) {
         Optional<Client> clientOfTeam = clientService.getClientOfTeam(team.getId());
         if (clientOfTeam.isPresent()) {
             team.setClientId(clientOfTeam.get().getId());
             team.setClientName(clientOfTeam.get().getName());
         }
-    }
-
-    @Override
-    public void createTeam(ClientTeamDTO clientTeamDTO) throws NoMatchException {
-        ClientTeam clientTeam = AbstractClientMapper.INSTANCE.clientTeamDTOToClientTeam(clientTeamDTO);
-
-        assignTeamToClient(clientTeamDTO.getClientId(), clientTeam);
     }
 
     /**
@@ -65,36 +94,6 @@ public class ClientTeamServiceImpl implements ClientTeamService {
         } else {
             clientTeamRepository.saveAndFlush(clientTeam);
         }
-    }
-
-    @Override
-    public void editTeam(ClientTeamDTO clientTeamDTO) throws NoMatchException {
-        ClientTeam existingTeam = getExistingTeamById(clientTeamDTO.getId());
-
-        ClientTeam updatedClientTeam = updateTeam(existingTeam, clientTeamDTO);
-
-        assignTeamToClient(clientTeamDTO.getClientId(), updatedClientTeam);
-    }
-
-    @Override
-    public void deleteTeam(Long id) throws NoMatchException {
-        ClientTeam existingTeam = getExistingTeamById(id);
-        existingTeam.setConsultants(Collections.emptyList());
-        clientTeamRepository.saveAndFlush(existingTeam);
-        clientTeamRepository.delete(existingTeam);
-    }
-
-    @Override
-    public void assignConsultantToTeam(Consultant consultant, Long teamId) throws NoMatchException {
-        ClientTeam clientTeam = getExistingTeamById(teamId);
-        clientTeam.getConsultants().add(consultant);
-        clientTeamRepository.saveAndFlush(clientTeam);
-    }
-
-    @Override
-    public Optional<ClientTeam> getAssignedTeamOfConsultant(Long consultantId) {
-        Optional<ClientTeam> clientTeam = clientTeamRepository.findByConsultantId(consultantId);
-        return clientTeam;
     }
 
     private ClientTeam updateTeam(ClientTeam existingClientTeam, ClientTeamDTO clientTeamDTO) {

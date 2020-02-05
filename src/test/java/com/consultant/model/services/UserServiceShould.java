@@ -6,7 +6,7 @@ import com.consultant.model.entities.Vacation;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.UserRepository;
-import com.consultant.model.services.impl.UserServiceImpl;
+import com.consultant.model.services.impl.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public class UserServiceShould {
 
     @Before
     public void setUp() {
-        userService = new UserServiceImpl(userRepository);
+        userService = new UserService(userRepository);
 
         user1 = new User();
         user1.setId(userId);
@@ -56,7 +56,7 @@ public class UserServiceShould {
         userList.add(user1);
         userList.add(user2);
 
-        Set<UserDTO> userDTOS = userService.getAllUsers();
+        Set<UserDTO> userDTOS = userService.getAll();
 
         Assert.assertThat(userDTOS.size(), is(2));
     }
@@ -65,7 +65,7 @@ public class UserServiceShould {
     public void returnEmptyListIfThereAreNoUsers() {
         when(userRepository.findAll()).thenReturn(userList);
 
-        Set<UserDTO> userDTOS = userService.getAllUsers();
+        Set<UserDTO> userDTOS = userService.getAll();
 
         Assert.assertThat(userDTOS.isEmpty(), is(true));
     }
@@ -75,9 +75,9 @@ public class UserServiceShould {
         userDTO = new UserDTO();
         userDTO.setId(userId);
 
-        userService.createUser(userDTO);
+        userService.create(userDTO);
 
-        verify(userRepository, times(1)).saveAndFlush(user1);
+        verify(userRepository, times(1)).saveAndFlush(Mockito.any());
     }
 
     @Test(expected = EntityAlreadyExists.class)
@@ -87,14 +87,14 @@ public class UserServiceShould {
         userDTO.setUsername(username);
         Mockito.when(userRepository.findByUsername(username)).thenReturn(Optional.ofNullable(user1));
 
-        userService.createUser(userDTO);
+        userService.create(userDTO);
     }
 
     @Test
     public void deleteInRepositoryWhenDeletingExistingUser() throws NoMatchException {
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user1));
 
-        userService.deleteUser(userId);
+        userService.delete(userId);
 
         verify(userRepository, times(1)).delete(user1);
     }
@@ -103,7 +103,7 @@ public class UserServiceShould {
     public void throwExceptionWhenDeletingNonExistingUser() throws NoMatchException {
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        userService.deleteUser(userId);
+        userService.delete(userId);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class UserServiceShould {
         userDTO.setId(userId);
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.ofNullable(user1));
 
-        userService.editUser(userDTO);
+        userService.edit(userDTO);
 
         verify(userRepository, times(1)).saveAndFlush(user1);
     }
@@ -123,7 +123,7 @@ public class UserServiceShould {
         userDTO.setId(userId);
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-        userService.editUser(userDTO);
+        userService.edit(userDTO);
     }
 
     @Test

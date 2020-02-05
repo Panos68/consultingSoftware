@@ -6,7 +6,7 @@ import com.consultant.model.dto.CandidateDTO;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.CandidateRepository;
-import com.consultant.model.services.CandidateService;
+import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +16,18 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class CandidateServiceImpl implements CandidateService {
+public class CandidateService implements BasicOperationsService<CandidateDTO> {
 
     CandidateRepository candidateRepository;
 
 
     @Autowired
-    public CandidateServiceImpl(CandidateRepository candidateRepository) {
+    public CandidateService(CandidateRepository candidateRepository) {
         this.candidateRepository = candidateRepository;
     }
 
     @Override
-    public Set<CandidateDTO> getAllCandidates() {
+    public Set<CandidateDTO> getAll() {
         List<Candidate> candidateList = candidateRepository.findAll();
         Set<CandidateDTO> candidateDTOS = new HashSet<>();
         candidateList.forEach(candidate -> {
@@ -40,7 +40,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public void createCandidate(CandidateDTO candidateDTO) throws Exception {
+    public void create(CandidateDTO candidateDTO) throws NoMatchException {
         Optional<Candidate> existingCandidate = candidateRepository.findByLinkedinUrl(candidateDTO.getLinkedinUrl());
         if (existingCandidate.isPresent()) {
             throw new EntityAlreadyExists("Candidate already exists");
@@ -51,7 +51,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public void editCandidate(CandidateDTO candidateDTO) throws Exception {
+    public void edit(CandidateDTO candidateDTO) throws NoMatchException {
         Optional<Candidate> existingCandidate = getExistingCandidateById(candidateDTO.getId());
 
         Candidate updatedCandidate = updateCandidate(existingCandidate.get(), candidateDTO);
@@ -60,7 +60,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public void deleteCandidate(Long id) throws Exception {
+    public void delete(Long id) throws NoMatchException {
         Optional<Candidate> existingCandidate = getExistingCandidateById(id);
 
         candidateRepository.delete(existingCandidate.get());
@@ -78,7 +78,7 @@ public class CandidateServiceImpl implements CandidateService {
         return existingCandidate;
     }
 
-    private Optional<Candidate> getExistingCandidateById(Long id) throws Exception {
+    private Optional<Candidate> getExistingCandidateById(Long id) throws NoMatchException {
         Optional<Candidate> existingCandidate = candidateRepository.findById(id);
         if (!existingCandidate.isPresent()) {
             throw new NoMatchException("The id provided doesn't match any candidate");

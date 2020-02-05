@@ -1,7 +1,7 @@
 package com.consultant.model.controller;
 
 import com.consultant.model.dto.CandidateDTO;
-import com.consultant.model.services.CandidateService;
+import com.consultant.model.services.impl.CandidateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,21 +21,21 @@ public class CandidateController {
 
     @GetMapping
     public ResponseEntity<Set<CandidateDTO>> getAllCandidates(){
-        return ResponseEntity.ok(candidateService.getAllCandidates());
+        return ResponseEntity.ok(candidateService.getAll());
     }
 
     @PostMapping
     public void createCandidate(@RequestBody CandidateDTO candidateDTO) throws Exception {
-        candidateService.createCandidate(candidateDTO);
+        candidateService.create(candidateDTO);
     }
 
     @PutMapping
     public void editCandidate(@RequestBody CandidateDTO candidateDTO) throws Exception {
-        candidateService.editCandidate(candidateDTO);
+        candidateService.edit(candidateDTO);
     }
 
     @DeleteMapping(value = "/{id}")
     public void deleteCandidate(@PathVariable Long id) throws Exception {
-        candidateService.deleteCandidate(id);
+        candidateService.delete(id);
     }
 }

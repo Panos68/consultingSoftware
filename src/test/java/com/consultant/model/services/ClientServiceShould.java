@@ -6,8 +6,8 @@ import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ClientRepository;
-import com.consultant.model.services.impl.ClientServiceImpl;
-import com.consultant.model.services.impl.ClientTeamServiceImpl;
+import com.consultant.model.services.impl.ClientService;
+import com.consultant.model.services.impl.ClientTeamService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +29,10 @@ public class ClientServiceShould {
     private ClientRepository clientRepository;
 
     @Mock
-    private ClientTeamServiceImpl clientTeamService;
+    private ClientTeamService clientTeamService;
 
     @InjectMocks
-    private ClientServiceImpl clientService;
+    private ClientService clientService;
 
     private Long clientId = 1L;
 
@@ -62,45 +62,45 @@ public class ClientServiceShould {
         clientList.add(client1);
 
         clientList.add(client2);
-        Set<ClientDTO> clientDTOS = clientService.getAllClients();
+        Set<ClientDTO> clientDTOS = clientService.getAll();
         Assert.assertThat(clientDTOS.size(), is(2));
     }
 
     @Test
     public void returnEmptyListIfThereAreNoClients() {
         when(clientRepository.findAll()).thenReturn(clientList);
-        Set<ClientDTO> clientDTOS = clientService.getAllClients();
+        Set<ClientDTO> clientDTOS = clientService.getAll();
 
         Assert.assertThat(clientDTOS.isEmpty(), is(true));
     }
 
     @Test
-    public void saveToRepositoryWhenCreatingClient() {
-        clientService.createClient(clientDTO1);
+    public void saveToRepositoryWhenCreatingClient() throws NoMatchException {
+        clientService.create(clientDTO1);
 
         verify(clientRepository, times(1)).saveAndFlush(client1);
     }
 
     @Test(expected = EntityAlreadyExists.class)
-    public void throwEntityAlreadyExistWhenCreatingClientWithSameName() {
+    public void throwEntityAlreadyExistWhenCreatingClientWithSameName() throws NoMatchException {
         String name = "name";
         client1.setName(name);
         clientDTO1.setName(name);
         Mockito.when(clientRepository.findByName(name)).thenReturn(Optional.ofNullable(client1));
-        clientService.createClient(clientDTO1);
+        clientService.create(clientDTO1);
     }
 
     @Test
     public void deleteInRepositoryWhenDeletingExistingClient() throws Exception {
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.ofNullable(client1));
-        clientService.deleteClient(clientId);
+        clientService.delete(clientId);
 
         verify(clientRepository, times(1)).delete(client1);
     }
 
     @Test(expected = NoMatchException.class)
     public void throwNoMatchExceptionWhenDeletingNonExistingClient() throws Exception {
-        clientService.deleteClient(clientId);
+        clientService.delete(clientId);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class ClientServiceShould {
         clientDTO1.setLastInteractedBy("name");
         clientDTO1.setId(clientId);
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.ofNullable(client1));
-        clientService.editClient(clientDTO1);
+        clientService.edit(clientDTO1);
 
         verify(clientRepository, times(1)).saveAndFlush(client1);
     }
@@ -118,7 +118,7 @@ public class ClientServiceShould {
         clientDTO1.setLastInteractedBy("name");
         clientDTO1.setId(clientId);
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
-        clientService.editClient(clientDTO1);
+        clientService.edit(clientDTO1);
     }
 
     @Test
