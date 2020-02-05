@@ -1,7 +1,7 @@
 package com.consultant.model.controller;
 
 import com.consultant.model.dto.VacationDTO;
-import com.consultant.model.services.VacationService;
+import com.consultant.model.services.impl.VacationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,22 +21,22 @@ public class VacationController {
 
     @GetMapping
     public ResponseEntity<Set<VacationDTO>> getAllVacations() {
-        return ResponseEntity.ok(vacationService.getAllVacations());
+        return ResponseEntity.ok(vacationService.getAll());
     }
 
     @PostMapping
     public void createVacation(@RequestBody VacationDTO vacationDTO) throws Exception {
-        vacationService.createVacation(vacationDTO);
+        vacationService.create(vacationDTO);
     }
 
     @PutMapping
     public void editVacation(@RequestBody VacationDTO vacationDTO) throws Exception {
-        vacationService.editVacation(vacationDTO);
+        vacationService.edit(vacationDTO);
     }
 
     @DeleteMapping(value = "/{id}")
     public void deleteCandidate(@PathVariable Long id) throws Exception {
-        vacationService.deleteVacation(id);
+        vacationService.delete(id);
     }
 
     @GetMapping(value = "/user/{userId}")

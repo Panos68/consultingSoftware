@@ -6,8 +6,8 @@ import com.consultant.model.entities.Vacation;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.VacationMapper;
 import com.consultant.model.repositories.VacationRepository;
+import com.consultant.model.services.BasicOperationsService;
 import com.consultant.model.services.UserService;
-import com.consultant.model.services.VacationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,34 +17,34 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class VacationServiceImpl implements VacationService {
+public class VacationService implements BasicOperationsService<VacationDTO> {
 
     VacationRepository vacationRepository;
 
     UserService userService;
 
     @Autowired
-    public VacationServiceImpl(VacationRepository vacationRepository, UserService userService) {
+    public VacationService(VacationRepository vacationRepository, UserService userService) {
         this.vacationRepository = vacationRepository;
         this.userService = userService;
     }
 
     @Override
-    public Set<VacationDTO> getAllVacations() {
+    public Set<VacationDTO> getAll() {
         List<Vacation> vacationList = vacationRepository.findAll();
 
         return mapVacationsToDTO(vacationList);
     }
 
     @Override
-    public void createVacation(VacationDTO vacationDTO) throws NoMatchException {
+    public void create(VacationDTO vacationDTO) throws NoMatchException {
         Vacation vacation = VacationMapper.INSTANCE.vacationDTOToVacation(vacationDTO);
 
         userService.updateUserVacations(vacation);
     }
 
     @Override
-    public void editVacation(VacationDTO vacationDTO) throws NoMatchException {
+    public void edit(VacationDTO vacationDTO) throws NoMatchException {
         Optional<Vacation> existingVacation = getExistingVacationById(vacationDTO.getId());
 
         Vacation updatedVacation = updateVacation(existingVacation.get(), vacationDTO);
@@ -53,13 +53,12 @@ public class VacationServiceImpl implements VacationService {
     }
 
     @Override
-    public void deleteVacation(Long id) throws NoMatchException {
+    public void delete(Long id) throws NoMatchException {
         Optional<Vacation> existingVacation = getExistingVacationById(id);
 
         vacationRepository.delete(existingVacation.get());
     }
 
-    @Override
     public Set<VacationDTO> getVacationsOfUser(Long userId) {
         List<Vacation> vacationList = vacationRepository.findByUserId(userId);
 

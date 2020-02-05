@@ -83,7 +83,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private void setLastInteraction(ClientTeam clientTeam, Client existingClient) {
-        if (existingClient.getLastInteractionDate().isBefore(clientTeam.getLastInteractionDate())) {
+        if (existingClient.getLastInteractionDate()!=null && clientTeam.getLastInteractionDate()!=null &&
+                existingClient.getLastInteractionDate().isBefore(clientTeam.getLastInteractionDate())) {
             existingClient.setLastInteractedWith(clientTeam.getLastInteractedWith());
             existingClient.setLastInteractedBy(clientTeam.getLastInteractedBy());
             existingClient.setLastInteractionDate(clientTeam.getLastInteractionDate());

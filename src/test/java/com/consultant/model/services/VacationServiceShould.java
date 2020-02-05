@@ -5,7 +5,7 @@ import com.consultant.model.entities.User;
 import com.consultant.model.entities.Vacation;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.VacationRepository;
-import com.consultant.model.services.impl.VacationServiceImpl;
+import com.consultant.model.services.impl.VacationService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +47,7 @@ public class VacationServiceShould {
 
     @Before
     public void setUp() {
-        vacationService = new VacationServiceImpl(vacationRepository,userService);
+        vacationService = new VacationService(vacationRepository,userService);
         user.setUsername("username");
         user.setId(1L);
 
@@ -64,7 +64,7 @@ public class VacationServiceShould {
         vacationList.add(vacation2);
         when(userService.getUserByVacationId(Mockito.any())).thenReturn(user);
 
-        Set<VacationDTO> vacationDTOS = vacationService.getAllVacations();
+        Set<VacationDTO> vacationDTOS = vacationService.getAll();
 
         Assert.assertThat(vacationDTOS.size(), is(2));
     }
@@ -73,7 +73,7 @@ public class VacationServiceShould {
     public void returnEmptyListIfThereAreNoVacations() throws Exception {
         when(vacationRepository.findAll()).thenReturn(vacationList);
 
-        Set<VacationDTO> vacationDTOS = vacationService.getAllVacations();
+        Set<VacationDTO> vacationDTOS = vacationService.getAll();
 
         Assert.assertThat(vacationDTOS.isEmpty(), is(true));
     }
@@ -83,7 +83,7 @@ public class VacationServiceShould {
         vacationDTO = new VacationDTO();
         vacationDTO.setId(vacationId);
 
-        vacationService.createVacation(vacationDTO);
+        vacationService.create(vacationDTO);
 
         verify(userService, times(1)).updateUserVacations(vacation1);
     }
@@ -92,7 +92,7 @@ public class VacationServiceShould {
     public void deleteInRepositoryWhenDeletingExistingVacation() throws Exception {
         Mockito.when(vacationRepository.findById(vacationId)).thenReturn(Optional.ofNullable(vacation1));
 
-        vacationService.deleteVacation(vacationId);
+        vacationService.delete(vacationId);
 
         verify(vacationRepository, times(1)).delete(vacation1);
     }
@@ -101,7 +101,7 @@ public class VacationServiceShould {
     public void throwExceptionWhenDeletingNonExistingVacation() throws Exception {
         Mockito.when(vacationRepository.findById(vacationId)).thenReturn(Optional.empty());
 
-        vacationService.deleteVacation(vacationId);
+        vacationService.delete(vacationId);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class VacationServiceShould {
         vacationDTO.setId(vacationId);
         Mockito.when(vacationRepository.findById(vacationId)).thenReturn(Optional.ofNullable(vacation1));
 
-        vacationService.editVacation(vacationDTO);
+        vacationService.edit(vacationDTO);
 
         verify(vacationRepository, times(1)).saveAndFlush(vacation1);
     }
@@ -122,7 +122,7 @@ public class VacationServiceShould {
 
         Mockito.when(vacationRepository.findById(vacationId)).thenReturn(Optional.empty());
 
-        vacationService.editVacation(vacationDTO);
+        vacationService.edit(vacationDTO);
     }
 
     @Test
