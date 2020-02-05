@@ -69,9 +69,9 @@ public class ClientTeamServiceImpl implements ClientTeamService {
 
     @Override
     public void editTeam(ClientTeamDTO clientTeamDTO) throws NoMatchException {
-        ClientTeam existingClient = getExistingTeamById(clientTeamDTO.getId());
+        ClientTeam existingTeam = getExistingTeamById(clientTeamDTO.getId());
 
-        ClientTeam updatedClientTeam = updateTeam(existingClient, clientTeamDTO);
+        ClientTeam updatedClientTeam = updateTeam(existingTeam, clientTeamDTO);
 
         assignTeamToClient(clientTeamDTO.getClientId(), updatedClientTeam);
     }

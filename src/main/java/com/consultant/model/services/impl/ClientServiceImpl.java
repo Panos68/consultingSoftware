@@ -77,7 +77,17 @@ public class ClientServiceImpl implements ClientService {
     public void assignTeamToClient(ClientTeam clientTeam, Long clientId) throws NoMatchException {
         Client existingClient = getExistingClientById(clientId);
         existingClient.getClientTeams().add(clientTeam);
+        setLastInteraction(clientTeam, existingClient);
+
         clientRepository.saveAndFlush(existingClient);
+    }
+
+    private void setLastInteraction(ClientTeam clientTeam, Client existingClient) {
+        if (existingClient.getLastInteractionDate().isBefore(clientTeam.getLastInteractionDate())) {
+            existingClient.setLastInteractedWith(clientTeam.getLastInteractedWith());
+            existingClient.setLastInteractedBy(clientTeam.getLastInteractedBy());
+            existingClient.setLastInteractionDate(clientTeam.getLastInteractionDate());
+        }
     }
 
     @Override
