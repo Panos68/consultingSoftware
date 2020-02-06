@@ -21,11 +21,7 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT,OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,observe");
         if (!(request.getMethod().equalsIgnoreCase("OPTIONS"))) {
-            try {
                 filterChain.doFilter(request, response);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
