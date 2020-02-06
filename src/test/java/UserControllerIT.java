@@ -1,48 +1,23 @@
 import com.consultant.model.dto.UserDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
-@ActiveProfiles(profiles = "test")
-@ContextConfiguration(classes = MiradoInternalApplication.class)
-@SpringBootTest(classes = {MiradoInternalApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserControllerIT {
-
-    @LocalServerPort
-    private int port;
+public class UserControllerIT extends ITtests{
 
     TestRestTemplate restTemplate = new TestRestTemplate();
     HttpHeaders headers = new HttpHeaders();
 
-    UserDTO userDTO = new UserDTO();
-
     Gson gson = new Gson();
-
-    @Before
-    public void setUp() throws Exception {
-        userDTO.setUsername("Admin");
-        userDTO.setPassword("123");
-        userDTO.setRoles(Collections.singletonList("admin"));
-    }
 
     @Test
     public void testUserAuthentication() throws Exception {
@@ -143,22 +118,5 @@ public class UserControllerIT {
 
         assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("EditedUser")));
         assertEquals(deleteUserResponse.getStatusCode(), HttpStatus.OK);
-    }
-
-    private String getToken() throws JSONException {
-        JSONObject jsonObject = getUserAuthenticationResponseAsJson();
-        return String.valueOf(jsonObject.get("jwtToken"));
-    }
-
-    private JSONObject getUserAuthenticationResponseAsJson() throws JSONException {
-        HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
-
-        return new JSONObject(response.getBody());
-    }
-
-    private String createURLWithPort(String uri) {
-        return "http://localhost:" + port + uri;
     }
 }
