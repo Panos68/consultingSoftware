@@ -10,7 +10,6 @@ public class CorsFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override
@@ -21,14 +20,12 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT,OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With,observe");
         if (!(request.getMethod().equalsIgnoreCase("OPTIONS"))) {
-                filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
         }
     }
 
-
     @Override
     public void destroy() {
-
     }
 
 }
