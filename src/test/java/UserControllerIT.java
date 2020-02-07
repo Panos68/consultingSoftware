@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserControllerIT extends ITtests {
+public class UserControllerIT extends ControllerITtest {
 
     Gson gson = new Gson();
 
@@ -34,20 +33,20 @@ public class UserControllerIT extends ITtests {
 
     @Test
     public void testThatNonAdminUserHasNoAccess() throws JSONException {
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
-
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername("NonAdminUser");
         userDTO.setPassword("123");
+
         HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
         ResponseEntity<String> authenticationResponse = restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
+
         JSONObject jsonObject = new JSONObject(authenticationResponse.getBody());
         String jwtToken = String.valueOf(jsonObject.get("jwtToken"));
         headers.add("Authorization", "Bearer " + jwtToken);
+        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
+
         try {
-            HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
-            ResponseEntity<String> response = restTemplate.exchange(
-                    createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
+            restTemplate.exchange(createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
         } catch (Exception e) {
             e.printStackTrace();
             assertEquals(HttpStatus.FORBIDDEN, ((HttpClientErrorException.Forbidden) e).getStatusCode());
@@ -56,11 +55,10 @@ public class UserControllerIT extends ITtests {
 
     @Test
     public void testNonExistingUserAuthentication() {
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
-
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername("NonExistingUser");
         userDTO.setPassword("123");
+
         HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
         try {
             restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
@@ -77,6 +75,7 @@ public class UserControllerIT extends ITtests {
         userDTO.setUsername("Admin");
         userDTO.setPassword("1234");
         HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
+
         try {
             restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
         } catch (Exception e) {
@@ -152,6 +151,7 @@ public class UserControllerIT extends ITtests {
         editedUser.setId(2L);
         editedUser.setUsername("EditedUser");
         editedUser.setPassword("123");
+
         HttpEntity<UserDTO> entity = new HttpEntity<>(editedUser, headers);
         ResponseEntity<String> deleteUserResponse = restTemplate.exchange(
                 createURLWithPort("/user"), HttpMethod.PUT, entity, String.class);
@@ -159,8 +159,8 @@ public class UserControllerIT extends ITtests {
         HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
-        Type type = new TypeToken<List<UserDTO>>() {}.getType();
 
+        Type type = new TypeToken<List<UserDTO>>() {}.getType();
         List<UserDTO> userList = gson.fromJson(response.getBody(), type);
 
         assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("EditedUser")));
