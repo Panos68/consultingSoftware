@@ -1,11 +1,15 @@
 import com.consultant.model.dto.UserDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Type;
@@ -15,9 +19,6 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerIT extends ITtests {
-
-    TestRestTemplate restTemplate = new TestRestTemplate();
-    HttpHeaders headers = new HttpHeaders();
 
     Gson gson = new Gson();
 
@@ -29,6 +30,28 @@ public class UserControllerIT extends ITtests {
 
         assertFalse(jwtToken.isEmpty());
         assertEquals("admin", admin);
+    }
+
+    @Test
+    public void testThatNonAdminUserHasNoAccess() throws JSONException {
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("NonAdminUser");
+        userDTO.setPassword("123");
+        HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
+        ResponseEntity<String> authenticationResponse = restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
+        JSONObject jsonObject = new JSONObject(authenticationResponse.getBody());
+        String jwtToken = String.valueOf(jsonObject.get("jwtToken"));
+        headers.add("Authorization", "Bearer " + jwtToken);
+        try {
+            HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertEquals(HttpStatus.FORBIDDEN, ((HttpClientErrorException.Forbidden) e).getStatusCode());
+        }
     }
 
     @Test
@@ -47,6 +70,7 @@ public class UserControllerIT extends ITtests {
         }
     }
 
+
     @Test
     public void testWrongCredentialsAuthentication() {
         UserDTO userDTO = new UserDTO();
@@ -57,7 +81,7 @@ public class UserControllerIT extends ITtests {
             restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
         } catch (Exception e) {
             e.printStackTrace();
-            assertEquals(HttpStatus.UNAUTHORIZED, ((HttpClientErrorException.Unauthorized) e).getStatusCode());
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ((HttpServerErrorException.InternalServerError) e).getStatusCode());
         }
     }
 
@@ -82,12 +106,11 @@ public class UserControllerIT extends ITtests {
 
     @Test
     public void testUserCreation() throws Exception {
-        String jwtToken = getToken();
-
         UserDTO userDTO2 = new UserDTO();
         userDTO2.setUsername("Test");
         userDTO2.setPassword("123");
 
+        String jwtToken = getToken();
         headers.add("Authorization", "Bearer " + jwtToken);
 
         HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO2, headers);
