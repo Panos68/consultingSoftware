@@ -10,9 +10,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 
@@ -24,16 +26,18 @@ public abstract class ITtests {
     @LocalServerPort
     private int port;
 
-    TestRestTemplate restTemplate = new TestRestTemplate();
+    SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+    RestTemplate restTemplate = new RestTemplate(requestFactory);
     HttpHeaders headers = new HttpHeaders();
 
     UserDTO userDTO = new UserDTO();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         userDTO.setUsername("Admin");
         userDTO.setPassword("123");
         userDTO.setRoles(Collections.singletonList("admin"));
+        requestFactory.setOutputStreaming(false);
     }
 
     String createURLWithPort(String uri) {

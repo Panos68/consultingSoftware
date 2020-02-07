@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserControllerIT extends ITtests{
+public class UserControllerIT extends ITtests {
 
     TestRestTemplate restTemplate = new TestRestTemplate();
     HttpHeaders headers = new HttpHeaders();
@@ -27,6 +29,36 @@ public class UserControllerIT extends ITtests{
 
         assertFalse(jwtToken.isEmpty());
         assertEquals("admin", admin);
+    }
+
+    @Test
+    public void testNonExistingUserAuthentication() {
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("NonExistingUser");
+        userDTO.setPassword("123");
+        HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
+        try {
+            restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertEquals(HttpStatus.UNAUTHORIZED, ((HttpClientErrorException.Unauthorized) e).getStatusCode());
+        }
+    }
+
+    @Test
+    public void testWrongCredentialsAuthentication() {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("Admin");
+        userDTO.setPassword("1234");
+        HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
+        try {
+            restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assertEquals(HttpStatus.UNAUTHORIZED, ((HttpClientErrorException.Unauthorized) e).getStatusCode());
+        }
     }
 
     @Test
