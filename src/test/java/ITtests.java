@@ -4,7 +4,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -44,9 +43,10 @@ public abstract class ITtests {
         return "http://localhost:" + port + uri;
     }
 
-     String getToken() throws JSONException {
+    void addAuthorizationRequestToHeader() throws JSONException {
         JSONObject jsonObject = getUserAuthenticationResponseAsJson();
-        return String.valueOf(jsonObject.get("jwtToken"));
+        String jwtToken = String.valueOf(jsonObject.get("jwtToken"));
+        headers.add("Authorization", "Bearer " + jwtToken);
     }
 
     JSONObject getUserAuthenticationResponseAsJson() throws JSONException {

@@ -87,10 +87,7 @@ public class UserControllerIT extends ITtests {
 
     @Test
     public void testUserRetrieving() throws Exception {
-        String jwtToken = getToken();
-
-        headers.add("Authorization", "Bearer " + jwtToken);
-
+        addAuthorizationRequestToHeader();
 
         HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
@@ -110,8 +107,7 @@ public class UserControllerIT extends ITtests {
         userDTO2.setUsername("Test");
         userDTO2.setPassword("123");
 
-        String jwtToken = getToken();
-        headers.add("Authorization", "Bearer " + jwtToken);
+        addAuthorizationRequestToHeader();
 
         HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO2, headers);
         ResponseEntity<String> createUserResponse = restTemplate.exchange(
@@ -131,9 +127,7 @@ public class UserControllerIT extends ITtests {
 
     @Test
     public void testUserDeletion() throws Exception {
-        String jwtToken = getToken();
-
-        headers.add("Authorization", "Bearer " + jwtToken);
+        addAuthorizationRequestToHeader();
 
         HttpEntity<UserDTO> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> deleteUserResponse = restTemplate.exchange(
@@ -152,9 +146,7 @@ public class UserControllerIT extends ITtests {
 
     @Test
     public void testUserEditing() throws Exception {
-        String jwtToken = getToken();
-
-        headers.add("Authorization", "Bearer " + jwtToken);
+        addAuthorizationRequestToHeader();
 
         UserDTO editedUser = new UserDTO();
         editedUser.setId(2L);
