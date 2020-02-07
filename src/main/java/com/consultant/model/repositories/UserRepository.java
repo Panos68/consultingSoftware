@@ -12,8 +12,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    @Query(value = "SELECT * FROM USERS u " +
-            "JOIN VACATIONS v " +
+    @Query(value = "SELECT * FROM users u " +
+            "JOIN vacations v " +
             "ON v.user_id=u.id " +
             "WHERE v.id = ?1",
             nativeQuery = true)

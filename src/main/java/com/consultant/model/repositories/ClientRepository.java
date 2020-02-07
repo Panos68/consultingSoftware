@@ -12,8 +12,8 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     Optional<Client> findByName(String name);
 
-    @Query(value = "SELECT * FROM CLIENTS c " +
-            "JOIN CLIENT_TEAMS ct " +
+    @Query(value = "SELECT * FROM clients c " +
+            "JOIN client_teams ct " +
             "ON ct.client_id=c.id " +
             "WHERE ct.id = ?1",
             nativeQuery = true)

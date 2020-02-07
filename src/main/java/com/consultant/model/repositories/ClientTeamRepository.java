@@ -10,8 +10,8 @@ import java.util.Optional;
 @Repository
 public interface ClientTeamRepository extends JpaRepository<ClientTeam, Long> {
 
- @Query(value = "SELECT * FROM CLIENT_TEAMS ct " +
-                 "JOIN CONSULTANTS c " +
+ @Query(value = "SELECT * FROM client_teams ct " +
+                 "JOIN consultants c " +
                  "ON c.team_id=ct.id " +
                  "WHERE c.id = ?1",
          nativeQuery = true)

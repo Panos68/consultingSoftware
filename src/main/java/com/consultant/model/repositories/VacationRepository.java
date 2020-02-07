@@ -10,8 +10,8 @@ import java.util.List;
 @Repository
 public interface VacationRepository extends JpaRepository<Vacation, Long> {
 
-    @Query(value = "SELECT * FROM Vacations v " +
-            "JOIN USERS u " +
+    @Query(value = "SELECT * FROM vacations v " +
+            "JOIN users u " +
             "ON u.id=v.user_id " +
             "WHERE u.id = ?1",
             nativeQuery = true)
