@@ -1,5 +1,6 @@
 import com.consultant.model.dto.ClientDTO;
 import com.consultant.model.dto.ClientTeamDTO;
+import com.consultant.model.dto.ConsultantDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.junit.Test;
@@ -83,9 +84,16 @@ public class ClientTeamControllerIT extends AbstractControllerIT {
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/teams"), HttpMethod.GET, getClientTeamsEntity, String.class);
         Type type = new TypeToken<List<ClientTeamDTO>>() {}.getType();
-
         List<ClientTeamDTO> clientTeamDTOS = gson.fromJson(response.getBody(), type);
 
+        HttpEntity<ConsultantDTO> getConsultantsEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> consultantResponse = restTemplate.exchange(
+                createURLWithPort("/consultants"), HttpMethod.GET, getConsultantsEntity, String.class);
+        Type consultantType = new TypeToken<List<ConsultantDTO>>() {}.getType();
+
+        List<ConsultantDTO> consultantDTOS = gson.fromJson(consultantResponse.getBody(), consultantType);
+
+        assertTrue(consultantDTOS.stream().anyMatch(consultantDTO -> consultantDTO.getFirstName().equals("MainConsultant")));
         assertFalse(Objects.requireNonNull(clientTeamDTOS).stream().map(ClientTeamDTO::getName).anyMatch(u -> u.equals("DeleteClientTeam")));
         assertEquals(deleteClientTeamResponse.getStatusCode(), HttpStatus.OK);
     }
