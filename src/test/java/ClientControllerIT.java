@@ -1,4 +1,5 @@
 import com.consultant.model.dto.ClientDTO;
+import com.consultant.model.dto.ClientTeamDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.junit.Test;
@@ -24,7 +25,8 @@ public class ClientControllerIT extends AbstractControllerIT {
         HttpEntity<ClientDTO> getClientsEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/clients"), HttpMethod.GET, getClientsEntity, String.class);
-        Type type = new TypeToken<List<ClientDTO>>() {}.getType();
+        Type type = new TypeToken<List<ClientDTO>>() {
+        }.getType();
 
         List<ClientDTO> clientDTOS = gson.fromJson(response.getBody(), type);
 
@@ -47,7 +49,8 @@ public class ClientControllerIT extends AbstractControllerIT {
         HttpEntity<ClientDTO> getClientsEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/clients"), HttpMethod.GET, getClientsEntity, String.class);
-        Type type = new TypeToken<List<ClientDTO>>() {}.getType();
+        Type type = new TypeToken<List<ClientDTO>>() {
+        }.getType();
 
         List<ClientDTO> clientDTOS = gson.fromJson(response.getBody(), type);
 
@@ -70,7 +73,14 @@ public class ClientControllerIT extends AbstractControllerIT {
 
         List<ClientDTO> clientDTOS = gson.fromJson(response.getBody(), type);
 
-        assertFalse(Objects.requireNonNull(clientDTOS).stream().map(ClientDTO::getName).anyMatch(u -> u.equals("Delete")));
+        HttpEntity<ClientTeamDTO> getClientTeamsEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> teamsResponse = restTemplate.exchange(
+                createURLWithPort("/teams"), HttpMethod.GET, getClientTeamsEntity, String.class);
+        Type teamsType = new TypeToken<List<ClientTeamDTO>>() {}.getType();
+        List<ClientTeamDTO> clientTeamDTOS = gson.fromJson(teamsResponse.getBody(), teamsType);
+
+        assertFalse(clientTeamDTOS.stream().anyMatch(clientTeamDTO -> clientTeamDTO.getName().equals("DeleteTeam2")));
+        assertFalse(clientDTOS.stream().map(ClientDTO::getName).anyMatch(u -> u.equals("DeleteClient")));
         assertEquals(deleteClientResponse.getStatusCode(), HttpStatus.OK);
     }
 
