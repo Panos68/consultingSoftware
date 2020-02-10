@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ConsultantAbstractControllerIT extends AbstractControllerIT {
+public class ConsultantControllerIT extends AbstractControllerIT {
 
     Gson gson = new Gson();
 

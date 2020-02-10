@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserAbstractControllerIT extends AbstractControllerIT {
+public class UserControllerIT extends AbstractControllerIT {
 
     Gson gson = new Gson();
 
