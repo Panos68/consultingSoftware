@@ -26,7 +26,9 @@ public abstract class AbstractControllerIT {
     private int port;
 
     SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+
     RestTemplate restTemplate = new RestTemplate(requestFactory);
+
     HttpHeaders headers = new HttpHeaders();
 
     UserDTO userDTO = new UserDTO();
