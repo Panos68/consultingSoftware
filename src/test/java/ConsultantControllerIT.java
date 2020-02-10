@@ -1,4 +1,6 @@
+import com.consultant.model.dto.ClientTeamDTO;
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.entities.Consultant;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.junit.Test;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +27,8 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         HttpEntity<ConsultantDTO> getConsultantsEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/consultants"), HttpMethod.GET, getConsultantsEntity, String.class);
-        Type type = new TypeToken<List<ConsultantDTO>>() {}.getType();
+        Type type = new TypeToken<List<ConsultantDTO>>() {
+        }.getType();
 
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
@@ -37,6 +41,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
     public void testConsultantCreation() throws Exception {
         ConsultantDTO consultantDTO = new ConsultantDTO();
         consultantDTO.setFirstName("Created");
+        consultantDTO.setTeamId(1L);
 
         addAuthorizationRequestToHeader();
 
@@ -47,10 +52,23 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         HttpEntity<ConsultantDTO> getConsultantsEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/consultants"), HttpMethod.GET, getConsultantsEntity, String.class);
-        Type type = new TypeToken<List<ConsultantDTO>>() {}.getType();
+        Type type = new TypeToken<List<ConsultantDTO>>() {
+        }.getType();
 
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
+        HttpEntity<ClientTeamDTO> getClientTeamsEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> teamsResponse = restTemplate.exchange(
+                createURLWithPort("/teams"), HttpMethod.GET, getClientTeamsEntity, String.class);
+        Type teamsType = new TypeToken<List<ClientTeamDTO>>() {}.getType();
+        List<ClientTeamDTO> clientTeamDTOS = gson.fromJson(teamsResponse.getBody(), teamsType);
+
+        boolean consultantExistsForTeam = clientTeamDTOS.stream()
+                .filter(clientTeamDTO -> clientTeamDTO.getId() == 1).map(ClientTeamDTO::getConsultants)
+                .flatMap(Collection::stream)
+                .anyMatch(clientTeam -> clientTeam.getFirstName().equals("Created"));
+
+        assertTrue(consultantExistsForTeam);
         assertTrue(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("Created")));
         assertEquals(createConsultantResponse.getStatusCode(), HttpStatus.OK);
     }
@@ -66,7 +84,8 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         HttpEntity<ConsultantDTO> getConsultantsEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/consultants"), HttpMethod.GET, getConsultantsEntity, String.class);
-        Type type = new TypeToken<List<ConsultantDTO>>() {}.getType();
+        Type type = new TypeToken<List<ConsultantDTO>>() {
+        }.getType();
 
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
@@ -89,7 +108,8 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         HttpEntity<ConsultantDTO> getConsultantsEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
                 createURLWithPort("/consultants"), HttpMethod.GET, getConsultantsEntity, String.class);
-        Type type = new TypeToken<List<ConsultantDTO>>() {}.getType();
+        Type type = new TypeToken<List<ConsultantDTO>>() {
+        }.getType();
 
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
