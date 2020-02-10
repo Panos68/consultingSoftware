@@ -153,7 +153,7 @@ public class UserControllerIT extends AbstractControllerIT {
         editedUser.setPassword("123");
 
         HttpEntity<UserDTO> entity = new HttpEntity<>(editedUser, headers);
-        ResponseEntity<String> deleteUserResponse = restTemplate.exchange(
+        ResponseEntity<String> editUserResponse = restTemplate.exchange(
                 createURLWithPort("/user"), HttpMethod.PUT, entity, String.class);
 
         HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
@@ -164,6 +164,6 @@ public class UserControllerIT extends AbstractControllerIT {
         List<UserDTO> userList = gson.fromJson(response.getBody(), type);
 
         assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("EditedUser")));
-        assertEquals(deleteUserResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(editUserResponse.getStatusCode(), HttpStatus.OK);
     }
 }

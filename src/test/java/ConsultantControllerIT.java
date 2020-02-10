@@ -60,7 +60,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         addAuthorizationRequestToHeader();
 
         HttpEntity<ConsultantDTO> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> deleteUserResponse = restTemplate.exchange(
+        ResponseEntity<String> deleteConsultantResponse = restTemplate.exchange(
                 createURLWithPort("/consultants/3"), HttpMethod.DELETE, entity, String.class);
 
         HttpEntity<ConsultantDTO> getConsultantsEntity = new HttpEntity<>(null, headers);
@@ -70,8 +70,8 @@ public class ConsultantControllerIT extends AbstractControllerIT {
 
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
-        assertFalse(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("Delete")));
-        assertEquals(deleteUserResponse.getStatusCode(), HttpStatus.OK);
+        assertFalse(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("DeleteConsultant")));
+        assertEquals(deleteConsultantResponse.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -80,10 +80,10 @@ public class ConsultantControllerIT extends AbstractControllerIT {
 
         ConsultantDTO consultantDTO = new ConsultantDTO();
         consultantDTO.setId(2L);
-        consultantDTO.setFirstName("EditedUser");
+        consultantDTO.setFirstName("EditedConsultant");
 
         HttpEntity<ConsultantDTO> entity = new HttpEntity<>(consultantDTO, headers);
-        ResponseEntity<String> deleteUserResponse = restTemplate.exchange(
+        ResponseEntity<String> editConsultantResponse = restTemplate.exchange(
                 createURLWithPort("/consultants"), HttpMethod.PUT, entity, String.class);
 
         HttpEntity<ConsultantDTO> getConsultantsEntity = new HttpEntity<>(null, headers);
@@ -93,7 +93,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
 
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
-        assertTrue(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("EditedUser")));
-        assertEquals(deleteUserResponse.getStatusCode(), HttpStatus.OK);
+        assertTrue(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("EditedConsultant")));
+        assertEquals(editConsultantResponse.getStatusCode(), HttpStatus.OK);
     }
 }
