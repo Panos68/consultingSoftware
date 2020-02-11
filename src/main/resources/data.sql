@@ -17,3 +17,8 @@ INSERT INTO `client_teams` (`id`, `last_interacted_by`, `last_interacted_with`, 
 INSERT INTO `consultants` (`id`, `discount`, `first_name`, `last_name`, `list_price`, `other`, `price`, `signed`, `status`, `team_id`) VALUES ('1', '20', 'MainConsultant', 'User', '200', 'Some other text', '100', true, 'active', '3');
 INSERT INTO `consultants` (`id`, `discount`, `first_name`, `last_name`, `list_price`, `other`, `price`, `signed`, `status`, `team_id`) VALUES ('2', '20', 'EditConsultant', 'User', '200', 'Some other text', '100', true, 'active', '1');
 INSERT INTO `consultants` (`id`, `discount`, `first_name`, `last_name`, `list_price`, `other`, `price`, `signed`, `status`, `team_id`) VALUES ('3', '20', 'DeleteConsultant', 'User', '200', 'Some other text', '100', true, 'active', '1');
+
+INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('1', 'Brazil', '1');
+INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('2', 'EditVac', '1');
+INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('3', 'DeleteVac', '1');
+INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('4', 'UserVac', '3');
