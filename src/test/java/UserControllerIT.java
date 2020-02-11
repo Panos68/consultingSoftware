@@ -1,4 +1,5 @@
 import com.consultant.model.dto.UserDTO;
+import com.consultant.model.dto.VacationDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.json.JSONException;
@@ -112,13 +113,7 @@ public class UserControllerIT extends AbstractControllerIT {
         ResponseEntity<String> createUserResponse = restTemplate.exchange(
                 createURLWithPort("/user"), HttpMethod.POST, entity, String.class);
 
-        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
-        Type type = new TypeToken<List<UserDTO>>() {
-        }.getType();
-
-        List<UserDTO> userList = gson.fromJson(response.getBody(), type);
+        List<UserDTO> userList = getUserDTOS();
 
         assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("Test")));
         assertEquals(createUserResponse.getStatusCode(), HttpStatus.OK);
@@ -132,13 +127,17 @@ public class UserControllerIT extends AbstractControllerIT {
         ResponseEntity<String> deleteUserResponse = restTemplate.exchange(
                 createURLWithPort("/user/3"), HttpMethod.DELETE, entity, String.class);
 
-        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
-        Type type = new TypeToken<List<UserDTO>>() {}.getType();
+        List<UserDTO> userList = getUserDTOS();
 
-        List<UserDTO> userList = gson.fromJson(response.getBody(), type);
+        HttpEntity<VacationDTO> getVacationsEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> vacationResponse = restTemplate.exchange(
+                createURLWithPort("/vacations"), HttpMethod.GET, getVacationsEntity, String.class);
 
+        Type vacationType = new TypeToken<List<VacationDTO>>() {}.getType();
+        List<VacationDTO> vacationList = gson.fromJson(vacationResponse.getBody(), vacationType);
+        boolean userVacExists = vacationList.stream().anyMatch(vacationDTO -> vacationDTO.getDescription().equals("UserVac"));
+
+        assertFalse(userVacExists);
         assertFalse(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("UserToDelete")));
         assertEquals(deleteUserResponse.getStatusCode(), HttpStatus.OK);
     }
@@ -156,14 +155,18 @@ public class UserControllerIT extends AbstractControllerIT {
         ResponseEntity<String> editUserResponse = restTemplate.exchange(
                 createURLWithPort("/user"), HttpMethod.PUT, entity, String.class);
 
-        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
-
-        Type type = new TypeToken<List<UserDTO>>() {}.getType();
-        List<UserDTO> userList = gson.fromJson(response.getBody(), type);
+        List<UserDTO> userList = getUserDTOS();
 
         assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("EditedUser")));
         assertEquals(editUserResponse.getStatusCode(), HttpStatus.OK);
+    }
+
+    private List<UserDTO> getUserDTOS() {
+        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
+        Type type = new TypeToken<List<UserDTO>>() {}.getType();
+
+        return gson.fromJson(response.getBody(), type);
     }
 }
