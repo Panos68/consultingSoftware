@@ -18,6 +18,11 @@ INSERT INTO `consultants` (`id`, `discount`, `first_name`, `last_name`, `list_pr
 INSERT INTO `consultants` (`id`, `discount`, `first_name`, `last_name`, `list_price`, `other`, `price`, `signed`, `status`, `team_id`) VALUES ('2', '20', 'EditConsultant', 'User', '200', 'Some other text', '100', true, 'active', '1');
 INSERT INTO `consultants` (`id`, `discount`, `first_name`, `last_name`, `list_price`, `other`, `price`, `signed`, `status`, `team_id`) VALUES ('3', '20', 'DeleteConsultant', 'User', '200', 'Some other text', '100', true, 'active', '1');
 
+INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `linkedin_url`, `location`, `role`, `source`) VALUES ('1', 'comment', 'company', 'consultant', 'no', 'MainLinkedIn', 'Stockholm', 'backend', 'source');
+INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `linkedin_url`, `location`, `role`, `source`) VALUES ('2', 'comment', 'company', 'consultant', 'no', 'EditLinkedIn', 'Stockholm', 'backend', 'source');
+INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `linkedin_url`, `location`, `role`, `source`) VALUES ('3', 'comment', 'company', 'consultant', 'no', 'DeleteLinkedIn', 'Stockholm', 'backend', 'source');
+
+
 INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('1', 'Brazil', '1');
 INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('2', 'EditVac', '1');
 INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('3', 'DeleteVac', '1');

@@ -10,10 +10,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories
 @SpringBootApplication
 @EnableEncryptableProperties
-public class MiradoInternalApplication {
+public class ConsultancyManagementApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MiradoInternalApplication.class, args);
+        SpringApplication.run(ConsultancyManagementApplication.class, args);
     }
 
 }

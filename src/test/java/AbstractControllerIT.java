@@ -19,8 +19,8 @@ import java.util.Collections;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles(profiles = "test")
-@ContextConfiguration(classes = MiradoInternalApplication.class)
-@SpringBootTest(classes = {MiradoInternalApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ContextConfiguration(classes = ConsultancyManagementApplication.class)
+@SpringBootTest(classes = {ConsultancyManagementApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class AbstractControllerIT {
     @LocalServerPort
     private int port;

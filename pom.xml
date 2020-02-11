@@ -124,7 +124,7 @@
 
                     <archive>
                         <manifest>
-                            <mainClass>MiradoInternalApplication</mainClass>
+                            <mainClass>ConsultancyManagementApplication</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
