@@ -2,13 +2,15 @@ package com.consultant.model.dto;
 
 import com.consultant.model.entities.HistoricalData;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
-@Data
+@Setter
+@Getter
 public class ConsultantDTO {
     private Long id;
 
@@ -42,5 +44,5 @@ public class ConsultantDTO {
 
     private String mainTechnologies;
 
-    private List<HistoricalData> historicalData = new ArrayList<>();
+    private List<HistoricalData> historicalDataList = new ArrayList<>();
 }

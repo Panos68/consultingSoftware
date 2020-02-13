@@ -1,5 +1,6 @@
 package com.consultant.model.services.impl;
 
+import com.consultant.model.entities.HistoricalData;
 import com.consultant.model.mappers.ConsultantMapper;
 import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.entities.Client;
@@ -7,10 +8,12 @@ import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
+import com.consultant.model.requests.ContractRequest;
 import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +60,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     public void edit(ConsultantDTO consultantDTO) throws NoMatchException {
         Consultant existingConsultant = getExistingConsultantById(consultantDTO.getId());
 
-        Consultant updatedConsultant = updateConsultant(existingConsultant, consultantDTO);
+        Consultant updatedConsultant = Consultant.updateConsultant(existingConsultant, consultantDTO);
 
         assignConsultantToTeam(consultantDTO.getTeamId(), updatedConsultant);
     }
@@ -68,32 +71,22 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         consultantRepository.delete(existingConsultant);
     }
 
+    public void createNewContract(ContractRequest contractRequest) throws NoMatchException {
+        Consultant existingConsultant = getExistingConsultantById(contractRequest.getConsultantId());
 
-    private void setTeamAndClientOfConsultant(Consultant consultant) {
-        Optional<ClientTeam> consultantTeam = clientTeamService.getAssignedTeamOfConsultant(consultant.getId());
-        if (consultantTeam.isPresent()) {
-            consultant.setTeamName(consultantTeam.get().getName());
-            Optional<Client> clientOfTeam = clientService.getClientOfTeam(consultantTeam.get().getId());
-            clientOfTeam.ifPresent(client -> consultant.setClientName(client.getName()));
-        }
+        addHistoricalEntry(contractRequest.getTerminatedDate(), existingConsultant);
+        Consultant updatedConsultant = setContractData(existingConsultant, contractRequest);
+
+        assignConsultantToTeam(contractRequest.getTeamId(), updatedConsultant);
     }
 
-    private Consultant updateConsultant(Consultant existingConsultant, ConsultantDTO consultantDTO) {
-        existingConsultant.setId(consultantDTO.getId());
-        existingConsultant.setStatus(consultantDTO.getStatus());
-        existingConsultant.setFirstName(consultantDTO.getFirstName());
-        existingConsultant.setLastName(consultantDTO.getLastName());
-        existingConsultant.setPrice(consultantDTO.getPrice());
-        existingConsultant.setListPrice(consultantDTO.getListPrice());
-        existingConsultant.setDiscount(consultantDTO.getDiscount());
-        existingConsultant.setContractStarted(consultantDTO.getContractStarted());
-        existingConsultant.setContractEnding(consultantDTO.getContractEnding());
-        existingConsultant.setUpdatedContractEnding(consultantDTO.getUpdatedContractEnding());
-        existingConsultant.setSigned(consultantDTO.getSigned());
-        existingConsultant.setOther(consultantDTO.getOther());
-        existingConsultant.setMainTechnologies(consultantDTO.getMainTechnologies());
+    public void terminateContract(ContractRequest contractRequest) throws NoMatchException {
+        Consultant existingConsultant = getExistingConsultantById(contractRequest.getConsultantId());
 
-        return existingConsultant;
+        addHistoricalEntry(contractRequest.getTerminatedDate(), existingConsultant);
+        clearContractData(existingConsultant);
+
+        consultantRepository.saveAndFlush(existingConsultant);
     }
 
     private Consultant getExistingConsultantById(Long id) throws NoMatchException {
@@ -119,5 +112,45 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         } else {
             consultantRepository.saveAndFlush(consultant);
         }
+    }
+
+    private void addHistoricalEntry(LocalDate terminatedDate, Consultant existingConsultant) {
+        LocalDate endingDate = existingConsultant.getContractEnding();
+        if (terminatedDate != null) {
+            endingDate = existingConsultant.getContractEnding();
+        }
+        setTeamAndClientOfConsultant(existingConsultant);
+        HistoricalData historicalData = new HistoricalData(existingConsultant.getClientName(), existingConsultant.getContractStarted(), endingDate);
+        existingConsultant.getHistoricalDataList().add(historicalData);
+    }
+
+    private void setTeamAndClientOfConsultant(Consultant consultant) {
+        Optional<ClientTeam> consultantTeam = clientTeamService.getAssignedTeamOfConsultant(consultant.getId());
+        if (consultantTeam.isPresent()) {
+            consultant.setTeamName(consultantTeam.get().getName());
+            Optional<Client> clientOfTeam = clientService.getClientOfTeam(consultantTeam.get().getId());
+            clientOfTeam.ifPresent(client -> consultant.setClientName(client.getName()));
+        }
+    }
+
+    private void clearContractData(Consultant existingConsultant) {
+        existingConsultant.setContractEnding(null);
+        existingConsultant.setContractStarted(null);
+        existingConsultant.setUpdatedContractEnding(null);
+        existingConsultant.setPrice(0);
+        existingConsultant.setSigned(false);
+        existingConsultant.setStatus("Unassigned");
+        clientTeamService.unassignedConsultantFromTeam(existingConsultant);
+    }
+
+    private Consultant setContractData(Consultant existingConsultant, ContractRequest contractRequest) {
+        existingConsultant.setContractEnding(contractRequest.getContractEnding());
+        existingConsultant.setContractStarted(contractRequest.getContractStarted());
+        existingConsultant.setUpdatedContractEnding(contractRequest.getUpdatedContractEnding());
+        existingConsultant.setPrice(contractRequest.getPrice());
+        existingConsultant.setSigned(contractRequest.getSigned());
+        existingConsultant.setStatus(contractRequest.getStatus());
+
+        return existingConsultant;
     }
 }

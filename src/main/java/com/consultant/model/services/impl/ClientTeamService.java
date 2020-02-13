@@ -72,6 +72,11 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
         return clientTeam;
     }
 
+    public void unassignedConsultantFromTeam(Consultant consultant) {
+        Optional<ClientTeam> assignedTeamOfConsultant = getAssignedTeamOfConsultant(consultant.getId());
+        assignedTeamOfConsultant.ifPresent(clientTeam -> clientTeam.getConsultants().remove(consultant));
+    }
+
     private void setClientOfTeam(ClientTeam team) {
         Optional<Client> clientOfTeam = clientService.getClientOfTeam(team.getId());
         if (clientOfTeam.isPresent()) {

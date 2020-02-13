@@ -1,6 +1,7 @@
 package com.consultant.model.controller;
 
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.requests.ContractRequest;
 import com.consultant.model.services.impl.ConsultantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,23 @@ public class ConsultantController {
     }
 
     @GetMapping
-    public ResponseEntity<Set<ConsultantDTO>> getAllConsultants(){
+    public ResponseEntity<Set<ConsultantDTO>> getAllConsultants() {
         return ResponseEntity.ok(consultantService.getAll());
     }
 
     @PostMapping
     public void createConsultant(@RequestBody ConsultantDTO consultantDTO) throws Exception {
         consultantService.create(consultantDTO);
+    }
+
+    @PostMapping(value = "/contract/create")
+    public void createNewContract(@RequestBody ContractRequest contractRequest) throws Exception {
+        consultantService.createNewContract(contractRequest);
+    }
+
+    @PostMapping(value = "contract/terminate")
+    public void terminate(@RequestBody ContractRequest contractRequest) throws Exception {
+        consultantService.terminateContract(contractRequest);
     }
 
     @PutMapping

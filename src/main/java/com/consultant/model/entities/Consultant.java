@@ -1,60 +1,86 @@
 package com.consultant.model.entities;
 
-import lombok.Data;
+import com.consultant.model.dto.ConsultantDTO;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Data
+@Setter
+@Getter
 @Table(name = "consultants")
 @NoArgsConstructor
 public class Consultant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column
-    String status;
+    private String status;
 
     @Column
-    String firstName;
+    private String firstName;
 
     @Column
-    String lastName;
+    private String lastName;
 
     @Column
-    Integer price;
+    private Integer price;
 
     @Column
-    Integer listPrice;
+    private Integer listPrice;
 
     @Column
-    Integer discount;
+    private Integer discount;
 
     @Column
-    LocalDate contractStarted;
+    private LocalDate contractStarted;
 
     @Column
-    LocalDate contractEnding;
+    private LocalDate contractEnding;
 
     @Column
-    LocalDate updatedContractEnding;
+    private LocalDate updatedContractEnding;
 
     @Column
-    Boolean signed;
+    private Boolean signed;
 
     @Column
-    String other;
+    private String other;
 
     @Column
-    String mainTechnologies;
+    private String mainTechnologies;
 
     @Transient
-    String teamName;
+    private String teamName;
 
     @Transient
-    String clientName;
+    private String clientName;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "consultant.id")
+    private List<HistoricalData> historicalDataList = new ArrayList<>();
+
+    public static Consultant updateConsultant(Consultant existingConsultant, ConsultantDTO consultantDTO) {
+        existingConsultant.setFirstName(consultantDTO.getFirstName());
+        existingConsultant.setLastName(consultantDTO.getLastName());
+        existingConsultant.setListPrice(consultantDTO.getListPrice());
+        existingConsultant.setDiscount(consultantDTO.getDiscount());
+        existingConsultant.setOther(consultantDTO.getOther());
+        existingConsultant.setMainTechnologies(consultantDTO.getMainTechnologies());
+        existingConsultant.setContractEnding(consultantDTO.getContractEnding());
+        existingConsultant.setContractStarted(consultantDTO.getContractStarted());
+        existingConsultant.setUpdatedContractEnding(consultantDTO.getUpdatedContractEnding());
+        existingConsultant.setPrice(consultantDTO.getPrice());
+        existingConsultant.setSigned(consultantDTO.getSigned());
+        existingConsultant.setStatus(consultantDTO.getStatus());
+
+        return existingConsultant;
+    }
 }
