@@ -10,11 +10,7 @@ public class ContractRequest {
 
     private String status;
 
-    private Integer listPrice;
-
     private Integer price;
-
-    private Integer discount;
 
     private LocalDate contractStarted;
 
