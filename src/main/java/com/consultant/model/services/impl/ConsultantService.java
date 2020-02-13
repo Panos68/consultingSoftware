@@ -91,6 +91,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         existingConsultant.setUpdatedContractEnding(consultantDTO.getUpdatedContractEnding());
         existingConsultant.setSigned(consultantDTO.getSigned());
         existingConsultant.setOther(consultantDTO.getOther());
+        existingConsultant.setMainTechnologies(consultantDTO.getMainTechnologies());
 
         return existingConsultant;
     }

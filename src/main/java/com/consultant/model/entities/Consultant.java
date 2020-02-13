@@ -49,6 +49,9 @@ public class Consultant {
     @Column
     String other;
 
+    @Column
+    String mainTechnologies;
+
     @Transient
     String teamName;
 
