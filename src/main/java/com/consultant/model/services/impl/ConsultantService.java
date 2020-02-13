@@ -72,12 +72,12 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     }
 
     public void createNewContract(ContractRequest contractRequest) throws NoMatchException {
-        Consultant existingConsultant = getExistingConsultantById(contractRequest.getConsultantId());
+        Consultant consultant = getExistingConsultantById(contractRequest.getConsultantId());
 
-        addHistoricalEntry(contractRequest.getTerminatedDate(), existingConsultant);
-        Consultant updatedConsultant = setContractData(existingConsultant, contractRequest);
+        addHistoricalEntry(contractRequest.getTerminatedDate(), consultant);
+        updateConsultantContractData(consultant, contractRequest);
 
-        assignConsultantToTeam(contractRequest.getTeamId(), updatedConsultant);
+        assignConsultantToTeam(contractRequest.getTeamId(), consultant);
     }
 
     public void terminateContract(ContractRequest contractRequest) throws NoMatchException {
@@ -143,14 +143,12 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         clientTeamService.unassignedConsultantFromTeam(existingConsultant);
     }
 
-    private Consultant setContractData(Consultant existingConsultant, ContractRequest contractRequest) {
+    private void updateConsultantContractData(Consultant existingConsultant, ContractRequest contractRequest) {
         existingConsultant.setContractEnding(contractRequest.getContractEnding());
         existingConsultant.setContractStarted(contractRequest.getContractStarted());
         existingConsultant.setUpdatedContractEnding(contractRequest.getUpdatedContractEnding());
         existingConsultant.setPrice(contractRequest.getPrice());
         existingConsultant.setSigned(contractRequest.getSigned());
         existingConsultant.setStatus(contractRequest.getStatus());
-
-        return existingConsultant;
     }
 }
