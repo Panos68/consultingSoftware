@@ -68,8 +68,7 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
     }
 
     public Optional<ClientTeam> getAssignedTeamOfConsultant(Long consultantId) {
-        Optional<ClientTeam> clientTeam = clientTeamRepository.findByConsultantId(consultantId);
-        return clientTeam;
+        return clientTeamRepository.findByConsultantId(consultantId);
     }
 
     public void unassignedConsultantFromTeam(Consultant consultant) {

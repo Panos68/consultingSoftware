@@ -1,6 +1,7 @@
 package com.consultant.model.controller;
 
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.requests.ContractRequest;
 import com.consultant.model.services.impl.ConsultantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,27 +27,27 @@ public class ConsultantController {
     }
 
     @PostMapping
-    public void createConsultant(@RequestBody ConsultantDTO consultantDTO) throws Exception {
+    public void createConsultant(@RequestBody ConsultantDTO consultantDTO) throws NoMatchException {
         consultantService.create(consultantDTO);
     }
 
     @PostMapping(value = "/contract/create")
-    public void createNewContract(@RequestBody ContractRequest contractRequest) throws Exception {
+    public void createNewContract(@RequestBody ContractRequest contractRequest) throws NoMatchException {
         consultantService.createNewContract(contractRequest);
     }
 
     @PostMapping(value = "contract/terminate")
-    public void terminate(@RequestBody ContractRequest contractRequest) throws Exception {
+    public void terminate(@RequestBody ContractRequest contractRequest) throws NoMatchException {
         consultantService.terminateContract(contractRequest);
     }
 
     @PutMapping
-    public void editConsultant(@RequestBody ConsultantDTO consultantDTO) throws Exception {
+    public void editConsultant(@RequestBody ConsultantDTO consultantDTO) throws NoMatchException {
         consultantService.edit(consultantDTO);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteConsultant(@PathVariable Long id) throws Exception {
+    public void deleteConsultant(@PathVariable Long id) throws NoMatchException {
         consultantService.delete(id);
     }
 }
