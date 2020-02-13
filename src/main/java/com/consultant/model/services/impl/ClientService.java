@@ -102,6 +102,7 @@ public class ClientService implements BasicOperationsService<ClientDTO> {
         existingClient.setMainPersonEmail(clientDTO.getMainPersonEmail());
         existingClient.setMainPersonName(clientDTO.getMainPersonName());
         existingClient.setMainPersonPhone(clientDTO.getMainPersonPhone());
+
         return existingClient;
     }
 

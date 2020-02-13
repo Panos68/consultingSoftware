@@ -10,11 +10,11 @@ import java.util.List;
 @Setter
 @Getter
 public class ClientTeamDTO extends AbstractClientDTO {
-    List<Consultant> consultants;
+    private List<Consultant> consultants;
 
-    String mainTechnologies;
+    private String mainTechnologies;
 
-    Long clientId;
+    private Long clientId;
 
-    String clientName;
+    private String clientName;
 }

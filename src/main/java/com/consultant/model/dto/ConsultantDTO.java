@@ -1,41 +1,46 @@
 package com.consultant.model.dto;
 
+import com.consultant.model.entities.HistoricalData;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
 public class ConsultantDTO {
-    Long id;
+    private Long id;
 
-    String status;
+    private String status;
 
-    String lastName;
+    private String lastName;
 
-    String firstName;
+    private String firstName;
 
-    Integer listPrice;
+    private Integer listPrice;
 
-    Integer price;
+    private Integer price;
 
-    Integer discount;
+    private Integer discount;
 
-    LocalDate contractStarted;
+    private LocalDate contractStarted;
 
-    LocalDate contractEnding;
+    private LocalDate contractEnding;
 
-    LocalDate updatedContractEnding;
+    private LocalDate updatedContractEnding;
 
-    Boolean signed;
+    private Boolean signed;
 
-    String other;
+    private String other;
 
-    Long teamId;
+    private Long teamId;
 
-    String teamName;
+    private String teamName;
 
-    String clientName;
+    private String clientName;
 
-    String mainTechnologies;
+    private String mainTechnologies;
+
+    private List<HistoricalData> historicalData = new ArrayList<>();
 }

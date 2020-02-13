@@ -10,26 +10,26 @@ import java.time.LocalDate;
 abstract public class AbstractClient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column
-    String name;
+    private String name;
 
     @Column
-    String mainPersonName;
+    private String mainPersonName;
 
     @Column
-    String mainPersonEmail;
+    private String mainPersonEmail;
 
     @Column
-    String mainPersonPhone;
+    private String mainPersonPhone;
 
     @Column
-    LocalDate lastInteractionDate;
+    private LocalDate lastInteractionDate;
 
     @Column
-    String lastInteractedWith;
+    private String lastInteractedWith;
 
     @Column
-    String lastInteractedBy;
+    private String lastInteractedBy;
 }

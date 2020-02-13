@@ -18,27 +18,27 @@ public class Candidate {
     private Long id;
 
     @Column
-    String linkedinUrl;
+    private String linkedinUrl;
 
     @Column
-    String role;
+    private String role;
 
     @Column
-    String company;
+    private String company;
 
     @Column
-    String location;
+    private String location;
 
     @Column
-    String consultant;
+    private String consultant;
 
     @Column
-    String diverse;
+    private String diverse;
 
     @Column
-    String source;
+    private String source;
 
     @Column
-    String comment;
+    private String comment;
 
 }
