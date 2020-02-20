@@ -32,6 +32,9 @@ public class ConsultantServiceShould {
     @Mock
     private ConsultantRepository consultantRepository;
 
+    @Mock
+    private ContractService contractService;
+
     private ConsultantService consultantService;
 
     private Long consultantId = 1L;
@@ -47,7 +50,7 @@ public class ConsultantServiceShould {
 
     @Before
     public void setUp() {
-        consultantService = new ConsultantService(consultantRepository,clientTeamService,clientService);
+        consultantService = new ConsultantService(consultantRepository,clientTeamService,clientService,contractService);
 
         consultant1.setId(consultantId);
 
@@ -93,7 +96,7 @@ public class ConsultantServiceShould {
 
     @Test
     public void updateOnEditingExistingConsultant() throws Exception {
-        consultantDTO.setPrice(100);
+        consultantDTO.setFirstName("Test");
         consultantDTO.setId(consultantId);
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.ofNullable(consultant1));
         consultantService.edit(consultantDTO);
@@ -103,7 +106,7 @@ public class ConsultantServiceShould {
 
     @Test(expected = NoMatchException.class)
     public void throwNoMatchExceptionWhenUpdatingNonExistingConsultant() throws Exception {
-        consultantDTO.setPrice(100);
+        consultantDTO.setFirstName("Test");
         consultantDTO.setId(consultantId);
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.empty());
 

@@ -1,6 +1,6 @@
 import com.consultant.model.dto.ClientTeamDTO;
 import com.consultant.model.dto.ConsultantDTO;
-import com.consultant.model.entities.Consultant;
+import com.consultant.model.dto.ContractDTO;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
         assertTrue(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getId).anyMatch(u -> u.equals(1L)));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK,response.getStatusCode());
     }
 
 
@@ -42,6 +42,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         ConsultantDTO consultantDTO = new ConsultantDTO();
         consultantDTO.setFirstName("Created");
         consultantDTO.setTeamId(1L);
+        consultantDTO.setActiveContract(new ContractDTO());
 
         addAuthorizationRequestToHeader();
 
@@ -70,7 +71,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
 
         assertTrue(consultantExistsForTeam);
         assertTrue(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("Created")));
-        assertEquals(createConsultantResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK,createConsultantResponse.getStatusCode());
     }
 
     @Test
@@ -90,7 +91,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
         assertFalse(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("DeleteConsultant")));
-        assertEquals(deleteConsultantResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK,deleteConsultantResponse.getStatusCode());
     }
 
     @Test
@@ -100,6 +101,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         ConsultantDTO consultantDTO = new ConsultantDTO();
         consultantDTO.setId(2L);
         consultantDTO.setFirstName("EditedConsultant");
+        consultantDTO.setActiveContract(new ContractDTO());
 
         HttpEntity<ConsultantDTO> entity = new HttpEntity<>(consultantDTO, headers);
         ResponseEntity<String> editConsultantResponse = restTemplate.exchange(
@@ -114,6 +116,6 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
         assertTrue(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("EditedConsultant")));
-        assertEquals(editConsultantResponse.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK,editConsultantResponse.getStatusCode());
     }
 }

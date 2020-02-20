@@ -1,20 +1,18 @@
-package com.consultant.model.requests;
+package com.consultant.model.dto;
 
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-public class ContractRequest {
+public class ContractDTO {
     private Long consultantId;
-
-    private String status;
 
     private Integer price;
 
-    private LocalDate contractStarted;
+    private LocalDate startedDate;
 
-    private LocalDate contractEnding;
+    private LocalDate endDate;
 
     private LocalDate updatedContractEnding;
 
@@ -23,4 +21,6 @@ public class ContractRequest {
     private LocalDate terminatedDate;
 
     private Long teamId;
+
+    private Integer discount;
 }

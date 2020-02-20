@@ -1,6 +1,6 @@
 package com.consultant.model.services.impl;
 
-import com.consultant.model.entities.HistoricalData;
+import com.consultant.model.entities.Contract;
 import com.consultant.model.mappers.ConsultantMapper;
 import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.entities.Client;
@@ -8,16 +8,16 @@ import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
-import com.consultant.model.requests.ContractRequest;
+import com.consultant.model.dto.ContractDTO;
 import com.consultant.model.services.BasicOperationsService;
+import com.consultant.model.services.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
+import static com.consultant.model.services.ContractService.OFFICE_NAME;
 
 @Service
 public class ConsultantService implements BasicOperationsService<ConsultantDTO> {
@@ -28,12 +28,16 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
 
     ClientService clientService;
 
+    ContractService contractService;
+
+
     @Autowired
     public ConsultantService(ConsultantRepository consultantRepository, ClientTeamService clientTeamService,
-                             ClientService clientService) {
+                             ClientService clientService, ContractService contractService) {
         this.consultantRepository = consultantRepository;
         this.clientTeamService = clientTeamService;
         this.clientService = clientService;
+        this.contractService = contractService;
     }
 
     @Override
@@ -53,6 +57,12 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     public void create(ConsultantDTO consultantDTO) throws NoMatchException {
         final Consultant consultant = ConsultantMapper.INSTANCE.consultantDTOToConsultant(consultantDTO);
 
+        if (consultantDTO.getActiveContract() != null) {
+            consultantDTO.getActiveContract().setTeamId(consultantDTO.getTeamId());
+            Contract newContract = contractService.createNewContract(consultantDTO.getActiveContract());
+            consultant.setContracts(Collections.singletonList(newContract));
+        }
+
         assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
     }
 
@@ -61,6 +71,13 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         Consultant existingConsultant = getExistingConsultantById(consultantDTO.getId());
 
         Consultant updatedConsultant = Consultant.updateConsultant(existingConsultant, consultantDTO);
+
+        Contract activeContract = contractService.getActiveContractByConsultant(updatedConsultant);
+
+        if (consultantDTO.getActiveContract() != null) {
+            consultantDTO.getActiveContract().setTeamId(consultantDTO.getTeamId());
+            contractService.updateContract(activeContract, consultantDTO.getActiveContract());
+        }
 
         assignConsultantToTeam(consultantDTO.getTeamId(), updatedConsultant);
     }
@@ -71,22 +88,32 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         consultantRepository.delete(existingConsultant);
     }
 
-    public void createNewContract(ContractRequest contractRequest) throws NoMatchException {
-        Consultant consultant = getExistingConsultantById(contractRequest.getConsultantId());
+    public void createNewContractForExistingConsultant(ContractDTO contractDTO) throws NoMatchException {
+        Consultant consultant = getExistingConsultantById(contractDTO.getConsultantId());
 
-        addHistoricalEntry(contractRequest.getTerminatedDate(), consultant);
-        updateConsultantContractData(consultant, contractRequest);
+        Contract activeContract = contractService.getActiveContractByConsultant(consultant);
+        if (activeContract.getClientName().equals(OFFICE_NAME)) {
+            contractService.updateContract(activeContract, contractDTO);
+        } else {
+            contractService.terminateActiveContract(contractDTO.getTerminatedDate(), consultant);
+            Contract newContract = contractService.createNewContract(contractDTO);
+            consultant.getContracts().add(newContract);
+        }
 
-        assignConsultantToTeam(contractRequest.getTeamId(), consultant);
+        assignConsultantToTeam(contractDTO.getTeamId(), consultant);
     }
 
-    public void terminateContract(ContractRequest contractRequest) throws NoMatchException {
-        Consultant existingConsultant = getExistingConsultantById(contractRequest.getConsultantId());
+    public void terminateContract(Long consultantId, LocalDate terminatedDate) throws NoMatchException {
+        Consultant existingConsultant = getExistingConsultantById(consultantId);
 
-        addHistoricalEntry(contractRequest.getTerminatedDate(), existingConsultant);
-        clearContractData(existingConsultant);
-
-        consultantRepository.saveAndFlush(existingConsultant);
+        Contract activeContract = contractService.getActiveContractByConsultant(existingConsultant);
+        if (!activeContract.getClientName().equals(OFFICE_NAME)) {
+            contractService.terminateActiveContract(terminatedDate, existingConsultant);
+            Contract emptyContract = contractService.createEmptyContract();
+            existingConsultant.getContracts().add(emptyContract);
+            clientTeamService.unassignedConsultantFromTeam(existingConsultant);
+            consultantRepository.saveAndFlush(existingConsultant);
+        }
     }
 
     private Consultant getExistingConsultantById(Long id) throws NoMatchException {
@@ -114,16 +141,6 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         }
     }
 
-    private void addHistoricalEntry(LocalDate terminatedDate, Consultant existingConsultant) {
-        LocalDate endingDate = existingConsultant.getContractEnding();
-        if (terminatedDate != null) {
-            endingDate = existingConsultant.getContractEnding();
-        }
-        setTeamAndClientOfConsultant(existingConsultant);
-        HistoricalData historicalData = new HistoricalData(existingConsultant.getClientName(), existingConsultant.getContractStarted(), endingDate);
-        existingConsultant.getHistoricalDataList().add(historicalData);
-    }
-
     private void setTeamAndClientOfConsultant(Consultant consultant) {
         Optional<ClientTeam> consultantTeam = clientTeamService.getAssignedTeamOfConsultant(consultant.getId());
         if (consultantTeam.isPresent()) {
@@ -131,24 +148,5 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
             Optional<Client> clientOfTeam = clientService.getClientOfTeam(consultantTeam.get().getId());
             clientOfTeam.ifPresent(client -> consultant.setClientName(client.getName()));
         }
-    }
-
-    private void clearContractData(Consultant existingConsultant) {
-        existingConsultant.setContractEnding(null);
-        existingConsultant.setContractStarted(null);
-        existingConsultant.setUpdatedContractEnding(null);
-        existingConsultant.setPrice(0);
-        existingConsultant.setSigned(false);
-        existingConsultant.setStatus("Unassigned");
-        clientTeamService.unassignedConsultantFromTeam(existingConsultant);
-    }
-
-    private void updateConsultantContractData(Consultant existingConsultant, ContractRequest contractRequest) {
-        existingConsultant.setContractEnding(contractRequest.getContractEnding());
-        existingConsultant.setContractStarted(contractRequest.getContractStarted());
-        existingConsultant.setUpdatedContractEnding(contractRequest.getUpdatedContractEnding());
-        existingConsultant.setPrice(contractRequest.getPrice());
-        existingConsultant.setSigned(contractRequest.getSigned());
-        existingConsultant.setStatus(contractRequest.getStatus());
     }
 }

@@ -1,11 +1,9 @@
 package com.consultant.model.dto;
 
-import com.consultant.model.entities.HistoricalData;
-import lombok.Data;
+import com.consultant.model.entities.Contract;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,35 +12,23 @@ import java.util.List;
 public class ConsultantDTO {
     private Long id;
 
-    private String status;
+    private String firstName;
 
     private String lastName;
 
-    private String firstName;
+    private List<Contract> contracts = new ArrayList<>();
 
     private Integer listPrice;
 
-    private Integer price;
-
-    private Integer discount;
-
-    private LocalDate contractStarted;
-
-    private LocalDate contractEnding;
-
-    private LocalDate updatedContractEnding;
-
-    private Boolean signed;
-
     private String other;
 
-    private Long teamId;
+    private String mainTechnologies;
 
     private String teamName;
 
     private String clientName;
 
-    private String mainTechnologies;
+    private Long teamId;
 
-    private List<HistoricalData> historicalDataList = new ArrayList<>();
+    private ContractDTO activeContract;
 }
