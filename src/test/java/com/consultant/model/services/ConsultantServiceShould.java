@@ -95,6 +95,13 @@ public class ConsultantServiceShould {
     }
 
     @Test
+    public void createEmptyContractWhenCreatingConsultantWithoutContract() throws NoMatchException {
+        consultantService.create(consultantDTO);
+
+        verify(contractService, times(1)).createEmptyContract();
+    }
+
+    @Test
     public void saveToRepositoryWhenCreatingConsultant() throws NoMatchException {
         consultantService.create(consultantDTO);
 

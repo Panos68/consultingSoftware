@@ -62,6 +62,10 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
             Contract newContract = contractService.createNewContract(consultantDTO.getActiveContract());
             consultant.setContracts(Collections.singletonList(newContract));
         }
+        else {
+            Contract emptyContract = contractService.createEmptyContract();
+            consultant.setContracts(Collections.singletonList(emptyContract));
+        }
 
         assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
     }
