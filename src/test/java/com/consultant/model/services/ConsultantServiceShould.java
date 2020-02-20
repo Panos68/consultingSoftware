@@ -1,7 +1,9 @@
 package com.consultant.model.services;
 
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.dto.ContractDTO;
 import com.consultant.model.entities.Consultant;
+import com.consultant.model.entities.Contract;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.ConsultantRepository;
 import com.consultant.model.services.impl.ClientService;
@@ -35,6 +37,7 @@ public class ConsultantServiceShould {
     @Mock
     private ContractService contractService;
 
+
     private ConsultantService consultantService;
 
     private Long consultantId = 1L;
@@ -47,6 +50,9 @@ public class ConsultantServiceShould {
 
     private ConsultantDTO consultantDTO = new ConsultantDTO();
 
+    private ContractDTO contractDTO = new ContractDTO();
+
+    private Contract activeContract = new Contract();
 
     @Before
     public void setUp() {
@@ -54,7 +60,13 @@ public class ConsultantServiceShould {
 
         consultant1.setId(consultantId);
 
+        contractDTO.setConsultantId(consultantId);
+
         when(consultantRepository.findAll()).thenReturn(consultantList);
+
+        Mockito.when(contractService.getActiveContractByConsultant(consultant1)).thenReturn(activeContract);
+
+        Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.ofNullable(consultant1));
     }
 
     @Test
@@ -75,6 +87,14 @@ public class ConsultantServiceShould {
     }
 
     @Test
+    public void createNewContractWhenCreatingConsultantWithContract() throws NoMatchException {
+        consultantDTO.setActiveContract(contractDTO);
+        consultantService.create(consultantDTO);
+
+        verify(contractService, times(1)).createNewContract(Mockito.any());
+    }
+
+    @Test
     public void saveToRepositoryWhenCreatingConsultant() throws NoMatchException {
         consultantService.create(consultantDTO);
 
@@ -83,7 +103,6 @@ public class ConsultantServiceShould {
 
     @Test
     public void deleteInRepositoryWhenDeletingExistingConsultant() throws Exception {
-        Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.ofNullable(consultant1));
         consultantService.delete(consultantId);
 
         verify(consultantRepository, times(1)).delete(consultant1);
@@ -91,6 +110,8 @@ public class ConsultantServiceShould {
 
     @Test(expected = NoMatchException.class)
     public void throwNoMatchExceptionWhenDeletingNonExistingConsultant() throws Exception {
+        Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.empty());
+
         consultantService.delete(consultantId);
     }
 
@@ -98,10 +119,18 @@ public class ConsultantServiceShould {
     public void updateOnEditingExistingConsultant() throws Exception {
         consultantDTO.setFirstName("Test");
         consultantDTO.setId(consultantId);
-        Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.ofNullable(consultant1));
         consultantService.edit(consultantDTO);
 
         verify(consultantRepository, times(1)).saveAndFlush(consultant1);
+    }
+
+    @Test
+    public void updateContractWhenEditConsultantsContract() throws NoMatchException {
+        consultantDTO.setId(consultantId);
+        consultantDTO.setActiveContract(contractDTO);
+        consultantService.edit(consultantDTO);
+
+        verify(contractService, times(1)).updateContract(Mockito.any(),any());
     }
 
     @Test(expected = NoMatchException.class)
@@ -111,5 +140,39 @@ public class ConsultantServiceShould {
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.empty());
 
         consultantService.edit(consultantDTO);
+    }
+
+    @Test
+    public void updateContractWhenCreatingNewContractForUnassignedConsultant() throws Exception {
+        activeContract.setClientName(ContractService.OFFICE_NAME);
+
+        consultantService.createNewContractForExistingConsultant(contractDTO);
+
+        verify(contractService, times(1)).updateContract(Mockito.any(),Mockito.any());
+    }
+
+    @Test
+    public void terminateOldContractWhenCreatingNewOneForAssignedConsultant() throws Exception {
+        activeContract.setClientName("Client");
+
+        consultantService.createNewContractForExistingConsultant(contractDTO);
+
+        verify(contractService, times(1)).terminateActiveContract(Mockito.any(),Mockito.any());
+    }
+
+    @Test
+    public void createNewContractForAssignedConsultant() throws Exception {
+        activeContract.setClientName("Client");
+
+        consultantService.createNewContractForExistingConsultant(contractDTO);
+
+        verify(contractService, times(1)).createNewContract(Mockito.any());
+    }
+
+    @Test(expected = NoMatchException.class)
+    public void throwNoMatchExceptionWhenCreatingContractForNonExistingConsultant() throws Exception {
+        Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.empty());
+
+        consultantService.createNewContractForExistingConsultant(contractDTO);
     }
 }
