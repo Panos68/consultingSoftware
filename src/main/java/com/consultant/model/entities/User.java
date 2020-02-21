@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class User implements UserDetails {
     @Id
