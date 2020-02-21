@@ -45,6 +45,9 @@ public class Consultant {
     @Transient
     private String clientName;
 
+    @Transient
+    private Long teamId;
+
     public static Consultant updateConsultant(Consultant existingConsultant, ConsultantDTO consultantDTO) {
         existingConsultant.setFirstName(consultantDTO.getFirstName());
         existingConsultant.setLastName(consultantDTO.getLastName());

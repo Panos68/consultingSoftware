@@ -168,6 +168,16 @@ public class ConsultantServiceShould {
     }
 
     @Test
+    public void saveToRepositoryWhenTerminateContractForAssignedConsultant() throws Exception {
+        activeContract.setClientName("Client");
+
+        consultantService.terminateContract(consultantId,null);
+
+        verify(consultantRepository, times(1)).saveAndFlush(Mockito.any());
+    }
+
+
+    @Test
     public void createNewContractForAssignedConsultant() throws Exception {
         activeContract.setClientName("Client");
 

@@ -149,6 +149,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         Optional<ClientTeam> consultantTeam = clientTeamService.getAssignedTeamOfConsultant(consultant.getId());
         if (consultantTeam.isPresent()) {
             consultant.setTeamName(consultantTeam.get().getName());
+            consultant.setTeamId(consultantTeam.get().getId());
             Optional<Client> clientOfTeam = clientService.getClientOfTeam(consultantTeam.get().getId());
             clientOfTeam.ifPresent(client -> consultant.setClientName(client.getName()));
         }
