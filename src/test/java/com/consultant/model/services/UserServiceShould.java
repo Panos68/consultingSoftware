@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.*;
 
@@ -40,10 +41,14 @@ public class UserServiceShould {
 
     private Vacation vacation = new Vacation();
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @Before
     public void setUp() {
-        userService = new UserService(userRepository);
+        userService = new UserService(userRepository,passwordEncoder);
 
+        Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("123");
         user1 = new User();
         user1.setId(userId);
         when(userRepository.findAll()).thenReturn(userList);

@@ -1,6 +1,7 @@
 package com.consultant.model.controller;
 
 import com.consultant.model.dto.UserDTO;
+import com.consultant.model.entities.User;
 import com.consultant.model.security.JwtResponse;
 import com.consultant.model.security.JwtTokenUtil;
 import com.consultant.model.security.JwtUserDetailsService;
@@ -34,7 +35,8 @@ public class UserController {
     public ResponseEntity<?> createAuthenticationToken(@RequestBody UserDTO userDTO) throws WrongValidationException {
         Collection<? extends GrantedAuthority> grantedAuthorities = userDetailsService.authenticateUserAndReturnAuthorities(userDTO);
         final String token = jwtTokenUtil.generateToken(userDTO.getUsername());
-        return ResponseEntity.ok(new JwtResponse(token, grantedAuthorities));
+        User authenticationUser = userDetailsService.getAuthenticationUser(userDTO.getUsername());
+        return ResponseEntity.ok(new JwtResponse(token, grantedAuthorities,userDTO.getUsername(),authenticationUser.getId()));
     }
 
     @GetMapping

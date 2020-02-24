@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,9 @@ public class Consultant {
     @Column
     private String mainTechnologies;
 
+    @Column
+    private LocalDate dateJoined;
+
     @Transient
     private String teamName;
 
@@ -54,6 +58,7 @@ public class Consultant {
         existingConsultant.setListPrice(consultantDTO.getListPrice());
         existingConsultant.setOther(consultantDTO.getOther());
         existingConsultant.setMainTechnologies(consultantDTO.getMainTechnologies());
+        existingConsultant.setDateJoined(consultantDTO.getDateJoined());
 
         return existingConsultant;
     }

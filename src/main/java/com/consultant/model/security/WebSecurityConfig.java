@@ -3,6 +3,7 @@ package com.consultant.model.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,7 +45,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.addFilterBefore(corsFilter(), SessionManagementFilter.class)
                 .csrf().disable()
                 // dont authenticate this particular request
-                .authorizeRequests().antMatchers("/user/authenticate").permitAll().and().
+                .authorizeRequests().antMatchers("/user/authenticate").permitAll().and()
+                .authorizeRequests().antMatchers(HttpMethod.GET,"/user/**").authenticated().and().
                 authorizeRequests().antMatchers("/user/**").hasAuthority("admin").
                 // all other requests need to be authenticated
                         anyRequest().authenticated().and().

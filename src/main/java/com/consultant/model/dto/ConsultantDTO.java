@@ -4,6 +4,7 @@ import com.consultant.model.entities.Contract;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,4 +32,6 @@ public class ConsultantDTO {
     private Long teamId;
 
     private ContractDTO activeContract;
+
+    private LocalDate dateJoined;
 }

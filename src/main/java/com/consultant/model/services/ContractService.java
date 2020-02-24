@@ -44,6 +44,7 @@ public class ContractService {
         Contract contract = new Contract();
         contract.setActive(true);
         contract.setClientName(OFFICE_NAME);
+        contract.setStartedDate(LocalDate.now());
 
         return contract;
     }

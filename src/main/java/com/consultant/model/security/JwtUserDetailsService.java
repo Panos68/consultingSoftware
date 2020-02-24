@@ -40,7 +40,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         return authenticationUser.getAuthorities();
     }
 
-    private User getAuthenticationUser(String  userName) {
+    public User getAuthenticationUser(String  userName) {
         Optional<User> authenticationUser = userRepository.findByUsername(userName);
         if (!authenticationUser.isPresent()){
             throw new UsernameNotFoundException("No existing user with that name");

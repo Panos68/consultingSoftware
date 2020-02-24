@@ -9,6 +9,7 @@ import com.consultant.model.mappers.UserMapper;
 import com.consultant.model.repositories.UserRepository;
 import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -21,22 +22,26 @@ public class UserService implements BasicOperationsService<UserDTO> {
 
     UserRepository userRepository;
 
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
     @Override
     public Set<UserDTO> getAll() {
-            List<User> usersList = userRepository.findAll();
-            Set<UserDTO> userDTOS = new HashSet<>();
-            usersList.forEach(user -> {
-                final UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
-                userDTOS.add(userDTO);
-            });
+        List<User> usersList = userRepository.findAll();
+        Set<UserDTO> userDTOS = new HashSet<>();
+        usersList.forEach(user -> {
+            final UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
+            userDTOS.add(userDTO);
+            userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        });
 
-            return userDTOS;
+        return userDTOS;
     }
 
     @Override
@@ -77,7 +82,9 @@ public class UserService implements BasicOperationsService<UserDTO> {
     }
 
     private void updateUser(User existingUser, UserDTO userDTO) {
-        existingUser.setPassword(userDTO.getPassword());
+        if (userDTO.getPassword() != null) {
+            existingUser.setPassword(userDTO.getPassword());
+        }
         existingUser.setRoles(userDTO.getRoles());
         existingUser.setUsername(userDTO.getUsername());
 
