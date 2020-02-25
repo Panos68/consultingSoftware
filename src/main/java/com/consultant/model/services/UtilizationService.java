@@ -8,6 +8,7 @@ import com.consultant.model.mappers.UtilizationMapper;
 import com.consultant.model.repositories.UtilizationRepository;
 import com.consultant.model.services.impl.ConsultantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,6 +29,46 @@ public class UtilizationService {
     public UtilizationService(UtilizationRepository utilizationRepository, ConsultantService consultantService) {
         this.utilizationRepository = utilizationRepository;
         this.consultantService = consultantService;
+    }
+
+    @Scheduled(cron = "0 0 9 1 * ?")
+    public void saveUtToDb() {
+        LocalDate firstDayOfLastMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().minusMonths(1).getMonthValue(), 1);
+        Optional<Utilization> optionalUtilization = utilizationRepository.findByDate(firstDayOfLastMonth);
+        Utilization utilization;
+        if (optionalUtilization.isPresent()) {
+            utilization = optionalUtilization.get();
+        } else {
+            utilization = new Utilization();
+            utilization.setDate(firstDayOfLastMonth);
+        }
+        utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
+        utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
+        utilizationRepository.saveAndFlush(utilization);
+    }
+
+    public UtilizationDTO getUtilization() {
+        LocalDate firstDayOfPreviousMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().minusMonths(1).getMonthValue(), 1);
+        Optional<Utilization> optionalOneMonthAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth);
+        Optional<Utilization> optionalTwoMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(1));
+        Optional<Utilization> optionalThreeMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(2));
+        Utilization utilization;
+        if (optionalOneMonthAgoUtilization.isPresent()) {
+            utilization = optionalOneMonthAgoUtilization.get();
+        } else {
+            utilization = new Utilization();
+            utilization.setDate(LocalDate.now());
+            utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
+            utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
+        }
+
+        UtilizationDTO utilizationDTO = UtilizationMapper.INSTANCE.utilizationToUtilizationDTO(utilization);
+        if (optionalTwoMonthsAgoUtilization.isPresent() && optionalThreeMonthsAgoUtilization.isPresent()) {
+            utilizationDTO.setThreeMonthsUt((utilization.getUt() + optionalTwoMonthsAgoUtilization.get().getUt() + optionalThreeMonthsAgoUtilization.get().getUt()) / 3);
+            utilizationDTO.setThreeMonthsAidedUt((utilization.getAidedUt() + optionalTwoMonthsAgoUtilization.get().getAidedUt() + optionalThreeMonthsAgoUtilization.get().getAidedUt()) / 3);
+
+        }
+        return utilizationDTO;
     }
 
     double calculateUtilizationPercentageOfCurrentMonth() {
@@ -60,20 +101,6 @@ public class UtilizationService {
         double maxAssignedDays = previousMonthMaxDays * contractsToCheck.size();
 
         return assignedDays.get() / maxAssignedDays * 100;
-    }
-
-    public UtilizationDTO getUtilization() {
-        Utilization utilization = new Utilization();
-        utilization.setDate(LocalDate.now());
-        utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
-        utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
-        UtilizationDTO utilizationDTO = UtilizationMapper.INSTANCE.utilizationToUtilizationDTO(utilization);
-        return utilizationDTO;
-    }
-
-    private int getPastMonthsMaxDays(int monthsInThePast) {
-        YearMonth yearMonth = YearMonth.now().minusMonths(monthsInThePast);
-        return yearMonth.lengthOfMonth();
     }
 
     double calculateAidedUtilizationPercentageOfCurrentMonth() {
@@ -124,5 +151,10 @@ public class UtilizationService {
         double maxAssignedDays = previousMonthMaxDays * contractsToCheck.size();
 
         return assignedDays.get() / maxAssignedDays * 100;
+    }
+
+    private int getPastMonthsMaxDays(int monthsInThePast) {
+        YearMonth yearMonth = YearMonth.now().minusMonths(monthsInThePast);
+        return yearMonth.lengthOfMonth();
     }
 }

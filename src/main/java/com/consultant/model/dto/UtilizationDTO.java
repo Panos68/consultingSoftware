@@ -14,4 +14,8 @@ public class UtilizationDTO {
     Double ut;
 
     Double aidedUt;
+
+    Double threeMonthsUt;
+
+    Double threeMonthsAidedUt;
 }
