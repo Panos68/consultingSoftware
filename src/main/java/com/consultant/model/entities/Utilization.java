@@ -25,4 +25,10 @@ public class Utilization {
 
     @Column
     Double aidedUt;
+
+    @Column
+    Double threeMonthsUt;
+
+    @Column
+    Double threeMonthsAidedUt;
 }

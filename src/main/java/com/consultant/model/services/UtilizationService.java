@@ -33,25 +33,24 @@ public class UtilizationService {
 
     @Scheduled(cron = "0 0 9 1 * ?")
     public void saveUtToDb() {
-        LocalDate firstDayOfLastMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().minusMonths(1).getMonthValue(), 1);
-        Optional<Utilization> optionalUtilization = utilizationRepository.findByDate(firstDayOfLastMonth);
+        LocalDate firstDayOfPreviousMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().minusMonths(1).getMonthValue(), 1);
+        Optional<Utilization> optionalUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth);
         Utilization utilization;
         if (optionalUtilization.isPresent()) {
             utilization = optionalUtilization.get();
         } else {
             utilization = new Utilization();
-            utilization.setDate(firstDayOfLastMonth);
+            utilization.setDate(firstDayOfPreviousMonth);
         }
         utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
         utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
+        CalculateThreeMonthsUtilizations(firstDayOfPreviousMonth, utilization);
         utilizationRepository.saveAndFlush(utilization);
     }
 
-    public UtilizationDTO getUtilization() {
+    public UtilizationDTO getCurrentUtilization() {
         LocalDate firstDayOfPreviousMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().minusMonths(1).getMonthValue(), 1);
         Optional<Utilization> optionalOneMonthAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth);
-        Optional<Utilization> optionalTwoMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(1));
-        Optional<Utilization> optionalThreeMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(2));
         Utilization utilization;
         if (optionalOneMonthAgoUtilization.isPresent()) {
             utilization = optionalOneMonthAgoUtilization.get();
@@ -60,15 +59,18 @@ public class UtilizationService {
             utilization.setDate(LocalDate.now());
             utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
             utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
+            CalculateThreeMonthsUtilizations(firstDayOfPreviousMonth, utilization);
         }
+        return UtilizationMapper.INSTANCE.utilizationToUtilizationDTO(utilization);
+    }
 
-        UtilizationDTO utilizationDTO = UtilizationMapper.INSTANCE.utilizationToUtilizationDTO(utilization);
+    private void CalculateThreeMonthsUtilizations(LocalDate firstDayOfPreviousMonth, Utilization utilization) {
+        Optional<Utilization> optionalTwoMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(1));
+        Optional<Utilization> optionalThreeMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(2));
         if (optionalTwoMonthsAgoUtilization.isPresent() && optionalThreeMonthsAgoUtilization.isPresent()) {
-            utilizationDTO.setThreeMonthsUt((utilization.getUt() + optionalTwoMonthsAgoUtilization.get().getUt() + optionalThreeMonthsAgoUtilization.get().getUt()) / 3);
-            utilizationDTO.setThreeMonthsAidedUt((utilization.getAidedUt() + optionalTwoMonthsAgoUtilization.get().getAidedUt() + optionalThreeMonthsAgoUtilization.get().getAidedUt()) / 3);
-
+            utilization.setThreeMonthsUt((utilization.getUt() + optionalTwoMonthsAgoUtilization.get().getUt() + optionalThreeMonthsAgoUtilization.get().getUt()) / 3);
+            utilization.setThreeMonthsAidedUt((utilization.getAidedUt() + optionalTwoMonthsAgoUtilization.get().getAidedUt() + optionalThreeMonthsAgoUtilization.get().getAidedUt()) / 3);
         }
-        return utilizationDTO;
     }
 
     double calculateUtilizationPercentageOfCurrentMonth() {
@@ -156,5 +158,15 @@ public class UtilizationService {
     private int getPastMonthsMaxDays(int monthsInThePast) {
         YearMonth yearMonth = YearMonth.now().minusMonths(monthsInThePast);
         return yearMonth.lengthOfMonth();
+    }
+
+    public Set<UtilizationDTO> getAllUtilization() {
+        List<Utilization> utilizationList = utilizationRepository.findAll();
+        Set<UtilizationDTO> utilizationDTOS = new HashSet<>();
+        utilizationList.forEach(utilization -> {
+            UtilizationDTO utilizationDTO = UtilizationMapper.INSTANCE.utilizationToUtilizationDTO(utilization);
+            utilizationDTOS.add(utilizationDTO);
+        });
+        return utilizationDTOS;
     }
 }

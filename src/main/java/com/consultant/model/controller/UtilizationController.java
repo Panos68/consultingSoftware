@@ -5,6 +5,7 @@ import com.consultant.model.services.UtilizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Set;
 
 @RestController
 @CrossOrigin
@@ -19,8 +20,13 @@ public class UtilizationController {
 
 
     @GetMapping()
-    public ResponseEntity<UtilizationDTO> getUtilization() {
-        return ResponseEntity.ok(utilizationService.getUtilization());
+    public ResponseEntity<Set<UtilizationDTO>> getUtilization() {
+        return ResponseEntity.ok(utilizationService.getAllUtilization());
+    }
+
+    @GetMapping(value = "/current")
+    public ResponseEntity<UtilizationDTO> getCurrentUtilization() {
+        return ResponseEntity.ok(utilizationService.getCurrentUtilization());
     }
 
     @PostMapping(value = "/calculate")
