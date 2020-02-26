@@ -109,7 +109,6 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
         existingClientTeam.setMainPersonEmail(clientTeamDTO.getMainPersonEmail());
         existingClientTeam.setMainPersonName(clientTeamDTO.getMainPersonName());
         existingClientTeam.setMainPersonPhone(clientTeamDTO.getMainPersonPhone());
-        existingClientTeam.setConsultants(clientTeamDTO.getConsultants());
         existingClientTeam.setMainTechnologies(clientTeamDTO.getMainTechnologies());
         return existingClientTeam;
     }
