@@ -38,7 +38,6 @@ public class UserService implements BasicOperationsService<UserDTO> {
         usersList.forEach(user -> {
             final UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
             userDTOS.add(userDTO);
-            userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         });
 
         return userDTOS;
@@ -51,6 +50,7 @@ public class UserService implements BasicOperationsService<UserDTO> {
             throw new EntityAlreadyExists("User already exists");
         }
         final User user = UserMapper.INSTANCE.userDTOToUser(userDTO);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.saveAndFlush(user);
     }

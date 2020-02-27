@@ -34,6 +34,7 @@ public class JwtUserDetailsServiceShould {
 
 
     private String correctPassword = "correctPassword";
+    private String correctEncodedPassword = "$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu";
 
     private SimpleGrantedAuthority adminRole = new SimpleGrantedAuthority("admin");
 
@@ -47,8 +48,9 @@ public class JwtUserDetailsServiceShould {
     public void setUp() {
         jwtUserDetailsService = new JwtUserDetailsService(userRepository,passwordEncoder);
         savedUser.setUsername(correctUsername);
-        savedUser.setPassword(correctPassword);
-        Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("encodedPassword");
+        savedUser.setPassword(correctEncodedPassword);
+        Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn(correctEncodedPassword);
+        Mockito.when(passwordEncoder.matches(correctPassword,correctEncodedPassword)).thenReturn(true);
     }
 
     @Test

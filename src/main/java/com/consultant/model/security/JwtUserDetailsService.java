@@ -34,7 +34,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     public Collection<? extends GrantedAuthority> authenticateUserAndReturnAuthorities(UserDTO userDTO) throws WrongValidationException {
         User authenticationUser = getAuthenticationUser(userDTO.getUsername());
-        if (!authenticationUser.getPassword().equals(userDTO.getPassword())){
+        if (!passwordEncoder.matches(userDTO.getPassword(),authenticationUser.getPassword())){
             throw new WrongValidationException("Incorrect credentials");
         }
         return authenticationUser.getAuthorities();

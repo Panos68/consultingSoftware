@@ -1,7 +1,7 @@
-INSERT INTO `users` (`id`, `password`, `username`) VALUES ('1', '123', 'Admin');
-INSERT INTO `users` (`id`, `password`, `username`) VALUES ('2', '123', 'UserToEdit');
-INSERT INTO `users` (`id`, `password`, `username`) VALUES ('3', '123', 'UserToDelete');
-INSERT INTO `users` (`id`, `password`, `username`) VALUES ('4', '123', 'NonAdminUser');
+INSERT INTO `users` (`id`, `password`, `username`) VALUES ('1', '$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu', 'Admin');
+INSERT INTO `users` (`id`, `password`, `username`) VALUES ('2', '$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu', 'UserToEdit');
+INSERT INTO `users` (`id`, `password`, `username`) VALUES ('3', '$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu', 'UserToDelete');
+INSERT INTO `users` (`id`, `password`, `username`) VALUES ('4', '$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu', 'NonAdminUser');
 insert into `user_roles` values ('1','admin');
 insert into `user_roles` values ('4','user');
 
