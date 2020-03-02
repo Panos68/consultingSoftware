@@ -44,7 +44,7 @@ public class UtilizationService {
         }
         utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
         utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
-        CalculateThreeMonthsUtilizations(firstDayOfPreviousMonth, utilization);
+        CalculateThreeMonthsUtilization(firstDayOfPreviousMonth, utilization);
         utilizationRepository.saveAndFlush(utilization);
     }
 
@@ -59,17 +59,21 @@ public class UtilizationService {
             utilization.setDate(LocalDate.now());
             utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
             utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
-            CalculateThreeMonthsUtilizations(firstDayOfPreviousMonth, utilization);
+            CalculateThreeMonthsUtilization(firstDayOfPreviousMonth, utilization);
         }
         return UtilizationMapper.INSTANCE.utilizationToUtilizationDTO(utilization);
     }
 
-    private void CalculateThreeMonthsUtilizations(LocalDate firstDayOfPreviousMonth, Utilization utilization) {
+    private void CalculateThreeMonthsUtilization(LocalDate firstDayOfPreviousMonth, Utilization utilization) {
         Optional<Utilization> optionalTwoMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(1));
         Optional<Utilization> optionalThreeMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(2));
         if (optionalTwoMonthsAgoUtilization.isPresent() && optionalThreeMonthsAgoUtilization.isPresent()) {
-            utilization.setThreeMonthsUt((utilization.getUt() + optionalTwoMonthsAgoUtilization.get().getUt() + optionalThreeMonthsAgoUtilization.get().getUt()) / 3);
-            utilization.setThreeMonthsAidedUt((utilization.getAidedUt() + optionalTwoMonthsAgoUtilization.get().getAidedUt() + optionalThreeMonthsAgoUtilization.get().getAidedUt()) / 3);
+            int oneMonthAgoMaxDays = getPastMonthsMaxDays(1);
+            int twoMonthsAgoMaxDays = getPastMonthsMaxDays(2);
+            int threeMonthsAgoMaxDays = getPastMonthsMaxDays(3);
+            int lastThreeMonthsTotalDays = oneMonthAgoMaxDays + twoMonthsAgoMaxDays + threeMonthsAgoMaxDays;
+            utilization.setThreeMonthsUt((utilization.getUt() * oneMonthAgoMaxDays + optionalTwoMonthsAgoUtilization.get().getUt() * twoMonthsAgoMaxDays + optionalThreeMonthsAgoUtilization.get().getUt() * threeMonthsAgoMaxDays) / lastThreeMonthsTotalDays);
+            utilization.setThreeMonthsAidedUt((utilization.getAidedUt() * oneMonthAgoMaxDays + optionalTwoMonthsAgoUtilization.get().getAidedUt()* twoMonthsAgoMaxDays + optionalThreeMonthsAgoUtilization.get().getAidedUt()* threeMonthsAgoMaxDays) / lastThreeMonthsTotalDays);
         }
     }
 
@@ -84,9 +88,7 @@ public class UtilizationService {
 
         consultants
                 .forEach(consultantDTO -> {
-                    Optional<Contract> consultantContractOfLastMonth = consultantDTO.getContracts().stream().filter(contract -> contract.getStartedDate().isBefore(firstDayOfCurrentMonth))
-                            .sorted(Comparator.comparing(Contract::getStartedDate).reversed())
-                            .findFirst();
+                    Optional<Contract> consultantContractOfLastMonth = consultantDTO.getContracts().stream().filter(contract -> contract.getStartedDate().isBefore(firstDayOfCurrentMonth)).max(Comparator.comparing(Contract::getStartedDate));
                     consultantContractOfLastMonth.ifPresent(contractsToCheck::add);
                 });
 
@@ -121,9 +123,7 @@ public class UtilizationService {
 
         consultantsJoinedBeforeCurrentMonth
                 .forEach(consultantDTO -> {
-                    Optional<Contract> consultantContractOfLastMonth = consultantDTO.getContracts().stream()
-                            .sorted(Comparator.comparing(Contract::getStartedDate).reversed())
-                            .findFirst();
+                    Optional<Contract> consultantContractOfLastMonth = consultantDTO.getContracts().stream().max(Comparator.comparing(Contract::getStartedDate));
                     consultantContractOfLastMonth.ifPresent(contractsToCheck::add);
                 });
 

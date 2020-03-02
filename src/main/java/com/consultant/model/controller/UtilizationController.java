@@ -18,7 +18,6 @@ public class UtilizationController {
         this.utilizationService = utilizationService;
     }
 
-
     @GetMapping()
     public ResponseEntity<Set<UtilizationDTO>> getUtilization() {
         return ResponseEntity.ok(utilizationService.getAllUtilization());
