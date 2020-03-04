@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TechnologyService {
@@ -21,7 +22,7 @@ public class TechnologyService {
     TechnologyRatingRepository technologyRatingRepository;
 
     @Autowired
-    public TechnologyService(TechnologyRepository technologyRepository,TechnologyRatingRepository technologyRatingRepository) {
+    public TechnologyService(TechnologyRepository technologyRepository, TechnologyRatingRepository technologyRatingRepository) {
         this.technologyRepository = technologyRepository;
         this.technologyRatingRepository = technologyRatingRepository;
     }
@@ -51,10 +52,34 @@ public class TechnologyService {
         return technology;
     }
 
-    public void saveRating(Technology technology,Long consultantId,TechnologyRating rating) {
+    public void saveRating(Technology technology, Long consultantId, TechnologyRating rating) {
         Technology savedTechnology = getTechnologyByNameAndType(technology.getName(), technology.getType());
         rating.setTechnology(savedTechnology);
-        rating.setId(new TechnologyRating.TechnologyRatingKey(consultantId,savedTechnology.getId()));
+        rating.setId(new TechnologyRating.TechnologyRatingKey(consultantId, savedTechnology.getId()));
         technologyRatingRepository.saveAndFlush(rating);
+    }
+
+    public void updateRatings(Set<TechnologyRating> newRatings, Long consultantId) {
+        List<TechnologyRating> existingRatings = technologyRatingRepository.findByConsultantId(consultantId);
+
+        List<TechnologyRating> ratingsToUpdate = existingRatings.stream()
+                .filter(rating -> (newRatings.stream().map(r -> r.getTechnology().getName())).collect(Collectors.toList())
+                        .contains(rating.getTechnology().getName()))
+                .collect(Collectors.toList());
+
+        existingRatings.removeAll(ratingsToUpdate);
+        existingRatings.forEach(rating -> technologyRatingRepository.delete(rating));
+
+        newRatings.forEach(rating ->
+        {
+            Optional<TechnologyRating> existingRating = ratingsToUpdate.stream().filter(r -> r.getTechnology().getName().equals(rating.getTechnology().getName())
+                    && r.getTechnology().getType().equals(rating.getTechnology().getType())).findFirst();
+            if (existingRating.isPresent()) {
+                existingRating.get().setRating(rating.getRating());
+                technologyRatingRepository.saveAndFlush(existingRating.get());
+            } else {
+                saveRating(rating.getTechnology(), consultantId, rating);
+            }
+        });
     }
 }

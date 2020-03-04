@@ -91,6 +91,9 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         Consultant existingConsultant = getExistingConsultantById(consultantDTO.getId());
 
         Consultant updatedConsultant = Consultant.updateConsultant(existingConsultant, consultantDTO);
+        if (consultantDTO.getRatings()!=null){
+            technologyService.updateRatings(consultantDTO.getRatings(),consultantDTO.getId());
+        }
 
         Contract activeContract = contractService.getActiveContractByConsultant(updatedConsultant);
 
