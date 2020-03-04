@@ -58,7 +58,9 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         consultantsList.forEach(consultant -> {
             setTeamAndClientOfConsultant(consultant);
             final ConsultantDTO consultantDTO = ConsultantMapper.INSTANCE.consultantToConsultantDTO(consultant);
-            consultant.getRatings().forEach(r -> consultantDTO.getRatings().add(TechnologyMapper.INSTANCE.technologyRatingToTechnologyRatingDTO(r)));
+            if (consultant.getRatings()!=null) {
+                consultant.getRatings().forEach(r -> consultantDTO.getRatings().add(TechnologyMapper.INSTANCE.technologyRatingToTechnologyRatingDTO(r)));
+            }
             consultantsDTOS.add(consultantDTO);
         });
 
