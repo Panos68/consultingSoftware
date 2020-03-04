@@ -14,8 +14,6 @@ public interface TechnologyMapper {
 
     TechnologyDTO technologyToTechnologyDTO(Technology technology);
 
-    TechnologyRatingDTO technologyRatingToTechnologyRatingDTO(TechnologyRating technologyRating);
-
     TechnologyRating technologyRatingDTOToTechnologyRating(TechnologyRatingDTO technologyRatingDTO);
 
 }
