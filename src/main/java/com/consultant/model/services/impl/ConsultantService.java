@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,7 +54,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     @Override
     public Set<ConsultantDTO> getAll() {
         List<Consultant> consultantsList = consultantRepository.findAll();
-        Set<ConsultantDTO> consultantsDTOS = new HashSet<>();
+        Set<ConsultantDTO> consultantsDTOS = new LinkedHashSet<>();
         consultantsList.forEach(consultant -> {
             setTeamAndClientOfConsultant(consultant);
             final ConsultantDTO consultantDTO = ConsultantMapper.INSTANCE.consultantToConsultantDTO(consultant);

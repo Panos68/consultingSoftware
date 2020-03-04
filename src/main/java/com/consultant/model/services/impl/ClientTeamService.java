@@ -25,7 +25,7 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
     @Override
     public Set<ClientTeamDTO> getAll() {
         List<ClientTeam> clientTeamsList = clientTeamRepository.findAll();
-        Set<ClientTeamDTO> clientTeamsDTOS = new HashSet<>();
+        Set<ClientTeamDTO> clientTeamsDTOS = new LinkedHashSet<>();
         clientTeamsList.forEach(team -> {
             setClientOfTeam(team);
             final ClientTeamDTO clientTeamDTO = AbstractClientMapper.INSTANCE.clientTeamToClientTeamDTO(team);

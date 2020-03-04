@@ -11,7 +11,7 @@ import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,7 +28,7 @@ public class ClientService implements BasicOperationsService<ClientDTO> {
     @Override
     public Set<ClientDTO> getAll() {
         List<Client> clientList = clientRepository.findAll();
-        Set<ClientDTO> clientDTOS = new HashSet<>();
+        Set<ClientDTO> clientDTOS = new LinkedHashSet<>();
         clientList.forEach(client -> {
             final ClientDTO clientDTO = AbstractClientMapper.INSTANCE.clientToClientDTO(client);
             clientDTOS.add(clientDTO);

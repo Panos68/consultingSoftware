@@ -10,7 +10,7 @@ import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -65,7 +65,7 @@ public class VacationService implements BasicOperationsService<VacationDTO> {
     }
 
     private Set<VacationDTO> mapVacationsToDTO(List<Vacation> vacationList) {
-        Set<VacationDTO> vacationDTOS = new HashSet<>();
+        Set<VacationDTO> vacationDTOS = new LinkedHashSet<>();
         vacationList.forEach(vacation -> {
             setUserDetailsOfVacation(vacation);
             VacationDTO vacationDTO = VacationMapper.INSTANCE.vacationToVacationDTO(vacation);

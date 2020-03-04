@@ -1,16 +1,16 @@
 package com.consultant.model.services.impl;
 
-import com.consultant.model.mappers.CandidateMapper;
-import com.consultant.model.entities.Candidate;
 import com.consultant.model.dto.CandidateDTO;
+import com.consultant.model.entities.Candidate;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
+import com.consultant.model.mappers.CandidateMapper;
 import com.consultant.model.repositories.CandidateRepository;
 import com.consultant.model.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,7 +29,7 @@ public class CandidateService implements BasicOperationsService<CandidateDTO> {
     @Override
     public Set<CandidateDTO> getAll() {
         List<Candidate> candidateList = candidateRepository.findAll();
-        Set<CandidateDTO> candidateDTOS = new HashSet<>();
+        Set<CandidateDTO> candidateDTOS = new LinkedHashSet<>();
         candidateList.forEach(candidate -> {
             CandidateDTO candidateDTO = CandidateMapper.INSTANCE.candidateToCandidateDTO( candidate );
 
