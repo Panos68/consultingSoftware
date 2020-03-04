@@ -6,10 +6,10 @@ import com.consultant.model.entities.Client;
 import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.entities.Contract;
-import com.consultant.model.entities.Technology;
 import com.consultant.model.entities.TechnologyRating;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.ConsultantMapper;
+import com.consultant.model.mappers.TechnologyMapper;
 import com.consultant.model.repositories.ConsultantRepository;
 import com.consultant.model.services.BasicOperationsService;
 import com.consultant.model.services.ContractService;
@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.consultant.model.services.ContractService.OFFICE_NAME;
 
@@ -57,6 +58,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         consultantsList.forEach(consultant -> {
             setTeamAndClientOfConsultant(consultant);
             final ConsultantDTO consultantDTO = ConsultantMapper.INSTANCE.consultantToConsultantDTO(consultant);
+            consultant.getRatings().forEach(r -> consultantDTO.getRatings().add(TechnologyMapper.INSTANCE.technologyRatingToTechnologyRatingDTO(r)));
             consultantsDTOS.add(consultantDTO);
         });
 
@@ -91,8 +93,11 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         Consultant existingConsultant = getExistingConsultantById(consultantDTO.getId());
 
         Consultant updatedConsultant = Consultant.updateConsultant(existingConsultant, consultantDTO);
-        if (consultantDTO.getRatings()!=null){
-            technologyService.updateRatings(consultantDTO.getRatings(),consultantDTO.getId());
+        if (consultantDTO.getRatings() != null) {
+            List<TechnologyRating> technologyRatings = consultantDTO.getRatings().stream()
+                    .map(TechnologyMapper.INSTANCE::technologyRatingDTOToTechnologyRating)
+                    .collect(Collectors.toList());
+            technologyService.updateRatings(technologyRatings, consultantDTO.getId());
         }
 
         Contract activeContract = contractService.getActiveContractByConsultant(updatedConsultant);

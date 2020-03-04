@@ -59,7 +59,7 @@ public class TechnologyService {
         technologyRatingRepository.saveAndFlush(rating);
     }
 
-    public void updateRatings(Set<TechnologyRating> newRatings, Long consultantId) {
+    public void updateRatings(List<TechnologyRating> newRatings, Long consultantId) {
         List<TechnologyRating> existingRatings = technologyRatingRepository.findByConsultantId(consultantId);
 
         List<TechnologyRating> ratingsToUpdate = existingRatings.stream()
