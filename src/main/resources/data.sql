@@ -14,9 +14,9 @@ INSERT INTO `client_teams` (`id`, `last_interacted_by`, `last_interacted_with`, 
 INSERT INTO `client_teams` (`id`, `last_interacted_by`, `last_interacted_with`, `main_person_email`, `main_person_name`, `main_person_phone`, `name`, `main_technologies`, `client_id`) VALUES ('3', 'Joe', 'Michael', 'test@gmail.com', 'MainPerson', '123123123', 'DeleteTeam', 'Java,Html', '1');
 INSERT INTO `client_teams` (`id`, `last_interacted_by`, `last_interacted_with`, `main_person_email`, `main_person_name`, `main_person_phone`, `name`, `main_technologies`, `client_id`) VALUES ('4', 'Joe', 'Michael', 'test@gmail.com', 'MainPerson', '123123123', 'DeleteTeam2', 'Java,Html', '3');
 
-INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`, `main_technologies`,`team_id`) VALUES ('1','MainConsultant', 'User', '200', 'Some other text', 'Java', '3');
-INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`, `main_technologies`,`team_id`) VALUES ('2','EditConsultant', 'User', '200', 'Some other text', 'Java', '1');
-INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`, `main_technologies`,`team_id`) VALUES ('3','DeleteConsultant', 'User', '200', 'Some other text', 'Java', '1');
+INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`,`team_id`) VALUES ('1','MainConsultant', 'User', '200', 'Some other text','3');
+INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`,`team_id`) VALUES ('2','EditConsultant', 'User', '200', 'Some other text','1');
+INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`,`team_id`) VALUES ('3','DeleteConsultant', 'User', '200', 'Some other text','1');
 
 INSERT INTO `contracts` (`id`, `active`, `client_name`, `discount`, `price`, `signed`, `consultant_id`) VALUES ('1', true, 'MainClient', '10', '100', true, '1');
 INSERT INTO `contracts` (`id`, `active`, `client_name`, `consultant_id`) VALUES ('3', true, 'Mirado',2);

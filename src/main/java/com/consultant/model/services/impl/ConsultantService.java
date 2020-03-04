@@ -1,21 +1,28 @@
 package com.consultant.model.services.impl;
 
-import com.consultant.model.entities.Contract;
-import com.consultant.model.mappers.ConsultantMapper;
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.dto.ContractDTO;
 import com.consultant.model.entities.Client;
 import com.consultant.model.entities.ClientTeam;
 import com.consultant.model.entities.Consultant;
+import com.consultant.model.entities.Contract;
+import com.consultant.model.entities.Technology;
+import com.consultant.model.entities.TechnologyRating;
 import com.consultant.model.exception.NoMatchException;
+import com.consultant.model.mappers.ConsultantMapper;
 import com.consultant.model.repositories.ConsultantRepository;
-import com.consultant.model.dto.ContractDTO;
 import com.consultant.model.services.BasicOperationsService;
 import com.consultant.model.services.ContractService;
+import com.consultant.model.services.TechnologyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static com.consultant.model.services.ContractService.OFFICE_NAME;
 
@@ -30,14 +37,17 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
 
     ContractService contractService;
 
+    TechnologyService technologyService;
+
 
     @Autowired
     public ConsultantService(ConsultantRepository consultantRepository, ClientTeamService clientTeamService,
-                             ClientService clientService, ContractService contractService) {
+                             ClientService clientService, ContractService contractService, TechnologyService technologyService) {
         this.consultantRepository = consultantRepository;
         this.clientTeamService = clientTeamService;
         this.clientService = clientService;
         this.contractService = contractService;
+        this.technologyService = technologyService;
     }
 
     @Override
@@ -61,10 +71,16 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
             consultantDTO.getActiveContract().setTeamId(consultantDTO.getTeamId());
             Contract newContract = contractService.createNewContract(consultantDTO.getActiveContract());
             consultant.setContracts(Collections.singletonList(newContract));
-        }
-        else {
+        } else {
             Contract emptyContract = contractService.createEmptyContract();
             consultant.setContracts(Collections.singletonList(emptyContract));
+        }
+        consultantRepository.saveAndFlush(consultant);
+
+        if (consultant.getRatings() != null) {
+            consultant.getRatings().forEach(rating -> {
+                technologyService.saveRating(rating.getTechnology(), consultant.getId(), rating);
+            });
         }
 
         assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
@@ -82,6 +98,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
             consultantDTO.getActiveContract().setTeamId(consultantDTO.getTeamId());
             contractService.updateContract(activeContract, consultantDTO.getActiveContract());
         }
+        consultantRepository.saveAndFlush(updatedConsultant);
 
         assignConsultantToTeam(consultantDTO.getTeamId(), updatedConsultant);
     }
@@ -103,6 +120,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
             Contract newContract = contractService.createNewContract(contractDTO);
             consultant.getContracts().add(newContract);
         }
+        consultantRepository.saveAndFlush(consultant);
 
         assignConsultantToTeam(contractDTO.getTeamId(), consultant);
     }
@@ -130,8 +148,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     }
 
     /**
-     * Checks if an id was sent to be saved for the consultant. If exists it assigns the consultant to that team, if not it just
-     * saves the updated consultant.
+     * Checks if an id was sent to be saved for the consultant. If exists it assigns the consultant to that team
      *
      * @param teamId     the id of the team to be assigned to
      * @param consultant the updated consultant to be saved
@@ -140,8 +157,6 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     private void assignConsultantToTeam(Long teamId, Consultant consultant) throws NoMatchException {
         if (teamId != null) {
             clientTeamService.assignConsultantToTeam(consultant, teamId);
-        } else {
-            consultantRepository.saveAndFlush(consultant);
         }
     }
 

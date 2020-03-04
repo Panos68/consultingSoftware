@@ -16,7 +16,7 @@ public class ClientTeam extends AbstractClient {
     @Column
     private String mainTechnologies;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany
     @JoinColumn(name = "team.id")
     private List<Consultant> consultants = new ArrayList<>();
 

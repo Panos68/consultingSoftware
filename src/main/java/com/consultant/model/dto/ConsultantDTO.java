@@ -1,12 +1,14 @@
 package com.consultant.model.dto;
 
 import com.consultant.model.entities.Contract;
+import com.consultant.model.entities.TechnologyRating;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -23,8 +25,6 @@ public class ConsultantDTO {
 
     private String other;
 
-    private String mainTechnologies;
-
     private String teamName;
 
     private String clientName;
@@ -34,4 +34,6 @@ public class ConsultantDTO {
     private ContractDTO activeContract;
 
     private LocalDate dateJoined;
+
+    private Set<TechnologyRating> ratings;
 }

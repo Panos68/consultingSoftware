@@ -37,6 +37,8 @@ public class ConsultantServiceShould {
     @Mock
     private ContractService contractService;
 
+    @Mock
+    private TechnologyService technologyService;
 
     private ConsultantService consultantService;
 
@@ -56,7 +58,7 @@ public class ConsultantServiceShould {
 
     @Before
     public void setUp() {
-        consultantService = new ConsultantService(consultantRepository,clientTeamService,clientService,contractService);
+        consultantService = new ConsultantService(consultantRepository,clientTeamService,clientService,contractService,technologyService);
 
         consultant1.setId(consultantId);
 
