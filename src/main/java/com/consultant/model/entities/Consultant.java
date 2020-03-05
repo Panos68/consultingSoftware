@@ -76,6 +76,7 @@ public class Consultant {
         existingConsultant.setListPrice(consultantDTO.getListPrice());
         existingConsultant.setOther(consultantDTO.getOther());
         existingConsultant.setDateJoined(consultantDTO.getDateJoined());
+        existingConsultant.setUserId(consultantDTO.getUserId());
 
         return existingConsultant;
     }

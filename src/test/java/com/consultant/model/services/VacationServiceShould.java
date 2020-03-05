@@ -71,7 +71,7 @@ public class VacationServiceShould {
     }
 
     @Test
-    public void returnEmptyListIfThereAreNoVacations() throws Exception {
+    public void returnEmptyListIfThereAreNoVacations() {
         when(vacationRepository.findAll()).thenReturn(vacationList);
 
         Set<VacationDTO> vacationDTOS = vacationService.getAll();
