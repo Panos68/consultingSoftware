@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -98,6 +99,15 @@ public class ClientServiceShould {
         verify(clientRepository, times(1)).saveAndFlush(client1);
     }
 
+    @Test
+    public void deleteTeamsWhenDeletingExistingClient() throws Exception {
+        client1.getClientTeams().add(clientTeam);
+        Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.ofNullable(client1));
+        clientService.delete(clientId);
+
+        verify(clientTeamService, times(1)).delete(clientTeam.getId());
+    }
+
     @Test(expected = NoMatchException.class)
     public void throwNoMatchExceptionWhenDeletingNonExistingClient() throws Exception {
         clientService.delete(clientId);
@@ -123,8 +133,11 @@ public class ClientServiceShould {
 
     @Test
     public void saveToRepositoryWhenAssigningTeamToExistingClient() throws Exception {
+        client1.setLastInteractionDate(LocalDate.now().minusMonths(1));
+        clientTeam.setLastInteractionDate(LocalDate.now());
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.ofNullable(client1));
         clientService.assignTeamToClient(clientTeam,clientId);
+        verify(clientRepository, times(1)).saveAndFlush(client1);
     }
 
     @Test(expected = NoMatchException.class)

@@ -2,6 +2,7 @@ package com.consultant.model.services;
 
 import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.dto.ContractDTO;
+import com.consultant.model.dto.TechnologyRatingDTO;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.entities.Contract;
 import com.consultant.model.exception.NoMatchException;
@@ -193,5 +194,15 @@ public class ConsultantServiceShould {
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.empty());
 
         consultantService.createNewContractForExistingConsultant(contractDTO);
+    }
+
+    @Test
+    public void saveRatingsWhenCreatingConsultant() throws Exception {
+        Set<TechnologyRatingDTO> technologyRatingDTOS = new HashSet<>();
+        technologyRatingDTOS.add(new TechnologyRatingDTO());
+        consultantDTO.setRatings(technologyRatingDTOS);
+        consultantService.create(consultantDTO);
+
+        verify(technologyService, times(1)).saveRating(Mockito.any(),Mockito.any(),Mockito.any());
     }
 }
