@@ -19,4 +19,6 @@ public class UserDTO {
     private List<String> roles = new ArrayList<>();
 
     private Set<Vacation> vacations = new HashSet<>();
+
+    private Long consultantId;
 }

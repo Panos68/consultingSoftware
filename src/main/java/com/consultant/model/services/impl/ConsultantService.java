@@ -30,15 +30,15 @@ import static com.consultant.model.services.ContractService.OFFICE_NAME;
 @Service
 public class ConsultantService implements BasicOperationsService<ConsultantDTO> {
 
-    ConsultantRepository consultantRepository;
+    private ConsultantRepository consultantRepository;
 
-    ClientTeamService clientTeamService;
+    private ClientTeamService clientTeamService;
 
-    ClientService clientService;
+    private ClientService clientService;
 
-    ContractService contractService;
+    private ContractService contractService;
 
-    TechnologyService technologyService;
+    private TechnologyService technologyService;
 
 
     @Autowired
@@ -146,6 +146,23 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
             clientTeamService.unassignedConsultantFromTeam(existingConsultant);
             consultantRepository.saveAndFlush(existingConsultant);
         }
+    }
+
+    public void unAssignUserFromConsultant(Long userId){
+        Optional<Consultant> optionalConsultant = consultantRepository.findByUserId(userId);
+        if (optionalConsultant.isPresent()){
+            Consultant consultant = optionalConsultant.get();
+            consultant.setUserId(null);
+            consultantRepository.saveAndFlush(consultant);
+        }
+    }
+
+    public Optional<Consultant> getConsultantOfUser(Long userId) {
+        return consultantRepository.findByUserId(userId);
+    }
+
+    public Set<ConsultantDTO> getActiveConsultants() {
+        return getAll().stream().filter(consultantDTO -> !consultantDTO.getDeleted()).collect(Collectors.toSet());
     }
 
     private Consultant getExistingConsultantById(Long id) throws NoMatchException {

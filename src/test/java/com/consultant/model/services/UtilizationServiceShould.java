@@ -41,25 +41,29 @@ public class UtilizationServiceShould {
     public void setUp() throws Exception {
         Contract contract1 = new Contract();
         consultantDTO1.setDateJoined(LocalDate.now().minusMonths(2));
+        consultantDTO1.setDeleted(false);
         initializeContract(contract1, LocalDate.now().minusMonths(1), consultantDTO1);
 
         Contract contract2 = new Contract();
         consultantDTO2.setDateJoined(LocalDate.now().minusMonths(2));
+        consultantDTO2.setDeleted(false);
         initializeContract(contract2, LocalDate.now().minusMonths(2), consultantDTO2);
         Contract contract5 = new Contract();
         initializeContract(contract5, LocalDate.now().minusDays(2), consultantDTO2);
 
         Contract contract3 = new Contract();
         consultantDTO3.setDateJoined(LocalDate.now().minusMonths(2));
+        consultantDTO3.setDeleted(false);
         initializeContract(contract3, LocalDate.now().minusMonths(1).minusDays(1), consultantDTO3);
         contract3.setClientName(ContractService.OFFICE_NAME);
 
         Contract contract4 = new Contract();
         consultantDTO4.setDateJoined(LocalDate.now().minusMonths(1));
+        consultantDTO4.setDeleted(false);
         initializeContract(contract4, LocalDate.now().minusDays(9), consultantDTO4);
 
         utilizationService = new UtilizationService(utilizationRepository, consultantService);
-        Mockito.when(consultantService.getAll()).thenReturn(consultantDTOS);
+        Mockito.when(consultantService.getActiveConsultants()).thenReturn(consultantDTOS);
     }
 
     private void initializeContract(Contract contract, LocalDate startDate, ConsultantDTO consultantDTO) {

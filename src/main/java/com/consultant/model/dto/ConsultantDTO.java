@@ -38,4 +38,6 @@ public class ConsultantDTO {
     private Set<TechnologyRatingDTO> ratings = new HashSet<>();
 
     private Boolean deleted;
+
+    private Long userId;
 }

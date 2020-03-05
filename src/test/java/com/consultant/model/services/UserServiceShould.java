@@ -6,6 +6,7 @@ import com.consultant.model.entities.Vacation;
 import com.consultant.model.exception.EntityAlreadyExists;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.repositories.UserRepository;
+import com.consultant.model.services.impl.ConsultantService;
 import com.consultant.model.services.impl.UserService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +28,9 @@ public class UserServiceShould {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ConsultantService consultantService;
+
     private UserService userService;
 
     private Long userId = 1L;
@@ -46,7 +50,7 @@ public class UserServiceShould {
 
     @Before
     public void setUp() {
-        userService = new UserService(userRepository,passwordEncoder);
+        userService = new UserService(userRepository,passwordEncoder,consultantService);
 
         Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("123");
         user1 = new User();

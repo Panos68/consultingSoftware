@@ -1,6 +1,7 @@
 package com.consultant.model.services.impl;
 
 import com.consultant.model.dto.UserDTO;
+import com.consultant.model.entities.Consultant;
 import com.consultant.model.entities.User;
 import com.consultant.model.entities.Vacation;
 import com.consultant.model.exception.EntityAlreadyExists;
@@ -20,14 +21,17 @@ import java.util.Set;
 @Service
 public class UserService implements BasicOperationsService<UserDTO> {
 
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    private ConsultantService consultantService;
 
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,ConsultantService consultantService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.consultantService = consultantService;
     }
 
 
@@ -37,6 +41,8 @@ public class UserService implements BasicOperationsService<UserDTO> {
         Set<UserDTO> userDTOS = new LinkedHashSet<>();
         usersList.forEach(user -> {
             final UserDTO userDTO = UserMapper.INSTANCE.userToUserDTO(user);
+            Optional<Consultant> consultantOfUser = consultantService.getConsultantOfUser(userDTO.getId());
+            consultantOfUser.ifPresent(consultant -> userDTO.setConsultantId(consultant.getId()));
             userDTOS.add(userDTO);
         });
 
@@ -63,8 +69,10 @@ public class UserService implements BasicOperationsService<UserDTO> {
     }
 
     @Override
-    public void delete(Long id) throws NoMatchException {
-        User existingUser = getExistingUserById(id);
+    public void delete(Long userId) throws NoMatchException {
+        User existingUser = getExistingUserById(userId);
+
+        consultantService.unAssignUserFromConsultant(userId);
 
         userRepository.delete(existingUser);
     }

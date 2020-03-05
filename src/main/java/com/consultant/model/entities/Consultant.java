@@ -56,6 +56,9 @@ public class Consultant {
     private Set<TechnologyRating> ratings;
 
     @Column
+    private Long userId;
+
+    @Column
     private Boolean deleted;
 
     @Transient

@@ -78,7 +78,7 @@ public class UtilizationService {
     }
 
     double calculateUtilizationPercentageOfCurrentMonth() {
-        Set<ConsultantDTO> consultants = consultantService.getAll();
+        Set<ConsultantDTO> consultants = consultantService.getActiveConsultants();
         int previousMonthMaxDays = getPastMonthsMaxDays(1);
         AtomicInteger assignedDays = new AtomicInteger();
 
@@ -108,8 +108,7 @@ public class UtilizationService {
     }
 
     double calculateAidedUtilizationPercentageOfCurrentMonth() {
-
-        Set<ConsultantDTO> consultants = consultantService.getAll();
+        Set<ConsultantDTO> consultants = consultantService.getActiveConsultants();
         int previousMonthMaxDays = getPastMonthsMaxDays(1);
         AtomicInteger assignedDays = new AtomicInteger();
 

@@ -50,12 +50,12 @@ public class UserController {
     }
 
     @PutMapping
-    public void editTeam(@RequestBody UserDTO userDTO) throws Exception {
+    public void editUser(@RequestBody UserDTO userDTO) throws Exception {
         userService.edit(userDTO);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteTeam(@PathVariable Long id) throws Exception {
+    public void deleteUser(@PathVariable Long id) throws Exception {
         userService.delete(id);
     }
 }
