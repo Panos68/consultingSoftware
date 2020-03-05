@@ -84,11 +84,11 @@ public class ClientTeamServiceShould {
     }
 
     @Test
-    public void deleteInRepositoryWhenDeletingExistingTeam() throws Exception {
+    public void saveToRepositoryWhenDeletingExistingTeam() throws Exception {
         Mockito.when(clientTeamRepository.findById(teamId)).thenReturn(Optional.ofNullable(clientTeam1));
         clientTeamService.delete(clientId);
 
-        verify(clientTeamRepository, times(1)).delete(clientTeam1);
+        verify(clientTeamRepository, times(1)).saveAndFlush(clientTeam1);
     }
 
     @Test(expected = NoMatchException.class)

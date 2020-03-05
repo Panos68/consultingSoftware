@@ -32,4 +32,7 @@ abstract public class AbstractClient {
 
     @Column
     private String lastInteractedBy;
+
+    @Column
+    private Boolean deleted;
 }

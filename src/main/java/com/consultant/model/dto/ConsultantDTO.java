@@ -36,4 +36,6 @@ public class ConsultantDTO {
     private LocalDate dateJoined;
 
     private Set<TechnologyRatingDTO> ratings = new HashSet<>();
+
+    private Boolean deleted;
 }

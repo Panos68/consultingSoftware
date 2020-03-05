@@ -111,10 +111,10 @@ public class ConsultantServiceShould {
     }
 
     @Test
-    public void deleteInRepositoryWhenDeletingExistingConsultant() throws Exception {
+    public void saveInRepositoryWhenDeletingExistingConsultant() throws Exception {
         consultantService.delete(consultantId);
 
-        verify(consultantRepository, times(1)).delete(consultant1);
+        verify(consultantRepository, times(1)).saveAndFlush(consultant1);
     }
 
     @Test(expected = NoMatchException.class)

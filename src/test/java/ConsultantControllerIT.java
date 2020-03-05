@@ -90,7 +90,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
 
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
-        assertFalse(Objects.requireNonNull(consultantDTOS).stream().map(ConsultantDTO::getFirstName).anyMatch(u -> u.equals("DeleteConsultant")));
+        assertTrue(Objects.requireNonNull(consultantDTOS).stream().anyMatch(ConsultantDTO::getDeleted));
         assertEquals(HttpStatus.OK,deleteConsultantResponse.getStatusCode());
     }
 

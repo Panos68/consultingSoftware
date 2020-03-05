@@ -67,6 +67,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     @Override
     public void create(ConsultantDTO consultantDTO) throws NoMatchException {
         final Consultant consultant = ConsultantMapper.INSTANCE.consultantDTOToConsultant(consultantDTO);
+        consultant.setDeleted(false);
 
         if (consultantDTO.getActiveContract() != null) {
             consultantDTO.getActiveContract().setTeamId(consultantDTO.getTeamId());
@@ -113,7 +114,9 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     @Override
     public void delete(Long id) throws NoMatchException {
         Consultant existingConsultant = getExistingConsultantById(id);
-        consultantRepository.delete(existingConsultant);
+        existingConsultant.setDeleted(true);
+
+        consultantRepository.saveAndFlush(existingConsultant);
     }
 
     public void createNewContractForExistingConsultant(ContractDTO contractDTO) throws NoMatchException {

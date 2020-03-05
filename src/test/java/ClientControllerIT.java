@@ -79,8 +79,8 @@ public class ClientControllerIT extends AbstractControllerIT {
         Type teamsType = new TypeToken<List<ClientTeamDTO>>() {}.getType();
         List<ClientTeamDTO> clientTeamDTOS = gson.fromJson(teamsResponse.getBody(), teamsType);
 
-        assertFalse(clientTeamDTOS.stream().anyMatch(clientTeamDTO -> clientTeamDTO.getName().equals("DeleteTeam2")));
-        assertFalse(clientDTOS.stream().map(ClientDTO::getName).anyMatch(u -> u.equals("DeleteClient")));
+        assertTrue(clientTeamDTOS.stream().anyMatch(clientTeamDTO -> clientTeamDTO.getName().equals("DeleteTeam2")));
+        assertTrue(Objects.requireNonNull(clientDTOS).stream().anyMatch(ClientDTO::getDeleted));
         assertEquals(deleteClientResponse.getStatusCode(), HttpStatus.OK);
     }
 

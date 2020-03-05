@@ -24,4 +24,6 @@ public abstract class AbstractClientDTO {
     private String lastInteractedWith;
 
     private String lastInteractedBy;
+
+    private Boolean deleted;
 }

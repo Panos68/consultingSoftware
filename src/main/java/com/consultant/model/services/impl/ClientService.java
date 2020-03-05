@@ -44,6 +44,7 @@ public class ClientService implements BasicOperationsService<ClientDTO> {
             throw new EntityAlreadyExists("Client company already exists");
         }
         final Client client = AbstractClientMapper.INSTANCE.clientDTOToClient(clientDTO);
+        client.setDeleted(false);
 
         clientRepository.saveAndFlush(client);
     }
@@ -68,8 +69,9 @@ public class ClientService implements BasicOperationsService<ClientDTO> {
                 e.printStackTrace();
             }
         });
+        existingClient.setDeleted(true);
 
-        clientRepository.delete(existingClient);
+        clientRepository.saveAndFlush(existingClient);
     }
 
     public void assignTeamToClient(ClientTeam clientTeam, Long clientId) throws NoMatchException {

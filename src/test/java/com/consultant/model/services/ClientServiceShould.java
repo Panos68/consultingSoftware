@@ -91,11 +91,11 @@ public class ClientServiceShould {
     }
 
     @Test
-    public void deleteInRepositoryWhenDeletingExistingClient() throws Exception {
+    public void saveToRepositoryWhenDeletingExistingClient() throws Exception {
         Mockito.when(clientRepository.findById(clientId)).thenReturn(Optional.ofNullable(client1));
         clientService.delete(clientId);
 
-        verify(clientRepository, times(1)).delete(client1);
+        verify(clientRepository, times(1)).saveAndFlush(client1);
     }
 
     @Test(expected = NoMatchException.class)

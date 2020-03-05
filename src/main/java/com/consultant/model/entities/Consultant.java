@@ -55,6 +55,9 @@ public class Consultant {
     @JsonManagedReference(value="consultant-rating")
     private Set<TechnologyRating> ratings;
 
+    @Column
+    private Boolean deleted;
+
     @Transient
     private String teamName;
 

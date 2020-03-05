@@ -38,6 +38,7 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
     @Override
     public void create(ClientTeamDTO clientTeamDTO) throws NoMatchException {
         ClientTeam clientTeam = AbstractClientMapper.INSTANCE.clientTeamDTOToClientTeam(clientTeamDTO);
+        clientTeam.setDeleted(false);
 
         assignTeamToClient(clientTeamDTO.getClientId(), clientTeam);
     }
@@ -55,10 +56,10 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
     public void delete(Long id) throws NoMatchException {
         ClientTeam existingTeam = getExistingTeamById(id);
 
+        existingTeam.setDeleted(true);
         existingTeam.setConsultants(Collections.emptyList());
-        clientTeamRepository.saveAndFlush(existingTeam);
 
-        clientTeamRepository.delete(existingTeam);
+        clientTeamRepository.saveAndFlush(existingTeam);
     }
 
     public void assignConsultantToTeam(Consultant consultant, Long teamId) throws NoMatchException {
