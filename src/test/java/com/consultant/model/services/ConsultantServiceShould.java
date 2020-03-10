@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -69,6 +70,8 @@ public class ConsultantServiceShould {
 
         Mockito.when(contractService.getActiveContractByConsultant(consultant1)).thenReturn(activeContract);
 
+        when(contractService.terminateActiveContract(Mockito.any(),Mockito.any())).thenReturn(activeContract);
+
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.ofNullable(consultant1));
     }
 
@@ -92,6 +95,7 @@ public class ConsultantServiceShould {
     @Test
     public void createNewContractWhenCreatingConsultantWithContract() throws NoMatchException {
         consultantDTO.setActiveContract(contractDTO);
+        consultantDTO.setTeamId(1L);
         consultantService.create(consultantDTO);
 
         verify(contractService, times(1)).createNewContract(Mockito.any());
@@ -99,9 +103,10 @@ public class ConsultantServiceShould {
 
     @Test
     public void createEmptyContractWhenCreatingConsultantWithoutContract() throws NoMatchException {
+        consultantDTO.setDateJoined(LocalDate.of(2020,1,1));
         consultantService.create(consultantDTO);
 
-        verify(contractService, times(1)).createEmptyContract();
+        verify(contractService, times(1)).createEmptyContract(LocalDate.of(2020,1,1));
     }
 
     @Test
@@ -153,26 +158,17 @@ public class ConsultantServiceShould {
     }
 
     @Test
-    public void updateContractWhenCreatingNewContractForUnassignedConsultant() throws Exception {
-        activeContract.setClientName(ContractService.OFFICE_NAME);
-
-        consultantService.createNewContractForExistingConsultant(contractDTO);
-
-        verify(contractService, times(1)).updateContract(Mockito.any(),Mockito.any());
-    }
-
-    @Test
     public void terminateOldContractWhenCreatingNewOneForAssignedConsultant() throws Exception {
         activeContract.setClientName("Client");
 
         consultantService.createNewContractForExistingConsultant(contractDTO);
-
         verify(contractService, times(1)).terminateActiveContract(Mockito.any(),Mockito.any());
     }
 
     @Test
     public void saveToRepositoryWhenTerminateContractForAssignedConsultant() throws Exception {
         activeContract.setClientName("Client");
+        activeContract.setEndDate(LocalDate.of(2020,2,1));
 
         consultantService.terminateContract(consultantId,null);
 

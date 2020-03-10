@@ -25,12 +25,17 @@ public class UtilizationController {
 
     @GetMapping(value = "/current")
     public ResponseEntity<UtilizationDTO> getCurrentUtilization() {
-        return ResponseEntity.ok(utilizationService.getCurrentUtilization());
+        return ResponseEntity.ok(utilizationService.getCurrentCompleteUtil());
     }
 
-    @PostMapping(value = "/calculate")
+    @PostMapping(value = "/current/calculate")
     public void calculateUtilization() {
         utilizationService.saveUtToDb();
+    }
+
+    @PostMapping(value = "/calculate/all")
+    public void calculateUtilizationOfAllMonths() {
+        utilizationService.reCalcAllUtil();
     }
 
 }

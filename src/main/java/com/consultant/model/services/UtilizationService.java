@@ -31,9 +31,24 @@ public class UtilizationService {
         this.consultantService = consultantService;
     }
 
+    /**
+     * Calculates every 1st of the month at 9am the utilization and saves it to the db
+     */
     @Scheduled(cron = "0 0 9 1 * ?")
     public void saveUtToDb() {
         LocalDate firstDayOfPreviousMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().minusMonths(1).getMonthValue(), 1);
+        Utilization utilization = getUtilizationObject(firstDayOfPreviousMonth);
+        calcCompleteUtil(firstDayOfPreviousMonth, utilization);
+        utilizationRepository.saveAndFlush(utilization);
+    }
+
+    /**
+     * Returns the utilization for the given date if it exists on the db or creates a new one if it doesn't
+     *
+     * @param firstDayOfPreviousMonth given date to search in the db
+     * @return utilization object
+     */
+    private Utilization getUtilizationObject(LocalDate firstDayOfPreviousMonth) {
         Optional<Utilization> optionalUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth);
         Utilization utilization;
         if (optionalUtilization.isPresent()) {
@@ -42,13 +57,20 @@ public class UtilizationService {
             utilization = new Utilization();
             utilization.setDate(firstDayOfPreviousMonth);
         }
-        utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
-        utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
-        CalculateThreeMonthsUtilization(firstDayOfPreviousMonth, utilization);
-        utilizationRepository.saveAndFlush(utilization);
+        return utilization;
     }
 
-    public UtilizationDTO getCurrentUtilization() {
+    /**
+     * Calculates the complete utilization object for given month and adds it to the utilization parameter
+     */
+    private Utilization calcCompleteUtil(LocalDate firstDayOfGivenMonth, Utilization utilization) {
+        utilization.setAidedUt(calculateAidUtilPercentOfGivenMonth(firstDayOfGivenMonth));
+        utilization.setUt(calcUtilPercentOfGivenMonth(firstDayOfGivenMonth));
+        calcThreeMonthsUtil(firstDayOfGivenMonth, utilization);
+        return utilization;
+    }
+
+    public UtilizationDTO getCurrentCompleteUtil() {
         LocalDate firstDayOfPreviousMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().minusMonths(1).getMonthValue(), 1);
         Optional<Utilization> optionalOneMonthAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth);
         Utilization utilization;
@@ -57,105 +79,79 @@ public class UtilizationService {
         } else {
             utilization = new Utilization();
             utilization.setDate(LocalDate.now());
-            utilization.setAidedUt(calculateAidedUtilizationPercentageOfCurrentMonth());
-            utilization.setUt(calculateUtilizationPercentageOfCurrentMonth());
-            CalculateThreeMonthsUtilization(firstDayOfPreviousMonth, utilization);
+            calcCompleteUtil(firstDayOfPreviousMonth, utilization);
         }
         return UtilizationMapper.INSTANCE.utilizationToUtilizationDTO(utilization);
     }
 
-    private void CalculateThreeMonthsUtilization(LocalDate firstDayOfPreviousMonth, Utilization utilization) {
-        Optional<Utilization> optionalTwoMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(1));
-        Optional<Utilization> optionalThreeMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfPreviousMonth.minusMonths(2));
+    /**
+     * calculates three months Aid Ut and three months Ut and adds it to the utilization
+     *
+     * @param firstDayOfGivenMonth first day of month to calculate for
+     * @param utilization          object to add the calculated values
+     */
+    private void calcThreeMonthsUtil(LocalDate firstDayOfGivenMonth, Utilization utilization) {
+        Optional<Utilization> optionalTwoMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfGivenMonth.minusMonths(1));
+        Optional<Utilization> optionalThreeMonthsAgoUtilization = utilizationRepository.findByDate(firstDayOfGivenMonth.minusMonths(2));
         if (optionalTwoMonthsAgoUtilization.isPresent() && optionalThreeMonthsAgoUtilization.isPresent()) {
-            int oneMonthAgoMaxDays = getPastMonthsMaxDays(1);
-            int twoMonthsAgoMaxDays = getPastMonthsMaxDays(2);
-            int threeMonthsAgoMaxDays = getPastMonthsMaxDays(3);
+            int oneMonthAgoMaxDays = getMonthMaxDays(firstDayOfGivenMonth.minusMonths(1));
+            int twoMonthsAgoMaxDays = getMonthMaxDays(firstDayOfGivenMonth.minusMonths(2));
+            int threeMonthsAgoMaxDays = getMonthMaxDays(firstDayOfGivenMonth.minusMonths(3));
             int lastThreeMonthsTotalDays = oneMonthAgoMaxDays + twoMonthsAgoMaxDays + threeMonthsAgoMaxDays;
-            utilization.setThreeMonthsUt((utilization.getUt() * oneMonthAgoMaxDays + optionalTwoMonthsAgoUtilization.get().getUt() * twoMonthsAgoMaxDays + optionalThreeMonthsAgoUtilization.get().getUt() * threeMonthsAgoMaxDays) / lastThreeMonthsTotalDays);
-            utilization.setThreeMonthsAidedUt((utilization.getAidedUt() * oneMonthAgoMaxDays + optionalTwoMonthsAgoUtilization.get().getAidedUt()* twoMonthsAgoMaxDays + optionalThreeMonthsAgoUtilization.get().getAidedUt()* threeMonthsAgoMaxDays) / lastThreeMonthsTotalDays);
+            utilization.setThreeMonthsUt((utilization.getUt() * oneMonthAgoMaxDays + optionalTwoMonthsAgoUtilization.get().getUt()
+                    * twoMonthsAgoMaxDays + optionalThreeMonthsAgoUtilization.get().getUt() * threeMonthsAgoMaxDays) / lastThreeMonthsTotalDays);
+            utilization.setThreeMonthsAidedUt((utilization.getAidedUt() * oneMonthAgoMaxDays +
+                    optionalTwoMonthsAgoUtilization.get().getAidedUt() * twoMonthsAgoMaxDays +
+                    optionalThreeMonthsAgoUtilization.get().getAidedUt() * threeMonthsAgoMaxDays) / lastThreeMonthsTotalDays);
         }
     }
 
-    double calculateUtilizationPercentageOfCurrentMonth() {
+    /**
+     * Deletes all ut from the db and calculates again since the day that the first consultant joined until today.
+     */
+    public void reCalcAllUtil() {
         Set<ConsultantDTO> consultants = consultantService.getActiveConsultants();
-        int previousMonthMaxDays = getPastMonthsMaxDays(1);
-        AtomicInteger assignedDays = new AtomicInteger();
-
-        LocalDate firstDayOfCurrentMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonthValue(), 1);
-
-        List<Contract> contractsToCheck = new ArrayList<>();
-
-        consultants
-                .forEach(consultantDTO -> {
-                    Optional<Contract> consultantContractOfLastMonth = consultantDTO.getContracts().stream().filter(contract -> contract.getStartedDate().isBefore(firstDayOfCurrentMonth)).max(Comparator.comparing(Contract::getStartedDate));
-                    consultantContractOfLastMonth.ifPresent(contractsToCheck::add);
-                });
-
-        contractsToCheck.stream()
-                .filter(contract -> !contract.getClientName().equals(ContractService.OFFICE_NAME))
-                .forEach(c -> {
-                    if (c.getStartedDate().getMonthValue() == LocalDate.now().minusMonths(1).getMonthValue()) {
-                        assignedDays.addAndGet(previousMonthMaxDays - c.getStartedDate().getDayOfMonth());
-                    } else {
-                        assignedDays.addAndGet(previousMonthMaxDays);
-                    }
-                });
-
-        double maxAssignedDays = previousMonthMaxDays * contractsToCheck.size();
-
-        return assignedDays.get() / maxAssignedDays * 100;
+        ConsultantDTO firstConsultantJoinedDTO = consultants.stream().min((Comparator.comparing(ConsultantDTO::getDateJoined))).get();
+        LocalDate earliestCalculatingDate = firstConsultantJoinedDTO.getDateJoined().plusMonths(1);
+        LocalDate firstDayOfCalculatingMonth = LocalDate.of(earliestCalculatingDate.getYear(), earliestCalculatingDate.getMonthValue(), 1);
+        utilizationRepository.deleteAll();
+        while (firstDayOfCalculatingMonth.isBefore(LocalDate.now())) {
+            Utilization utilization = getUtilizationObject(firstDayOfCalculatingMonth);
+            utilization.setDate(firstDayOfCalculatingMonth);
+            calcCompleteUtil(firstDayOfCalculatingMonth, utilization);
+            utilizationRepository.saveAndFlush(utilization);
+            firstDayOfCalculatingMonth = firstDayOfCalculatingMonth.plusMonths(1);
+        }
     }
 
-    double calculateAidedUtilizationPercentageOfCurrentMonth() {
+    double calcUtilPercentOfGivenMonth(LocalDate givenDate) {
         Set<ConsultantDTO> consultants = consultantService.getActiveConsultants();
-        int previousMonthMaxDays = getPastMonthsMaxDays(1);
-        AtomicInteger assignedDays = new AtomicInteger();
 
-        LocalDate firstDayOfCurrentMonth = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonthValue(), 1);
+        AtomicInteger totalAssignedDays = new AtomicInteger();
+        AtomicInteger maxAssignedDays = new AtomicInteger();
 
-        List<Contract> contractsToCheck = new ArrayList<>();
+        LocalDate firstDayOfGivenMonth = LocalDate.of(givenDate.getYear(), givenDate.getMonthValue(), 1);
 
-        List<ConsultantDTO> consultantsJoinedBeforeCurrentMonth = consultants.stream()
-                .filter(consultantDTO -> consultantDTO.getDateJoined().isBefore(firstDayOfCurrentMonth))
+        List<ConsultantDTO> consultantsJoinedBeforeGivenMonth = consultants.stream()
+                .filter(consultantDTO -> consultantDTO.getDateJoined().isBefore(firstDayOfGivenMonth))
                 .collect(Collectors.toList());
 
-        consultantsJoinedBeforeCurrentMonth
-                .forEach(consultantDTO -> {
-                    Optional<Contract> consultantContractOfLastMonth = consultantDTO.getContracts().stream().max(Comparator.comparing(Contract::getStartedDate));
-                    consultantContractOfLastMonth.ifPresent(contractsToCheck::add);
-                });
+        consultantsJoinedBeforeGivenMonth
+                .forEach(consultantDTO -> calculateAssignDays(givenDate, totalAssignedDays, maxAssignedDays, firstDayOfGivenMonth, consultantDTO.getContracts()));
 
-        List<Contract> nonFullyCoveredAidedContracts = consultantsJoinedBeforeCurrentMonth.stream()
-                .filter(c -> c.getDateJoined().getMonthValue() == LocalDate.now().minusMonths(4).getMonthValue())
-                .flatMap(con -> con.getContracts().stream())
-                .filter(contract -> contract.getActive() && contract.getClientName().equals(ContractService.OFFICE_NAME))
-                .collect(Collectors.toList());
+        if (totalAssignedDays.get() == 0) {
+            return 0;
+        }
 
-        List<Contract> aidedActiveContracts = consultantsJoinedBeforeCurrentMonth.stream()
-                .filter(c -> c.getDateJoined().isAfter(LocalDate.now().minusMonths(4)) && c.getDateJoined().getMonthValue() != LocalDate.now().minusMonths(1).getMonthValue())
-                .flatMap(con -> con.getContracts().stream())
-                .collect(Collectors.toList());
-
-
-        contractsToCheck
-                .forEach(c -> {
-                    if ((c.getStartedDate().getMonthValue() == LocalDate.now().minusMonths(1).getMonthValue() || nonFullyCoveredAidedContracts.contains(c))
-                            && !aidedActiveContracts.contains(c)) {
-                        assignedDays.addAndGet(previousMonthMaxDays - c.getStartedDate().getDayOfMonth());
-                    } else if (c.getStartedDate().getMonthValue() != LocalDate.now().minusMonths(1).getMonthValue() || aidedActiveContracts.contains(c)) {
-                        assignedDays.addAndGet(previousMonthMaxDays);
-                    }
-                    //if contract is in the office but it's not aided then it doesn't add any days
-                });
-
-        double maxAssignedDays = previousMonthMaxDays * contractsToCheck.size();
-
-        return assignedDays.get() / maxAssignedDays * 100;
+        return (double) totalAssignedDays.get() / maxAssignedDays.get() * 100;
     }
 
-    private int getPastMonthsMaxDays(int monthsInThePast) {
-        YearMonth yearMonth = YearMonth.now().minusMonths(monthsInThePast);
+    private boolean areDatesOnSameMonthAndYear(LocalDate firstDate, LocalDate secondDate) {
+        return firstDate.getMonthValue() == secondDate.getMonthValue() && firstDate.getYear() == secondDate.getYear();
+    }
+
+    private int getMonthMaxDays(LocalDate givenDate) {
+        YearMonth yearMonth = YearMonth.of(givenDate.getYear(), givenDate.getMonth());
         return yearMonth.lengthOfMonth();
     }
 
@@ -167,5 +163,108 @@ public class UtilizationService {
             utilizationDTOS.add(utilizationDTO);
         });
         return utilizationDTOS;
+    }
+
+    double calculateAidUtilPercentOfGivenMonth(LocalDate givenDate) {
+        Set<ConsultantDTO> consultants = consultantService.getActiveConsultants();
+        int monthMaxDays = getMonthMaxDays(givenDate.minusMonths(1));
+        AtomicInteger totalAssignedDays = new AtomicInteger();
+        AtomicInteger maxAssignedDays = new AtomicInteger();
+
+        LocalDate firstDayOfGivenMonth = LocalDate.of(givenDate.getYear(), givenDate.getMonthValue(), 1);
+
+        List<ConsultantDTO> consultantsJoinedBeforeGivenMonth = consultants.stream()
+                .filter(consultantDTO -> consultantDTO.getDateJoined().isBefore(firstDayOfGivenMonth))
+                .collect(Collectors.toList());
+
+        consultantsJoinedBeforeGivenMonth.forEach(consultantDTO -> {
+            boolean joinedOnCalculatedMonth = areDatesOnSameMonthAndYear(consultantDTO.getDateJoined(), firstDayOfGivenMonth.minusMonths(1));
+            boolean isPartiallyAided = areDatesOnSameMonthAndYear(consultantDTO.getDateJoined(), firstDayOfGivenMonth.minusMonths(4));
+            boolean isFullyAided = !isPartiallyAided && consultantDTO.getDateJoined().isAfter(firstDayOfGivenMonth.minusMonths(4));
+            int consultantAidedDays;
+
+            if (joinedOnCalculatedMonth) {
+                //adds only the dates that consultant was in the company
+                consultantAidedDays = monthMaxDays - consultantDTO.getDateJoined().getDayOfMonth() + 1;
+                totalAssignedDays.addAndGet(consultantAidedDays);
+                maxAssignedDays.addAndGet(consultantAidedDays);
+            } else if (isFullyAided) {
+                totalAssignedDays.addAndGet(monthMaxDays);
+                maxAssignedDays.addAndGet(monthMaxDays);
+            } else if (isPartiallyAided) {
+                Optional<Contract> consultantLatestContract = consultantDTO.getContracts().stream()
+                        .filter(contract -> contract.getStartedDate().isBefore(firstDayOfGivenMonth))
+                        .max(Comparator.comparing(Contract::getStartedDate));
+                if (consultantLatestContract.isPresent() && !consultantLatestContract.get().getClientName().equals(ContractService.OFFICE_NAME)) {
+                    if (consultantLatestContract.get().getStartedDate().getMonthValue() != givenDate.minusMonths(1).getMonthValue()) {
+                        //consultant was assigned before the calculated month
+                        totalAssignedDays.addAndGet(monthMaxDays);
+                    } else {
+                        int daysWorked = monthMaxDays - consultantLatestContract.get().getStartedDate().getDayOfMonth() + 1;
+                        int aidedDays = consultantDTO.getDateJoined().getDayOfMonth();
+                        totalAssignedDays.addAndGet(Math.min(daysWorked+aidedDays, monthMaxDays));
+                    }
+                } else {
+                    //if consultants has still office contract then it adds only the aided days
+                    totalAssignedDays.addAndGet(Math.min(consultantDTO.getDateJoined().getDayOfMonth(), monthMaxDays));
+                }
+                maxAssignedDays.addAndGet(monthMaxDays);
+            } else {
+                calculateAssignDays(givenDate, totalAssignedDays, maxAssignedDays, firstDayOfGivenMonth, consultantDTO.getContracts());
+            }
+        });
+
+        if (totalAssignedDays.get() == 0) {
+            return 0;
+        }
+
+        return (double) totalAssignedDays.get() / maxAssignedDays.get() * 100;
+    }
+
+    private void calculateAssignDays(LocalDate givenDate, AtomicInteger totalAssignedDays, AtomicInteger maxAssignedDays, LocalDate firstDayOfGivenMonth, List<Contract> contracts) {
+        Optional<Contract> previousMonthsContractEndedOnGivenMonth = contracts.stream()
+                .filter(c -> (!areDatesOnSameMonthAndYear(givenDate.minusMonths(1), c.getStartedDate())
+                        && c.getEndDate() != null && areDatesOnSameMonthAndYear(givenDate.minusMonths(1), c.getEndDate())))
+                .findFirst();
+
+        List<Contract> contractsStartedOnGivenMonth = contracts.stream()
+                .filter(c -> areDatesOnSameMonthAndYear(givenDate.minusMonths(1), c.getStartedDate()))
+                .collect(Collectors.toList());
+
+        int monthMaxDays = getMonthMaxDays(givenDate.minusMonths(1));
+
+        if (!contractsStartedOnGivenMonth.isEmpty() || previousMonthsContractEndedOnGivenMonth.isPresent()) {
+            contractsStartedOnGivenMonth.forEach(contract -> {
+                int consultantAssignedDays;
+
+                if (contract.getEndDate() != null && areDatesOnSameMonthAndYear(contract.getEndDate(), givenDate.minusMonths(1))) {
+                    consultantAssignedDays = contract.getEndDate().getDayOfMonth() - contract.getStartedDate().getDayOfMonth() + 1;
+                } else {
+                    consultantAssignedDays = monthMaxDays - contract.getStartedDate().getDayOfMonth() + 1;
+                }
+                if (!contract.getClientName().equals(ContractService.OFFICE_NAME)) {
+                    totalAssignedDays.addAndGet(consultantAssignedDays);
+                }
+                maxAssignedDays.addAndGet(consultantAssignedDays);
+            });
+            if (previousMonthsContractEndedOnGivenMonth.isPresent()) {
+                Contract finishedContract = previousMonthsContractEndedOnGivenMonth.get();
+                if (!finishedContract.getClientName().equals(ContractService.OFFICE_NAME)) {
+                    totalAssignedDays.addAndGet(finishedContract.getEndDate().getDayOfMonth());
+                }
+                maxAssignedDays.addAndGet(finishedContract.getEndDate().getDayOfMonth());
+            }
+        } else {
+            //contracts assigned before current month
+            Optional<Contract> consultantLatestContractOnGivenDate = contracts.stream()
+                    .filter(contract -> contract.getStartedDate().isBefore(firstDayOfGivenMonth))
+                    .max(Comparator.comparing(Contract::getStartedDate));
+            if (consultantLatestContractOnGivenDate.isPresent()) {
+                if (!consultantLatestContractOnGivenDate.get().getClientName().equals(ContractService.OFFICE_NAME)) {
+                    totalAssignedDays.addAndGet(monthMaxDays);
+                }
+                maxAssignedDays.addAndGet(monthMaxDays);
+            }
+        }
     }
 }

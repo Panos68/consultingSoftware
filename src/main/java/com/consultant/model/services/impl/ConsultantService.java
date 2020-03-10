@@ -69,12 +69,12 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         final Consultant consultant = ConsultantMapper.INSTANCE.consultantDTOToConsultant(consultantDTO);
         consultant.setDeleted(false);
 
-        if (consultantDTO.getActiveContract() != null) {
+        if (consultantDTO.getActiveContract() != null && consultantDTO.getTeamId() != null) {
             consultantDTO.getActiveContract().setTeamId(consultantDTO.getTeamId());
             Contract newContract = contractService.createNewContract(consultantDTO.getActiveContract());
             consultant.setContracts(Collections.singletonList(newContract));
         } else {
-            Contract emptyContract = contractService.createEmptyContract();
+            Contract emptyContract = contractService.createEmptyContract(consultantDTO.getDateJoined());
             consultant.setContracts(Collections.singletonList(emptyContract));
         }
         consultantRepository.saveAndFlush(consultant);
@@ -122,14 +122,13 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
     public void createNewContractForExistingConsultant(ContractDTO contractDTO) throws NoMatchException {
         Consultant consultant = getExistingConsultantById(contractDTO.getConsultantId());
 
-        Contract activeContract = contractService.getActiveContractByConsultant(consultant);
-        if (activeContract.getClientName().equals(OFFICE_NAME)) {
-            contractService.updateContract(activeContract, contractDTO);
-        } else {
-            contractService.terminateActiveContract(contractDTO.getTerminatedDate(), consultant);
-            Contract newContract = contractService.createNewContract(contractDTO);
-            consultant.getContracts().add(newContract);
+        LocalDate terminatedDate = contractDTO.getTerminatedDate();
+        if (terminatedDate == null) {
+            terminatedDate = contractDTO.getStartedDate();
         }
+        contractService.terminateActiveContract(terminatedDate, consultant);
+        Contract newContract = contractService.createNewContract(contractDTO);
+        consultant.getContracts().add(newContract);
         consultantRepository.saveAndFlush(consultant);
 
         assignConsultantToTeam(contractDTO.getTeamId(), consultant);
@@ -140,17 +139,17 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
 
         Contract activeContract = contractService.getActiveContractByConsultant(existingConsultant);
         if (!activeContract.getClientName().equals(OFFICE_NAME)) {
-            contractService.terminateActiveContract(terminatedDate, existingConsultant);
-            Contract emptyContract = contractService.createEmptyContract();
+            Contract terminatedContract = contractService.terminateActiveContract(terminatedDate, existingConsultant);
+            Contract emptyContract = contractService.createEmptyContract(terminatedContract.getEndDate());
             existingConsultant.getContracts().add(emptyContract);
             clientTeamService.unassignedConsultantFromTeam(existingConsultant);
             consultantRepository.saveAndFlush(existingConsultant);
         }
     }
 
-    public void unAssignUserFromConsultant(Long userId){
+    public void unAssignUserFromConsultant(Long userId) {
         Optional<Consultant> optionalConsultant = consultantRepository.findByUserId(userId);
-        if (optionalConsultant.isPresent()){
+        if (optionalConsultant.isPresent()) {
             Consultant consultant = optionalConsultant.get();
             consultant.setUserId(null);
             consultantRepository.saveAndFlush(consultant);

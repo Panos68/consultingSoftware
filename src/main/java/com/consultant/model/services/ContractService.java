@@ -26,12 +26,14 @@ public class ContractService {
         this.clientService = clientService;
     }
 
-    public void terminateActiveContract(LocalDate terminatedDate, Consultant existingConsultant) {
+    public Contract terminateActiveContract(LocalDate terminatedDate, Consultant existingConsultant) {
         Contract activeContract = getActiveContractByConsultant(existingConsultant);
         if (terminatedDate != null) {
             activeContract.setEndDate(terminatedDate);
         }
         activeContract.setActive(false);
+
+        return activeContract;
     }
 
     public Contract getActiveContractByConsultant(Consultant consultant) {
@@ -40,11 +42,11 @@ public class ContractService {
         return consultantContracts.stream().filter(Contract::getActive).findFirst().get();
     }
 
-    public Contract createEmptyContract() {
+    public Contract createEmptyContract(LocalDate startingDate) {
         Contract contract = new Contract();
         contract.setActive(true);
         contract.setClientName(OFFICE_NAME);
-        contract.setStartedDate(LocalDate.now());
+        contract.setStartedDate(startingDate);
 
         return contract;
     }

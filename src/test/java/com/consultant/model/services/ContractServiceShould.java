@@ -62,7 +62,7 @@ public class ContractServiceShould {
 
     @Test
     public void createEmptyContractWithOfficeNameAsClientName() {
-        Contract emptyContract = contractService.createEmptyContract();
+        Contract emptyContract = contractService.createEmptyContract(LocalDate.now());
         Assert.assertEquals(ContractService.OFFICE_NAME,emptyContract.getClientName());
     }
 
