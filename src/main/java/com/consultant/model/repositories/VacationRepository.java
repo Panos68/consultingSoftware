@@ -16,4 +16,11 @@ public interface VacationRepository extends JpaRepository<Vacation, Long> {
             "WHERE u.id = ?1",
             nativeQuery = true)
     List<Vacation> findByUserId(Long userId);
+
+    @Query(value = "SELECT * FROM vacations v " +
+            "JOIN consultants c " +
+            "ON c.user_id=v.user_id " +
+            "WHERE v.user_id = ?1",
+            nativeQuery = true)
+    List<Vacation> findByConsultantId(Long consultantId);
 }

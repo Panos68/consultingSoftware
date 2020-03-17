@@ -25,10 +25,12 @@ public class Vacation {
     @Column
     private LocalDate endDate;
 
+    @Column
+    private Boolean isLongTerm;
+
     @Transient
     private String userName;
 
     @Transient
     private Long userId;
-
 }

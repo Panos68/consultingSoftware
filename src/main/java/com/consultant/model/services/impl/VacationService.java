@@ -18,9 +18,9 @@ import java.util.Set;
 @Service
 public class VacationService implements BasicOperationsService<VacationDTO> {
 
-    VacationRepository vacationRepository;
+    private VacationRepository vacationRepository;
 
-    UserService userService;
+    private UserService userService;
 
     @Autowired
     public VacationService(VacationRepository vacationRepository, UserService userService) {
@@ -64,6 +64,10 @@ public class VacationService implements BasicOperationsService<VacationDTO> {
         return mapVacationsToDTO(vacationList);
     }
 
+    public List<Vacation> getVacationsOfConsultant(Long consultantId) {
+        return vacationRepository.findByConsultantId(consultantId);
+    }
+
     private Set<VacationDTO> mapVacationsToDTO(List<Vacation> vacationList) {
         Set<VacationDTO> vacationDTOS = new LinkedHashSet<>();
         vacationList.forEach(vacation -> {
@@ -89,6 +93,7 @@ public class VacationService implements BasicOperationsService<VacationDTO> {
         existingVacation.setDescription(vacationDTO.getDescription());
         existingVacation.setEndDate(vacationDTO.getEndDate());
         existingVacation.setStartingDate(vacationDTO.getStartingDate());
+        existingVacation.setIsLongTerm(vacationDTO.getIsLongTerm());
         return existingVacation;
     }
 

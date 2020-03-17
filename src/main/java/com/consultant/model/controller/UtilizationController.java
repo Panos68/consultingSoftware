@@ -4,7 +4,12 @@ import com.consultant.model.dto.UtilizationDTO;
 import com.consultant.model.services.UtilizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Set;
 
 @RestController
@@ -23,12 +28,7 @@ public class UtilizationController {
         return ResponseEntity.ok(utilizationService.getAllUtilization());
     }
 
-    @GetMapping(value = "/current")
-    public ResponseEntity<UtilizationDTO> getCurrentUtilization() {
-        return ResponseEntity.ok(utilizationService.getCurrentCompleteUtil());
-    }
-
-    @PostMapping(value = "/current/calculate")
+    @PostMapping(value = "/calculate/current")
     public void calculateUtilization() {
         utilizationService.saveUtToDb();
     }
