@@ -300,7 +300,7 @@ public class UtilizationServiceShould {
     }
 
     @Test
-    public void returnFullUtOnPartiallyAssignedPlusLongTermVacation() {
+    public void returnZeroUtOnPartiallyAssignedPlusLongTermVacation() {
         consultantDTO.setDateJoined((LocalDate.of(2019, 12, 6)));
         consultantDTO.setDeleted(false);
         consultantDTO.setId(1L);
@@ -315,7 +315,7 @@ public class UtilizationServiceShould {
 
         utilizationService.calcUtilPercentOfGivenMonth(LocalDate.of(2020, 4, 1), utilization);
 
-        Assert.assertEquals(100, utilization.getAidedUt(), 0.00);
+        Assert.assertEquals(0, utilization.getAidedUt(), 0.00);
     }
 
     @Test

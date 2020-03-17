@@ -123,7 +123,6 @@ public class UtilizationService {
 
         AtomicLong aidedDays = new AtomicLong();
         AtomicLong nonAidedAssignedDays = new AtomicLong();
-        AtomicLong longTermLeaveDays = new AtomicLong();
         AtomicLong assignedDays = new AtomicLong();
         AtomicLong totalDays = new AtomicLong();
 
@@ -139,6 +138,7 @@ public class UtilizationService {
                                         getLongTermAbsenceForGivenDate(calculatedMonthDate, consultantDTO);
                                 if (longTermAbsenceForGivenDate.isPresent()) {
                                     dayAssignStatusDTO.setLongTermLeave(true);
+                                    continue;
                                 }
 
                                 Optional<Contract> contractOnGivenDay = getContractForGivenDate(calculatedMonthDate, consultantDTO);
@@ -157,7 +157,6 @@ public class UtilizationService {
                                 calculatedMonthDate = calculatedMonthDate.plusDays(1);
                             }
                             aidedDays.addAndGet(dayAssignStatusList.stream().filter(DayAssignStatusDTO::isAided).count());
-                            longTermLeaveDays.addAndGet(dayAssignStatusList.stream().filter(DayAssignStatusDTO::isLongTermLeave).count());
                             assignedDays.addAndGet(dayAssignStatusList.stream().filter(DayAssignStatusDTO::isAssigned).count());
                             nonAidedAssignedDays.addAndGet(dayAssignStatusList.stream()
                                     .filter(d -> !d.isAided() && d.isAssigned())
@@ -165,14 +164,14 @@ public class UtilizationService {
                         }
                 );
 
-        double maxAssignedDays = totalDays.get() - longTermLeaveDays.get();
+        double maxAssignedDays = totalDays.get() ;
         if (assignedDays.get() > 0 && maxAssignedDays > 0) {
-            utilization.setUt((assignedDays.get() - longTermLeaveDays.get()) / maxAssignedDays * 100);
+            utilization.setUt((assignedDays.get()) / maxAssignedDays * 100);
         } else {
             utilization.setUt(0.0);
         }
 
-        double assignedAidedDays = aidedDays.get() + nonAidedAssignedDays.get() - longTermLeaveDays.get();
+        double assignedAidedDays = aidedDays.get() + nonAidedAssignedDays.get();
         if (assignedAidedDays > 0 && maxAssignedDays > 0) {
             utilization.setAidedUt(assignedAidedDays / maxAssignedDays * 100);
         } else {
