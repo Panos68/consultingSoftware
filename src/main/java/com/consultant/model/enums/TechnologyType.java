@@ -1,5 +1,5 @@
 package com.consultant.model.enums;
 
-public enum Type {
+public enum TechnologyType {
     BE,FE,SOFT_SKILL,OTHER
 }

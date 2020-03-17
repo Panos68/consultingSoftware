@@ -1,6 +1,6 @@
 package com.consultant.model.dto;
 
-import com.consultant.model.enums.Type;
+import com.consultant.model.enums.TechnologyType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,5 +11,5 @@ public class TechnologyDTO {
 
     private String name;
 
-    private Type type;
+    private TechnologyType type;
 }

@@ -18,4 +18,5 @@ public class VacationDTO {
 
     private Long userId;
 
+    private Boolean isLongTerm;
 }

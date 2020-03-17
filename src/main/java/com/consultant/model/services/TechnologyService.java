@@ -3,7 +3,7 @@ package com.consultant.model.services;
 import com.consultant.model.dto.TechnologyDTO;
 import com.consultant.model.entities.Technology;
 import com.consultant.model.entities.TechnologyRating;
-import com.consultant.model.enums.Type;
+import com.consultant.model.enums.TechnologyType;
 import com.consultant.model.mappers.TechnologyMapper;
 import com.consultant.model.repositories.TechnologyRatingRepository;
 import com.consultant.model.repositories.TechnologyRepository;
@@ -39,12 +39,12 @@ public class TechnologyService {
         return technologyDTOS;
     }
 
-    public Technology getTechnologyByNameAndType(String name, Type type) {
+    public Technology getTechnologyByNameAndType(String name, TechnologyType type) {
         Optional<Technology> optionalTechnology = technologyRepository.findByNameAndType(name, type);
         return optionalTechnology.orElseGet(() -> createNewTechnology(name, type));
     }
 
-    private Technology createNewTechnology(String name, Type type) {
+    private Technology createNewTechnology(String name, TechnologyType type) {
         Technology technology = new Technology();
         technology.setName(name);
         technology.setType(type);

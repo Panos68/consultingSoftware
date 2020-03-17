@@ -19,10 +19,18 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConsultantServiceShould {
@@ -60,7 +68,7 @@ public class ConsultantServiceShould {
 
     @Before
     public void setUp() {
-        consultantService = new ConsultantService(consultantRepository,clientTeamService,clientService,contractService,technologyService);
+        consultantService = new ConsultantService(consultantRepository, clientTeamService, clientService, contractService, technologyService);
 
         consultant1.setId(consultantId);
 
@@ -70,7 +78,7 @@ public class ConsultantServiceShould {
 
         Mockito.when(contractService.getActiveContractByConsultant(consultant1)).thenReturn(activeContract);
 
-        when(contractService.terminateActiveContract(Mockito.any(),Mockito.any())).thenReturn(activeContract);
+        when(contractService.terminateActiveContract(Mockito.any(), Mockito.any())).thenReturn(activeContract);
 
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.ofNullable(consultant1));
     }
@@ -103,10 +111,10 @@ public class ConsultantServiceShould {
 
     @Test
     public void createEmptyContractWhenCreatingConsultantWithoutContract() throws NoMatchException {
-        consultantDTO.setDateJoined(LocalDate.of(2020,1,1));
+        consultantDTO.setDateJoined(LocalDate.of(2020, 1, 1));
         consultantService.create(consultantDTO);
 
-        verify(contractService, times(1)).createEmptyContract(LocalDate.of(2020,1,1));
+        verify(contractService, times(1)).createEmptyContract(LocalDate.of(2020, 1, 1));
     }
 
     @Test
@@ -145,7 +153,7 @@ public class ConsultantServiceShould {
         consultantDTO.setActiveContract(contractDTO);
         consultantService.edit(consultantDTO);
 
-        verify(contractService, times(1)).updateContract(Mockito.any(),any());
+        verify(contractService, times(1)).updateContract(Mockito.any(), any());
     }
 
     @Test(expected = NoMatchException.class)
@@ -162,15 +170,15 @@ public class ConsultantServiceShould {
         activeContract.setClientName("Client");
 
         consultantService.createNewContractForExistingConsultant(contractDTO);
-        verify(contractService, times(1)).terminateActiveContract(Mockito.any(),Mockito.any());
+        verify(contractService, times(1)).terminateActiveContract(Mockito.any(), Mockito.any());
     }
 
     @Test
     public void saveToRepositoryWhenTerminateContractForAssignedConsultant() throws Exception {
         activeContract.setClientName("Client");
-        activeContract.setEndDate(LocalDate.of(2020,2,1));
+        activeContract.setEndDate(LocalDate.of(2020, 2, 1));
 
-        consultantService.terminateContract(consultantId,null);
+        consultantService.terminateContract(consultantId, null);
 
         verify(consultantRepository, times(1)).saveAndFlush(Mockito.any());
     }
@@ -199,6 +207,18 @@ public class ConsultantServiceShould {
         consultantDTO.setRatings(technologyRatingDTOS);
         consultantService.create(consultantDTO);
 
-        verify(technologyService, times(1)).saveRating(Mockito.any(),Mockito.any(),Mockito.any());
+        verify(technologyService, times(1)).saveRating(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    public void returnActiveConsultants() throws Exception {
+        consultant1.setDeleted(false);
+        consultantList.add(consultant1);
+        consultant2.setDeleted(true);
+        consultantList.add(consultant2);
+
+        Set<ConsultantDTO> consultantDTOS = consultantService.getActiveConsultants();
+
+        Assert.assertThat(consultantDTOS.size(), is(1));
     }
 }

@@ -1,6 +1,6 @@
 package com.consultant.model.entities;
 
-import com.consultant.model.enums.Type;
+import com.consultant.model.enums.TechnologyType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +32,7 @@ public class Technology {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private Type type;
+    private TechnologyType type;
 
     @OneToMany(mappedBy = "technology")
     @JsonManagedReference(value="technology-rating")
