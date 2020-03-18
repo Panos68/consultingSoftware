@@ -124,7 +124,7 @@ public class UtilizationService {
         AtomicLong aidedDays = new AtomicLong();
         AtomicLong nonAidedAssignedDays = new AtomicLong();
         AtomicLong assignedDays = new AtomicLong();
-        AtomicLong totalDays = new AtomicLong();
+        AtomicLong maxAssignedDays = new AtomicLong();
 
         consultantsJoinedBeforeGivenMonth
                 .forEach(consultantDTO -> {
@@ -148,7 +148,7 @@ public class UtilizationService {
                                     } else {
                                         dayAssignStatusDTO.setAssigned(true);
                                     }
-                                    totalDays.addAndGet(1);
+                                    maxAssignedDays.addAndGet(1);
                                     if (consultantDTO.getDateJoined().plusMonths(3).isAfter(calculatedMonthDate)) {
                                         dayAssignStatusDTO.setAided(true);
                                     }
@@ -164,16 +164,15 @@ public class UtilizationService {
                         }
                 );
 
-        double maxAssignedDays = totalDays.get() ;
-        if (assignedDays.get() > 0 && maxAssignedDays > 0) {
-            utilization.setUt((assignedDays.get()) / maxAssignedDays * 100);
+        if (assignedDays.get() > 0 && maxAssignedDays.doubleValue() > 0) {
+            utilization.setUt((assignedDays.doubleValue() / maxAssignedDays.doubleValue()) * 100);
         } else {
             utilization.setUt(0.0);
         }
 
-        double assignedAidedDays = aidedDays.get() + nonAidedAssignedDays.get();
-        if (assignedAidedDays > 0 && maxAssignedDays > 0) {
-            utilization.setAidedUt(assignedAidedDays / maxAssignedDays * 100);
+        double assignedAidedDays = aidedDays.doubleValue() + nonAidedAssignedDays.doubleValue();
+        if (assignedAidedDays > 0 && maxAssignedDays.doubleValue() > 0) {
+            utilization.setAidedUt(assignedAidedDays / maxAssignedDays.doubleValue() * 100);
         } else {
             utilization.setAidedUt(0.0);
         }
