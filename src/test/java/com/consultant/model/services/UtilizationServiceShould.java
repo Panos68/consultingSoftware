@@ -49,7 +49,7 @@ public class UtilizationServiceShould {
     @Before
     public void setUp() {
         utilizationService = new UtilizationService(utilizationRepository, consultantService, vacationService);
-        Mockito.when(consultantService.getActiveConsultants()).thenReturn(consultantDTOS);
+        Mockito.when(consultantService.getAll()).thenReturn(consultantDTOS);
         Mockito.when(utilizationRepository.findAll()).thenReturn(utilizationList);
     }
 
