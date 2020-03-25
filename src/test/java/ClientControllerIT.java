@@ -16,8 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ClientControllerIT extends AbstractControllerIT {
 
-    Gson gson = new Gson();
-
     @Test
     public void testClientsRetrieving() throws Exception {
         addAuthorizationRequestToHeader();

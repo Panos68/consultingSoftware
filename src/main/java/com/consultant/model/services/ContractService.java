@@ -1,6 +1,7 @@
 package com.consultant.model.services;
 
 import com.consultant.model.dto.ContractDTO;
+import com.consultant.model.entities.Client;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.entities.Contract;
 import com.consultant.model.mappers.ContractMapper;
@@ -11,14 +12,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContractService {
     private ContractRepository contractRepository;
 
     private ClientService clientService;
-
-    public static final String OFFICE_NAME = "Mirado";
 
     @Autowired
     public ContractService(ContractRepository contractRepository, ClientService clientService) {
@@ -30,6 +30,9 @@ public class ContractService {
         Contract activeContract = getActiveContractByConsultant(existingConsultant);
         if (terminatedDate != null) {
             activeContract.setEndDate(terminatedDate);
+        }
+        if (activeContract.getEndDate() == null) {
+            activeContract.setEndDate(LocalDate.now());
         }
         activeContract.setActive(false);
 
@@ -45,14 +48,13 @@ public class ContractService {
     public Contract createEmptyContract(LocalDate startingDate) {
         Contract contract = new Contract();
         contract.setActive(true);
-        contract.setClientName(OFFICE_NAME);
         contract.setStartedDate(startingDate);
 
         return contract;
     }
 
     public void updateContract(Contract activeContract, ContractDTO contractDTO) {
-        if (contractDTO !=null) {
+        if (contractDTO != null) {
 
             activeContract.setEndDate(contractDTO.getEndDate());
             activeContract.setStartedDate(contractDTO.getStartedDate());
@@ -60,7 +62,7 @@ public class ContractService {
             activeContract.setPrice(contractDTO.getPrice());
             activeContract.setSigned(contractDTO.getSigned());
             activeContract.setDiscount(contractDTO.getDiscount());
-            activeContract.setClientName(clientService.getClientNameOfTeam(contractDTO.getTeamId()));
+            setClient(contractDTO, activeContract);
 
             contractRepository.saveAndFlush(activeContract);
         }
@@ -68,9 +70,14 @@ public class ContractService {
 
     public Contract createNewContract(ContractDTO contractDTO) {
         Contract contract = ContractMapper.INSTANCE.contractDTOToContract(contractDTO);
-        contract.setClientName(clientService.getClientNameOfTeam(contractDTO.getTeamId()));
+        setClient(contractDTO, contract);
         contract.setActive(true);
 
         return contract;
+    }
+
+    private void setClient(ContractDTO contractDTO, Contract contract) {
+        Optional<Client> clientOfTeam = clientService.getClientOfTeam(contractDTO.getTeamId());
+        clientOfTeam.ifPresent(contract::setClient);
     }
 }

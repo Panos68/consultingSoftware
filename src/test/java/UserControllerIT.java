@@ -20,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerIT extends AbstractControllerIT {
 
-    Gson gson = new Gson();
-
     @Test
     public void testUserAuthentication() throws Exception {
         JSONObject jsonObject = getUserAuthenticationResponseAsJson();

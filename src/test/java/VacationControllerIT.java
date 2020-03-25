@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class VacationControllerIT extends AbstractControllerIT {
 
-    Gson gson = new Gson();
-
     @Test
     public void testVacationRetrieving() throws Exception {
         addAuthorizationRequestToHeader();

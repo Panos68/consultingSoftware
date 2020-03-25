@@ -197,7 +197,7 @@ public class UtilizationByConsultantService {
                 Optional<Contract> consultantLatestContract = consultantDTO.getContracts().stream()
                         .filter(contract -> contract.getStartedDate().isBefore(firstDayOfGivenMonth))
                         .max(Comparator.comparing(Contract::getStartedDate));
-                if (consultantLatestContract.isPresent() && !consultantLatestContract.get().getClientName().equals(ContractService.OFFICE_NAME)) {
+                if (consultantLatestContract.isPresent() && consultantLatestContract.get().getClient() != null) {
                     if (consultantLatestContract.get().getStartedDate().getMonthValue() != givenDate.minusMonths(1).getMonthValue()) {
                         //consultant was assigned before the calculated month
                         totalAssignedDays.addAndGet(monthMaxDays);
@@ -244,14 +244,14 @@ public class UtilizationByConsultantService {
                 } else {
                     consultantAssignedDays = monthMaxDays - contract.getStartedDate().getDayOfMonth() + 1;
                 }
-                if (!contract.getClientName().equals(ContractService.OFFICE_NAME)) {
+                if (contract.getClient()!=null) {
                     totalAssignedDays.addAndGet(consultantAssignedDays);
                 }
                 maxAssignedDays.addAndGet(consultantAssignedDays);
             });
             if (previousMonthsContractEndedOnGivenMonth.isPresent()) {
                 Contract finishedContract = previousMonthsContractEndedOnGivenMonth.get();
-                if (!finishedContract.getClientName().equals(ContractService.OFFICE_NAME)) {
+                if (finishedContract.getClient()!=null) {
                     totalAssignedDays.addAndGet(finishedContract.getEndDate().getDayOfMonth());
                 }
                 maxAssignedDays.addAndGet(finishedContract.getEndDate().getDayOfMonth());
@@ -262,7 +262,7 @@ public class UtilizationByConsultantService {
                     .filter(contract -> contract.getStartedDate().isBefore(firstDayOfGivenMonth))
                     .max(Comparator.comparing(Contract::getStartedDate));
             if (consultantLatestContractOnGivenDate.isPresent()) {
-                if (!consultantLatestContractOnGivenDate.get().getClientName().equals(ContractService.OFFICE_NAME)) {
+                if (consultantLatestContractOnGivenDate.get().getClient()!=null) {
                     totalAssignedDays.addAndGet(monthMaxDays);
                 }
                 maxAssignedDays.addAndGet(monthMaxDays);

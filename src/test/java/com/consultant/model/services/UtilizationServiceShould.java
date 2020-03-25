@@ -1,7 +1,7 @@
 package com.consultant.model.services;
 
 import com.consultant.model.dto.ConsultantDTO;
-import com.consultant.model.dto.VacationDTO;
+import com.consultant.model.entities.Client;
 import com.consultant.model.entities.Contract;
 import com.consultant.model.entities.Utilization;
 import com.consultant.model.entities.Vacation;
@@ -46,6 +46,8 @@ public class UtilizationServiceShould {
 
     private Utilization utilization = new Utilization();
 
+    private Client client = new Client();
+
     @Before
     public void setUp() {
         utilizationService = new UtilizationService(utilizationRepository, consultantService, vacationService);
@@ -56,7 +58,7 @@ public class UtilizationServiceShould {
     private void initializeContract(Contract contract, LocalDate startDate, ConsultantDTO consultantDTO) {
         contract.setStartedDate(startDate);
         contract.setActive(true);
-        contract.setClientName("Client");
+        contract.setClient(client);
         consultantDTO.getContracts().add(contract);
     }
 
@@ -132,7 +134,7 @@ public class UtilizationServiceShould {
         createConsultant(LocalDate.now().minusMonths(1));
         Contract contract = new Contract();
         initializeContract(contract, (LocalDate.now().minusMonths(1)), consultantDTO);
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
 
         utilizationService.calcUtilPercentOfGivenMonth(LocalDate.now(), utilization);
 
@@ -157,7 +159,7 @@ public class UtilizationServiceShould {
         Contract contract = new Contract();
         initializeContract(contract, (LocalDate.now().minusMonths(1)), consultantDTO);
         contract.setEndDate(LocalDate.now().minusMonths(1).plusDays(1));
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
 
         utilizationService.calcUtilPercentOfGivenMonth(LocalDate.now(), utilization);
 
@@ -182,7 +184,7 @@ public class UtilizationServiceShould {
         Contract contract = new Contract();
         initializeContract(contract, (LocalDate.now().minusMonths(2)), consultantDTO);
         contract.setEndDate(LocalDate.now().minusMonths(1).plusDays(1));
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
 
         utilizationService.calcUtilPercentOfGivenMonth(LocalDate.now(), utilization);
 
@@ -195,7 +197,7 @@ public class UtilizationServiceShould {
         Contract contract = new Contract();
         initializeContract(contract, LocalDate.of(2020, 3, 1), consultantDTO);
         contract.setEndDate(LocalDate.of(2020, 3, 10));
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
         contract.setActive(false);
         Contract contract2 = new Contract();
         initializeContract(contract2, LocalDate.of(2020, 3, 11), consultantDTO);
@@ -220,7 +222,7 @@ public class UtilizationServiceShould {
         createConsultant(LocalDate.of(2019, 12, 3));
         Contract contract = new Contract();
         initializeContract(contract, LocalDate.of(2019, 12, 3), consultantDTO);
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
 
         utilizationService.calcUtilPercentOfGivenMonth(LocalDate.of(2020, 4, 1), utilization);
 
@@ -232,7 +234,6 @@ public class UtilizationServiceShould {
         createConsultant(LocalDate.of(2020, 3, 5));
         Contract contract = new Contract();
         initializeContract(contract, LocalDate.of(2019, 12, 3), consultantDTO);
-        contract.setClientName(ContractService.OFFICE_NAME);
 
         utilizationService.calcUtilPercentOfGivenMonth(LocalDate.of(2020, 4, 1), utilization);
 
@@ -244,7 +245,6 @@ public class UtilizationServiceShould {
         createConsultant(LocalDate.of(2019, 12, 6));
         Contract contract = new Contract();
         initializeContract(contract, LocalDate.of(2019, 12, 6), consultantDTO);
-        contract.setClientName(ContractService.OFFICE_NAME);
         initializeContract(contract, LocalDate.of(2020, 2, 3), consultantDTO);
 
         utilizationService.calcUtilPercentOfGivenMonth(LocalDate.of(2020, 4, 1), utilization);
@@ -258,7 +258,7 @@ public class UtilizationServiceShould {
 
         Contract officeContract = new Contract();
         initializeContract(officeContract, LocalDate.of(2019, 12, 3), consultantDTO);
-        officeContract.setClientName(ContractService.OFFICE_NAME);
+        officeContract.setClient(null);
         officeContract.setEndDate(LocalDate.of(2020, 3, 8));
         Contract clientContract = new Contract();
         initializeContract(clientContract, LocalDate.of(2020, 3, 9), consultantDTO);
@@ -273,7 +273,6 @@ public class UtilizationServiceShould {
         createConsultant(LocalDate.of(2019, 12, 6));
         Contract officeContract = new Contract();
         initializeContract(officeContract, LocalDate.of(2019, 12, 6), consultantDTO);
-        officeContract.setClientName(ContractService.OFFICE_NAME);
         officeContract.setEndDate(LocalDate.of(2020, 3, 2));
         Contract clientContract = new Contract();
         initializeContract(clientContract, LocalDate.of(2020, 3, 3), consultantDTO);
@@ -328,7 +327,7 @@ public class UtilizationServiceShould {
 
         Contract officeContract = new Contract();
         initializeContract(officeContract, LocalDate.of(2019, 12, 6), consultantDTO);
-        officeContract.setClientName(ContractService.OFFICE_NAME);
+        officeContract.setClient(null);
         officeContract.setEndDate(LocalDate.of(2020, 3, 10));
         Contract clientContract = new Contract();
         initializeContract(clientContract, LocalDate.of(2020, 3, 11), consultantDTO);

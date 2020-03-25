@@ -11,7 +11,6 @@ import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.ConsultantMapper;
 import com.consultant.model.mappers.TechnologyMapper;
 import com.consultant.model.repositories.ConsultantRepository;
-import com.consultant.model.services.BasicOperationsService;
 import com.consultant.model.services.ContractService;
 import com.consultant.model.services.TechnologyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.consultant.model.services.ContractService.OFFICE_NAME;
 
 @Service
-public class ConsultantService implements BasicOperationsService<ConsultantDTO> {
+public class ConsultantService {
 
     private ConsultantRepository consultantRepository;
 
@@ -51,7 +49,6 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         this.technologyService = technologyService;
     }
 
-    @Override
     public Set<ConsultantDTO> getAll() {
         List<Consultant> consultantsList = consultantRepository.findAll();
         Set<ConsultantDTO> consultantsDTOS = new LinkedHashSet<>();
@@ -64,7 +61,6 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         return consultantsDTOS;
     }
 
-    @Override
     public void create(ConsultantDTO consultantDTO) throws NoMatchException {
         final Consultant consultant = ConsultantMapper.INSTANCE.consultantDTOToConsultant(consultantDTO);
         consultant.setDeleted(false);
@@ -88,7 +84,6 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
     }
 
-    @Override
     public void edit(ConsultantDTO consultantDTO) throws NoMatchException {
         Consultant existingConsultant = getExistingConsultantById(consultantDTO.getId());
 
@@ -111,11 +106,11 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         assignConsultantToTeam(consultantDTO.getTeamId(), updatedConsultant);
     }
 
-    @Override
-    public void delete(Long id) throws NoMatchException {
+    public void delete(Long id, LocalDate terminatedDate) throws NoMatchException {
         Consultant existingConsultant = getExistingConsultantById(id);
         existingConsultant.setDeleted(true);
 
+        contractService.terminateActiveContract(terminatedDate, existingConsultant);
         consultantRepository.saveAndFlush(existingConsultant);
     }
 
@@ -138,7 +133,7 @@ public class ConsultantService implements BasicOperationsService<ConsultantDTO> 
         Consultant existingConsultant = getExistingConsultantById(consultantId);
 
         Contract activeContract = contractService.getActiveContractByConsultant(existingConsultant);
-        if (!activeContract.getClientName().equals(OFFICE_NAME)) {
+        if (activeContract.getClient() != null) {
             Contract terminatedContract = contractService.terminateActiveContract(terminatedDate, existingConsultant);
             Contract emptyContract = contractService.createEmptyContract(terminatedContract.getEndDate());
             existingConsultant.getContracts().add(emptyContract);

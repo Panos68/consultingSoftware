@@ -23,4 +23,8 @@ public class ContractDTO {
     private Long teamId;
 
     private Integer discount;
+
+    private ClientDTO client;
+
+    private Boolean active;
 }

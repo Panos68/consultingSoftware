@@ -1,4 +1,7 @@
 import com.consultant.model.dto.UserDTO;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -15,6 +18,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
 @RunWith(SpringRunner.class)
@@ -32,6 +36,10 @@ public abstract class AbstractControllerIT {
     HttpHeaders headers = new HttpHeaders();
 
     UserDTO userDTO = new UserDTO();
+
+    final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class,
+            (JsonDeserializer<LocalDate>)
+                    (jsonElement, type, jsonDeserializationContext) -> LocalDate.parse(jsonElement.getAsJsonPrimitive().getAsString())).create();
 
     @Before
     public void setUp() {

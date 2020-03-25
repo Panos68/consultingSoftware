@@ -56,7 +56,7 @@ public class UtilizationService {
 
     private LocalDate getFirstDayOfPreviousMonth(LocalDate date) {
         int monthValue = date.minusMonths(1).getMonthValue();
-        int year = monthValue == 12 ? date.getYear()-1 : date.getYear();
+        int year = monthValue == 12 ? date.getYear() - 1 : date.getYear();
         return LocalDate.of(year, monthValue, 1);
     }
 
@@ -151,7 +151,7 @@ public class UtilizationService {
 
                                 Optional<Contract> contractOnGivenDay = getContractForGivenDate(calculatedMonthDate, consultantDTO);
                                 if (contractOnGivenDay.isPresent()) {
-                                    if (contractOnGivenDay.get().getClientName().equals(ContractService.OFFICE_NAME)) {
+                                    if (contractOnGivenDay.get().getClient() == null) {
                                         dayAssignStatusDTO.setOffice(true);
                                     } else {
                                         dayAssignStatusDTO.setAssigned(true);

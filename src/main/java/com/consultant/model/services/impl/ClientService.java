@@ -86,11 +86,6 @@ public class ClientService implements BasicOperationsService<ClientDTO> {
         return clientRepository.findByTeamId(teamId);
     }
 
-    public String getClientNameOfTeam(Long teamId) {
-        Optional<Client> clientOfTeam = getClientOfTeam(teamId);
-        return clientOfTeam.isPresent() ? clientOfTeam.get().getName() : "";
-    }
-
     private void setLastInteraction(ClientTeam clientTeam, Client existingClient) {
         if (existingClient.getLastInteractionDate() != null && clientTeam.getLastInteractionDate() != null &&
                 existingClient.getLastInteractionDate().isBefore(clientTeam.getLastInteractionDate())) {

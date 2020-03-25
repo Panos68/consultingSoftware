@@ -1,10 +1,10 @@
 package com.consultant.model.services.deprecated;
 
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.entities.Client;
 import com.consultant.model.entities.Contract;
 import com.consultant.model.entities.Utilization;
 import com.consultant.model.repositories.UtilizationRepository;
-import com.consultant.model.services.ContractService;
 import com.consultant.model.services.impl.ConsultantService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +39,8 @@ public class UtilizationServiceByConsultantShould {
 
     private ConsultantDTO consultantDTO = new ConsultantDTO();
 
+    private Client client = new Client();
+
     @Before
     public void setUp() {
         utilizationService = new UtilizationByConsultantService(utilizationRepository, consultantService);
@@ -49,7 +51,7 @@ public class UtilizationServiceByConsultantShould {
     private void initializeContract(Contract contract, LocalDate startDate, ConsultantDTO consultantDTO) {
         contract.setStartedDate(startDate);
         contract.setActive(true);
-        contract.setClientName("Client");
+        contract.setClient(client);
         consultantDTO.getContracts().add(contract);
     }
 
@@ -126,7 +128,7 @@ public class UtilizationServiceByConsultantShould {
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
         initializeContract(contract, (LocalDate.now().minusMonths(1)), consultantDTO);
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
 
         Assert.assertEquals(0, utilizationService.calcUtilPercentOfGivenMonth(LocalDate.now()), 0.0);
     }
@@ -151,7 +153,7 @@ public class UtilizationServiceByConsultantShould {
         consultantDTOS.add(consultantDTO);
         initializeContract(contract, (LocalDate.now().minusMonths(1)), consultantDTO);
         contract.setEndDate(LocalDate.now().minusMonths(1).plusDays(1));
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
 
         Assert.assertEquals(0, utilizationService.calcUtilPercentOfGivenMonth(LocalDate.now()), 0.0);
     }
@@ -178,7 +180,7 @@ public class UtilizationServiceByConsultantShould {
         consultantDTOS.add(consultantDTO);
         initializeContract(contract, (LocalDate.now().minusMonths(2)), consultantDTO);
         contract.setEndDate(LocalDate.now().minusMonths(1).plusDays(1));
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
 
         Assert.assertEquals(0, utilizationService.calcUtilPercentOfGivenMonth(LocalDate.now()), 0.0);
     }
@@ -191,7 +193,7 @@ public class UtilizationServiceByConsultantShould {
         consultantDTOS.add(consultantDTO);
         initializeContract(contract, LocalDate.of(2020,3,1), consultantDTO);
         contract.setEndDate(LocalDate.of(2020,3,10));
-        contract.setClientName(ContractService.OFFICE_NAME);
+        contract.setClient(null);
         contract.setActive(false);
         Contract contract2 = new Contract();
         initializeContract(contract2, LocalDate.of(2020,3,11), consultantDTO);

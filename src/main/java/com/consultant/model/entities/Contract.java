@@ -1,5 +1,6 @@
 package com.consultant.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,8 +33,10 @@ public class Contract {
     @Column
     private Boolean signed;
 
-    @Column
-    private String clientName;
+    @ManyToOne
+    @JoinColumn(name = "clientId")
+    @JsonIgnoreProperties("clientTeams")
+    private Client client;
 
     @Column
     private Boolean active;

@@ -4,9 +4,11 @@ import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.services.impl.ConsultantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @RestController
@@ -36,7 +38,10 @@ public class ConsultantController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteConsultant(@PathVariable Long id) throws NoMatchException {
-        consultantService.delete(id);
+    public void deleteConsultant(@PathVariable Long id,
+                                 @RequestParam(value = "terminatedDate",required = false)
+                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate terminatedDate)
+            throws NoMatchException {
+        consultantService.delete(id, terminatedDate);
     }
 }

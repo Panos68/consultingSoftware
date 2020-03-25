@@ -3,6 +3,7 @@ package com.consultant.model.services;
 import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.dto.ContractDTO;
 import com.consultant.model.dto.TechnologyRatingDTO;
+import com.consultant.model.entities.Client;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.entities.Contract;
 import com.consultant.model.exception.NoMatchException;
@@ -66,6 +67,8 @@ public class ConsultantServiceShould {
 
     private Contract activeContract = new Contract();
 
+    private Client client = new Client();
+
     @Before
     public void setUp() {
         consultantService = new ConsultantService(consultantRepository, clientTeamService, clientService, contractService, technologyService);
@@ -126,7 +129,7 @@ public class ConsultantServiceShould {
 
     @Test
     public void saveInRepositoryWhenDeletingExistingConsultant() throws Exception {
-        consultantService.delete(consultantId);
+        consultantService.delete(consultantId,LocalDate.now());
 
         verify(consultantRepository, times(1)).saveAndFlush(consultant1);
     }
@@ -135,7 +138,7 @@ public class ConsultantServiceShould {
     public void throwNoMatchExceptionWhenDeletingNonExistingConsultant() throws Exception {
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.empty());
 
-        consultantService.delete(consultantId);
+        consultantService.delete(consultantId,LocalDate.now());
     }
 
     @Test
@@ -167,7 +170,7 @@ public class ConsultantServiceShould {
 
     @Test
     public void terminateOldContractWhenCreatingNewOneForAssignedConsultant() throws Exception {
-        activeContract.setClientName("Client");
+        activeContract.setClient(client);
 
         consultantService.createNewContractForExistingConsultant(contractDTO);
         verify(contractService, times(1)).terminateActiveContract(Mockito.any(), Mockito.any());
@@ -175,7 +178,7 @@ public class ConsultantServiceShould {
 
     @Test
     public void saveToRepositoryWhenTerminateContractForAssignedConsultant() throws Exception {
-        activeContract.setClientName("Client");
+        activeContract.setClient(client);
         activeContract.setEndDate(LocalDate.of(2020, 2, 1));
 
         consultantService.terminateContract(consultantId, null);
@@ -186,7 +189,7 @@ public class ConsultantServiceShould {
 
     @Test
     public void createNewContractForAssignedConsultant() throws Exception {
-        activeContract.setClientName("Client");
+        activeContract.setClient(client);
 
         consultantService.createNewContractForExistingConsultant(contractDTO);
 

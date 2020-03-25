@@ -1,7 +1,7 @@
 import com.consultant.model.dto.ClientTeamDTO;
 import com.consultant.model.dto.ConsultantDTO;
 import com.consultant.model.dto.ContractDTO;
-import com.google.gson.Gson;
+import com.consultant.model.entities.Contract;
 import com.google.gson.reflect.TypeToken;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -13,12 +13,13 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ConsultantControllerIT extends AbstractControllerIT {
-
-    Gson gson = new Gson();
 
     @Test
     public void testConsultantsRetrieving() throws Exception {
@@ -80,7 +81,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
 
         HttpEntity<ConsultantDTO> entity = new HttpEntity<>(null, headers);
         ResponseEntity<String> deleteConsultantResponse = restTemplate.exchange(
-                createURLWithPort("/consultants/3"), HttpMethod.DELETE, entity, String.class);
+                createURLWithPort("/consultants/3/?terminatedDate=2020-01-01"), HttpMethod.DELETE, entity, String.class);
 
         HttpEntity<ConsultantDTO> getConsultantsEntity = new HttpEntity<>(null, headers);
         ResponseEntity<String> response = restTemplate.exchange(
@@ -90,7 +91,15 @@ public class ConsultantControllerIT extends AbstractControllerIT {
 
         List<ConsultantDTO> consultantDTOS = gson.fromJson(response.getBody(), type);
 
-        assertTrue(Objects.requireNonNull(consultantDTOS).stream().anyMatch(ConsultantDTO::getDeleted));
+        Optional<ConsultantDTO> deletedConsultant = Objects.requireNonNull(consultantDTOS).stream()
+                .filter(ConsultantDTO::getDeleted)
+                .findFirst();
+
+        assertTrue(deletedConsultant.isPresent());
+        assertFalse(deletedConsultant.get()
+                .getContracts()
+                .stream()
+                .anyMatch(Contract::getActive));
         assertEquals(HttpStatus.OK,deleteConsultantResponse.getStatusCode());
     }
 

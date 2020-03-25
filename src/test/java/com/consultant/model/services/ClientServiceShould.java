@@ -79,7 +79,7 @@ public class ClientServiceShould {
     public void saveToRepositoryWhenCreatingClient() throws NoMatchException {
         clientService.create(clientDTO1);
 
-        verify(clientRepository, times(1)).saveAndFlush(client1);
+        verify(clientRepository, times(1)).saveAndFlush(Mockito.any());
     }
 
     @Test(expected = EntityAlreadyExists.class)

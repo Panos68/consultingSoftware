@@ -18,9 +18,9 @@ INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`
 INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`,`team_id`,deleted) VALUES ('2','EditConsultant', 'User', '200', 'Some other text','1',false);
 INSERT INTO `consultants` (`id`,`first_name`, `last_name`, `list_price`, `other`,`team_id`,deleted) VALUES ('3','DeleteConsultant', 'User', '200', 'Some other text','1',false);
 
-INSERT INTO `contracts` (`id`, `active`, `client_name`, `discount`, `price`, `signed`, `consultant_id`) VALUES ('1', true, 'MainClient', '10', '100', true, '1');
-INSERT INTO `contracts` (`id`, `active`, `client_name`, `consultant_id`) VALUES ('3', true, 'Mirado',2);
-INSERT INTO `contracts` (`id`, `active`, `client_name`, `discount`,`price`, `signed`, `consultant_id`) VALUES ('2', true, 'EditClient', '10', '100', true, '3');
+INSERT INTO `contracts` (`id`, `active`, `client_id`, `discount`, `price`, `signed`, `consultant_id`) VALUES ('1', true, 1, '10', '100', true, '1');
+INSERT INTO `contracts` (`id`, `active`, `client_id`, `consultant_id`) VALUES ('3', true, null,2);
+INSERT INTO `contracts` (`id`, `active`, `client_id`, `discount`,`price`, `signed`, `consultant_id`) VALUES ('2', true, 2, '10', '100', true, '3');
 
 INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `linkedin_url`, `location`, `role`, `source`) VALUES ('1', 'comment', 'company', 'consultant', 'no', 'MainLinkedIn', 'Stockholm', 'backend', 'source');
 INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `linkedin_url`, `location`, `role`, `source`) VALUES ('2', 'comment', 'company', 'consultant', 'no', 'EditLinkedIn', 'Stockholm', 'backend', 'source');

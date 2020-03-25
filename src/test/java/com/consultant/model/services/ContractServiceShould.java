@@ -1,6 +1,7 @@
 package com.consultant.model.services;
 
 import com.consultant.model.dto.ContractDTO;
+import com.consultant.model.entities.Client;
 import com.consultant.model.entities.Consultant;
 import com.consultant.model.entities.Contract;
 import com.consultant.model.repositories.ContractRepository;
@@ -24,32 +25,39 @@ import static org.junit.Assert.*;
 public class ContractServiceShould {
 
     @Mock
-    ContractRepository contractRepository;
+    private ContractRepository contractRepository;
 
     @Mock
-    ClientService clientService;
+    private ClientService clientService;
 
-    ContractService contractService;
+    private ContractService contractService;
 
-    Consultant consultant = new Consultant();
+    private Consultant consultant = new Consultant();
 
-    Contract activeContract = new Contract();
+    private Contract activeContract = new Contract();
 
-    Contract expiredContract = new Contract();
+    private Contract expiredContract = new Contract();
 
-    List<Contract> contracts = new ArrayList<>();
+    private List<Contract> contracts = new ArrayList<>();
 
-    LocalDate endDate = LocalDate.of(2020, 10, 10);
+    private LocalDate endDate = LocalDate.of(2020, 10, 10);
+
+    private Client activeClient = new Client();
+
+    private Client oldClient = new Client();
 
     @Before
     public void setUp() throws Exception {
+        activeClient.setId(1L);
+        oldClient.setId(2L);
+
         contractService = new ContractService(contractRepository, clientService);
         expiredContract.setActive(false);
         activeContract.setActive(true);
         contracts.add(expiredContract);
         contracts.add(activeContract);
-        activeContract.setClientName("Client");
-        expiredContract.setClientName("OldClient");
+        activeContract.setClient(activeClient);
+        expiredContract.setClient(oldClient);
         activeContract.setEndDate(endDate);
         consultant.setContracts(contracts);
     }
@@ -61,9 +69,9 @@ public class ContractServiceShould {
     }
 
     @Test
-    public void createEmptyContractWithOfficeNameAsClientName() {
+    public void createEmptyContractWithNullClient() {
         Contract emptyContract = contractService.createEmptyContract(LocalDate.now());
-        Assert.assertEquals(ContractService.OFFICE_NAME,emptyContract.getClientName());
+        assertNull(emptyContract.getClient());
     }
 
     @Test
@@ -76,7 +84,7 @@ public class ContractServiceShould {
     @Test
     public void keepEndDateIfTerminatedDateIsNull() {
         contractService.terminateActiveContract(null,consultant);
-        Optional<Contract> terminatedContract = consultant.getContracts().stream().filter(c -> c.getClientName().equals("Client")).findFirst();
+        Optional<Contract> terminatedContract = consultant.getContracts().stream().filter(c -> c.getClient().equals(activeClient)).findFirst();
         assertEquals(terminatedContract.get().getEndDate(),endDate);
     }
 
@@ -84,7 +92,7 @@ public class ContractServiceShould {
     public void changeToTerminatedDateOnTermination() {
         LocalDate terminatedDate = LocalDate.of(2022, 10, 10);
         contractService.terminateActiveContract(terminatedDate,consultant);
-        Optional<Contract> terminatedContract = consultant.getContracts().stream().filter(c -> c.getClientName().equals("Client")).findFirst();
+        Optional<Contract> terminatedContract = consultant.getContracts().stream().filter(c -> c.getClient().equals(activeClient)).findFirst();
         assertEquals(terminatedContract.get().getEndDate(),terminatedDate);
     }
 
