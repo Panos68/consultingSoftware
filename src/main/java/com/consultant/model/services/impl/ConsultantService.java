@@ -13,8 +13,11 @@ import com.consultant.model.mappers.TechnologyMapper;
 import com.consultant.model.repositories.ConsultantRepository;
 import com.consultant.model.services.ContractService;
 import com.consultant.model.services.TechnologyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import static net.logstash.logback.argument.StructuredArguments.v;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -38,6 +41,7 @@ public class ConsultantService {
 
     private TechnologyService technologyService;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConsultantService.class);
 
     @Autowired
     public ConsultantService(ConsultantRepository consultantRepository, ClientTeamService clientTeamService,
@@ -53,6 +57,7 @@ public class ConsultantService {
         List<Consultant> consultantsList = consultantRepository.findAll();
         Set<ConsultantDTO> consultantsDTOS = new LinkedHashSet<>();
         consultantsList.forEach(consultant -> {
+            LOGGER.info("Processing consultant",v("id", consultant.getId()),v("name",consultant.getFirstName()));
             setTeamAndClientOfConsultant(consultant);
             final ConsultantDTO consultantDTO = ConsultantMapper.INSTANCE.consultantToConsultantDTO(consultant);
             consultantsDTOS.add(consultantDTO);
