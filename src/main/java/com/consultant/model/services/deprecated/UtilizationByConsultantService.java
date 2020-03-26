@@ -6,7 +6,7 @@ import com.consultant.model.entities.Contract;
 import com.consultant.model.entities.Utilization;
 import com.consultant.model.mappers.UtilizationMapper;
 import com.consultant.model.repositories.UtilizationRepository;
-import com.consultant.model.services.ContractService;
+import com.consultant.model.services.UtilizationService;
 import com.consultant.model.services.impl.ConsultantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,8 +19,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 
+/**
+ * Calculates the utilization by looping the consultants. Was replaced by UtilizationService which loops the days of
+ * the month instead.
+ *
+ * @deprecated use {@link UtilizationService} instead.
+ */
 @Service
-@Deprecated //Service was replaced by UtilizationService
+@Deprecated
 public class UtilizationByConsultantService {
 
     private UtilizationRepository utilizationRepository;
@@ -270,3 +276,4 @@ public class UtilizationByConsultantService {
         }
     }
 }
+
