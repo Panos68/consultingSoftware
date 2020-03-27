@@ -2,6 +2,7 @@ package com.consultant.model.controller;
 
 import com.consultant.model.dto.UtilizationDTO;
 import com.consultant.model.services.UtilizationService;
+import com.consultant.model.utils.CsvUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Set;
 
 @RestController
@@ -38,4 +41,11 @@ public class UtilizationController {
         utilizationService.reCalcAllUtil();
     }
 
+    @GetMapping(value = "/export")
+    public void exportCSV(HttpServletResponse response) throws Exception {
+        ArrayList<UtilizationDTO> utilizationDTOS = new ArrayList<>(utilizationService.getAllUtilization());
+
+
+        CsvUtils.downloadCsv(utilizationDTOS, UtilizationDTO.class, response, "utilization.csv");
+    }
 }

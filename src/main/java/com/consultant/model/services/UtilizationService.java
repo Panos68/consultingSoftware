@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -62,7 +62,7 @@ public class UtilizationService {
 
     public Set<UtilizationDTO> getAllUtilization() {
         List<Utilization> utilizationList = utilizationRepository.findAll();
-        Set<UtilizationDTO> utilizationDTOS = new HashSet<>();
+        Set<UtilizationDTO> utilizationDTOS = new LinkedHashSet<>();
         utilizationList.forEach(utilization -> {
             UtilizationDTO utilizationDTO = UtilizationMapper.INSTANCE.utilizationToUtilizationDTO(utilization);
             utilizationDTOS.add(utilizationDTO);
