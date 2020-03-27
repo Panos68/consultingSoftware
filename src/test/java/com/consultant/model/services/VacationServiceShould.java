@@ -21,7 +21,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VacationServiceShould {
@@ -138,4 +140,14 @@ public class VacationServiceShould {
         Assert.assertThat(vacationDTOS.size(), is(2));
     }
 
+    @Test
+    public void returnVacationsOfConsultant() {
+        Long consultantId = 1L;
+        vacationList.add(vacation1);
+
+        when(vacationRepository.findByConsultantId(consultantId)).thenReturn(vacationList);
+        List<Vacation> vacationsOfConsultant = vacationService.getVacationsOfConsultant(consultantId);
+
+        Assert.assertThat(vacationsOfConsultant.size(), is(1));
+    }
 }
