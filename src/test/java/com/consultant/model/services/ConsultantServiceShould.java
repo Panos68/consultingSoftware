@@ -129,7 +129,7 @@ public class ConsultantServiceShould {
 
     @Test
     public void saveInRepositoryWhenDeletingExistingConsultant() throws Exception {
-        consultantService.delete(consultantId,LocalDate.now());
+        consultantService.delete(consultantId, LocalDate.now());
 
         verify(consultantRepository, times(1)).saveAndFlush(consultant1);
     }
@@ -138,7 +138,7 @@ public class ConsultantServiceShould {
     public void throwNoMatchExceptionWhenDeletingNonExistingConsultant() throws Exception {
         Mockito.when(consultantRepository.findById(consultantId)).thenReturn(Optional.empty());
 
-        consultantService.delete(consultantId,LocalDate.now());
+        consultantService.delete(consultantId, LocalDate.now());
     }
 
     @Test
@@ -223,5 +223,14 @@ public class ConsultantServiceShould {
         Set<ConsultantDTO> consultantDTOS = consultantService.getActiveConsultants();
 
         Assert.assertThat(consultantDTOS.size(), is(1));
+    }
+
+    @Test
+    public void unassignUserWhenDeletingConsultantUser() {
+        Long userid = 1L;
+        consultant1.setUserId(userid);
+        Mockito.when(consultantRepository.findByUserId(userid)).thenReturn(Optional.ofNullable(consultant1));
+        consultantService.unAssignUserFromConsultant(userid);
+        Assert.assertNull(consultant1.getUserId());
     }
 }
