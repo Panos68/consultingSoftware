@@ -39,7 +39,7 @@ public class TechnologyService {
         return technologyDTOS;
     }
 
-    public Technology getTechnologyByNameAndType(String name, TechnologyType type) {
+    private Technology getTechnologyByNameAndType(String name, TechnologyType type) {
         Optional<Technology> optionalTechnology = technologyRepository.findByNameAndType(name, type);
         return optionalTechnology.orElseGet(() -> createNewTechnology(name, type));
     }
