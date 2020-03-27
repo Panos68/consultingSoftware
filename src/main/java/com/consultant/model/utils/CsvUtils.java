@@ -18,7 +18,7 @@ public class CsvUtils {
     private CsvUtils() {
     }
 
-    private static <T> String writeCsv(List<T> entitiesList, Class<T> beanClazz, Writer writer) throws Exception {
+    public static <T> String writeCsv(List<T> entitiesList, Class<T> beanClazz, Writer writer) throws Exception {
 
         CustomMappingStrategy<T> mappingStrategy = new CustomMappingStrategy<T>();
         mappingStrategy.setType(beanClazz);
@@ -28,7 +28,9 @@ public class CsvUtils {
                 .build();
         beanToCsv.write(entitiesList);
 
-        return beanToCsv.toString();
+        String csv = writer.toString();
+        writer.close();
+        return csv;
     }
 
     public static <T> List<T> getEntitiesFromCsv(Class<T> beanClazz, MultipartFile file, Boolean skipHeader) throws Exception {

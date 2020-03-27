@@ -17,23 +17,23 @@ import java.util.Set;
 @Setter
 @Getter
 public class ConsultantDTO {
-    @CsvBindByName(column = "FirstName")
+    @CsvBindByName(column = "First Name")
     @CsvBindByPosition(position = 0)
     private String firstName;
 
-    @CsvBindByName(column = "LastName")
+    @CsvBindByName(column = "Last Name")
     @CsvBindByPosition(position = 1)
     private String lastName;
 
-    @CsvBindByName(column = "ClientName")
+    @CsvBindByName(column = "Client Name")
     @CsvBindByPosition(position = 2)
     private String clientName;
 
-    @CsvBindByName(column = "TeamName")
+    @CsvBindByName(column = "Team Name")
     @CsvBindByPosition(position = 3)
     private String teamName;
 
-    @CsvBindByName(column = "ListPrice")
+    @CsvBindByName(column = "List Price")
     @CsvBindByPosition(position = 4)
     private Integer listPrice;
 
