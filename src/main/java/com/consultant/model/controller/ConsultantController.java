@@ -61,7 +61,7 @@ public class ConsultantController {
 
     @GetMapping("/export")
     public void exportCSV(HttpServletResponse response) throws Exception {
-        ArrayList<ConsultantDTO> consultantDTOS = new ArrayList<>(consultantService.getAll());
+        ArrayList<ConsultantDTO> consultantDTOS = new ArrayList<>(consultantService.getActiveConsultants());
 
         CsvUtils.downloadCsv(consultantDTOS, ConsultantDTO.class, response, "consultants.csv");
     }

@@ -1,8 +1,8 @@
 package com.consultant.model.services.deprecated;
 
+import com.consultant.model.dto.ClientDTO;
 import com.consultant.model.dto.ConsultantDTO;
-import com.consultant.model.entities.Client;
-import com.consultant.model.entities.Contract;
+import com.consultant.model.dto.ContractDTO;
 import com.consultant.model.entities.Utilization;
 import com.consultant.model.repositories.UtilizationRepository;
 import com.consultant.model.services.impl.ConsultantService;
@@ -39,7 +39,7 @@ public class UtilizationServiceByConsultantShould {
 
     private ConsultantDTO consultantDTO = new ConsultantDTO();
 
-    private Client client = new Client();
+    private ClientDTO client = new ClientDTO();
 
     @Before
     public void setUp() {
@@ -48,7 +48,7 @@ public class UtilizationServiceByConsultantShould {
         Mockito.when(utilizationRepository.findAll()).thenReturn(utilizationList);
     }
 
-    private void initializeContract(Contract contract, LocalDate startDate, ConsultantDTO consultantDTO) {
+    private void initializeContract(ContractDTO contract, LocalDate startDate, ConsultantDTO consultantDTO) {
         contract.setStartedDate(startDate);
         contract.setActive(true);
         contract.setClient(client);
@@ -67,7 +67,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnZeroIfThereAreNoConsultantsJoinedBeforeGivenDate() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().plusDays(1));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -78,7 +78,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnZeroUtilizationIfThereAreNoActiveConsultants() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(1));
         consultantDTO.setDeleted(true);
         initializeContract(contract, LocalDate.now().minusMonths(1), consultantDTO);
@@ -88,7 +88,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnFullUtilizationIfThereAreActiveConsultantsJoinedOnPreviousMonthsThatGivenDate() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(2));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -99,7 +99,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnFullUtilizationIfConsultantHasActiveContractOfGivenMonth() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(1));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -112,7 +112,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnFullAidedUtilizationIfConsultantHasActiveContractOfGivenMonth() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(5));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -123,7 +123,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnZeroUtilizationIfConsultantHasOfficeContractOfGivenMonth() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(1));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -135,7 +135,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnFullUtilizationIfClientContractStartedAndEndedOnGivenMonth() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(2));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -147,7 +147,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnZeroUtilizationIfOfficeContractStartedAndEndedOnGivenMonth() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(2));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -162,7 +162,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnFullUtilizationIfClientContractStartedOnPreviousMonthsAndEndsOnGivenMonth() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(2));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -174,7 +174,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnZeroUtilizationIfOfficeContractStartedOnPreviousMonthsAndEndsOnGivenMonth() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.now().minusMonths(2));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -187,7 +187,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnUtilizationIfConsultantHasActiveAndInactiveContractsOnGivenMonth() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined(LocalDate.of(2020,3,1));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -195,7 +195,7 @@ public class UtilizationServiceByConsultantShould {
         contract.setEndDate(LocalDate.of(2020,3,10));
         contract.setClient(null);
         contract.setActive(false);
-        Contract contract2 = new Contract();
+        ContractDTO contract2 = new ContractDTO();
         initializeContract(contract2, LocalDate.of(2020,3,11), consultantDTO);
 
         Assert.assertEquals(67.74, utilizationService.calcUtilPercentOfGivenMonth(LocalDate.of(2020,4,1)), 0.01);
@@ -230,7 +230,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnFullUtilIfPartiallyAidedConsultantHasActiveContractBeforeGivenDate() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined((LocalDate.of(2019,12,6)));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -241,7 +241,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnUtilizationForPartialAidedConsultantWithActiveContract() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined((LocalDate.of(2019,12,3)));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -252,7 +252,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void returnFullUtilizationIfPartialAidedConsultantDateOverlapsStartedActiveContract() {
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined((LocalDate.of(2019,12,6)));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);
@@ -320,7 +320,7 @@ public class UtilizationServiceByConsultantShould {
 
     @Test
     public void recalculateAndSaveAllUtilization(){
-        Contract contract = new Contract();
+        ContractDTO contract = new ContractDTO();
         consultantDTO.setDateJoined((LocalDate.now().minusMonths(2)));
         consultantDTO.setDeleted(false);
         consultantDTOS.add(consultantDTO);

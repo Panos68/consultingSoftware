@@ -1,7 +1,6 @@
 package com.consultant.model.dto;
 
 import com.consultant.model.entities.ClientTeam;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

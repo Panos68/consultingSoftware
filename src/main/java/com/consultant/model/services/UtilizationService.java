@@ -1,9 +1,9 @@
 package com.consultant.model.services;
 
 import com.consultant.model.dto.ConsultantDTO;
+import com.consultant.model.dto.ContractDTO;
 import com.consultant.model.dto.DayAssignStatusDTO;
 import com.consultant.model.dto.UtilizationDTO;
-import com.consultant.model.entities.Contract;
 import com.consultant.model.entities.Utilization;
 import com.consultant.model.entities.Vacation;
 import com.consultant.model.mappers.UtilizationMapper;
@@ -149,7 +149,7 @@ public class UtilizationService {
                                     continue;
                                 }
 
-                                Optional<Contract> contractOnGivenDay = getContractForGivenDate(calculatedMonthDate, consultantDTO);
+                                Optional<ContractDTO> contractOnGivenDay = getContractForGivenDate(calculatedMonthDate, consultantDTO);
                                 if (contractOnGivenDay.isPresent()) {
                                     if (contractOnGivenDay.get().getClient() == null) {
                                         dayAssignStatusDTO.setOffice(true);
@@ -214,7 +214,7 @@ public class UtilizationService {
         }
     }
 
-    private Optional<Contract> getContractForGivenDate(LocalDate calculatedMonthDate, ConsultantDTO consultantDTO) {
+    private Optional<ContractDTO> getContractForGivenDate(LocalDate calculatedMonthDate, ConsultantDTO consultantDTO) {
         return consultantDTO.getContracts()
                 .stream()
                 .filter(c -> (c.getStartedDate().isBefore(calculatedMonthDate) ||

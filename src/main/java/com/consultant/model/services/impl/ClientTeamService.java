@@ -77,6 +77,11 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
         assignedTeamOfConsultant.ifPresent(clientTeam -> clientTeam.getConsultants().remove(consultant));
     }
 
+    public ClientTeam getClientTeamByName(String teamName) throws NoMatchException {
+        Optional<ClientTeam> teamByName = clientTeamRepository.findTeamByName(teamName);
+        return teamByName.orElseThrow(() -> new NoMatchException("No existing team with name " + teamName));
+    }
+
     private void setClientOfTeam(ClientTeam team) {
         Optional<Client> clientOfTeam = clientService.getClientOfTeam(team.getId());
         if (clientOfTeam.isPresent()) {

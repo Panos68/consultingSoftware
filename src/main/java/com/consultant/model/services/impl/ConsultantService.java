@@ -57,9 +57,11 @@ public class ConsultantService {
         List<Consultant> consultantsList = consultantRepository.findAll();
         Set<ConsultantDTO> consultantsDTOS = new LinkedHashSet<>();
         consultantsList.forEach(consultant -> {
-            LOGGER.info("Processing consultant",v("id", consultant.getId()),v("name",consultant.getFirstName()));
+            LOGGER.info("Processing consultant", v("id", consultant.getId()), v("name", consultant.getFirstName()));
             setTeamAndClientOfConsultant(consultant);
             final ConsultantDTO consultantDTO = ConsultantMapper.INSTANCE.consultantToConsultantDTO(consultant);
+            Optional<ContractDTO> activeContract = consultantDTO.getContracts().stream().filter(ContractDTO::getActive).findFirst();
+            activeContract.ifPresent(consultantDTO::setActiveContract);
             consultantsDTOS.add(consultantDTO);
         });
 
@@ -70,8 +72,8 @@ public class ConsultantService {
         final Consultant consultant = ConsultantMapper.INSTANCE.consultantDTOToConsultant(consultantDTO);
         consultant.setDeleted(false);
 
-        if (consultantDTO.getActiveContract() != null && consultantDTO.getTeamId() != null) {
-            consultantDTO.getActiveContract().setTeamId(consultantDTO.getTeamId());
+        setConsultantAndContractTeamId(consultantDTO);
+        if (consultantDTO.getActiveContract() != null && consultantDTO.getActiveContract().getTeamId() != null) {
             Contract newContract = contractService.createNewContract(consultantDTO.getActiveContract());
             consultant.setContracts(Collections.singletonList(newContract));
         } else {
@@ -87,6 +89,17 @@ public class ConsultantService {
         }
 
         assignConsultantToTeam(consultantDTO.getTeamId(), consultant);
+    }
+
+    private void setConsultantAndContractTeamId(ConsultantDTO consultantDTO) throws NoMatchException {
+        if (consultantDTO.getTeamId() != null) {
+            consultantDTO.getActiveContract().setTeamId(consultantDTO.getTeamId());
+        } else if (consultantDTO.getTeamName() != null) {
+            Long teamId = clientTeamService.getClientTeamByName(consultantDTO.getTeamName()).getId();
+            consultantDTO.setTeamId(teamId);
+            consultantDTO.getActiveContract()
+                    .setTeamId(teamId);
+        }
     }
 
     public void edit(ConsultantDTO consultantDTO) throws NoMatchException {

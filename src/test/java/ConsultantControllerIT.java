@@ -99,7 +99,7 @@ public class ConsultantControllerIT extends AbstractControllerIT {
         assertFalse(deletedConsultant.get()
                 .getContracts()
                 .stream()
-                .anyMatch(Contract::getActive));
+                .anyMatch(ContractDTO::getActive));
         assertEquals(HttpStatus.OK,deleteConsultantResponse.getStatusCode());
     }
 
