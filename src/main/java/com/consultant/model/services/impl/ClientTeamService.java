@@ -72,7 +72,7 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
         return clientTeamRepository.findByConsultantId(consultantId);
     }
 
-    public void unassignedConsultantFromTeam(Consultant consultant) {
+    public void unassignConsultantFromTeam(Consultant consultant) {
         Optional<ClientTeam> assignedTeamOfConsultant = getAssignedTeamOfConsultant(consultant.getId());
         assignedTeamOfConsultant.ifPresent(clientTeam -> clientTeam.getConsultants().remove(consultant));
     }

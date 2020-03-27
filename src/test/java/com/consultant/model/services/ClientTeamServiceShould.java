@@ -117,19 +117,46 @@ public class ClientTeamServiceShould {
     @Test
     public void saveToRepositoryWhenAssigningConsultantToExistingTeam() throws Exception {
         Mockito.when(clientTeamRepository.findById(clientId)).thenReturn(Optional.ofNullable(clientTeam1));
-        clientTeamService.assignConsultantToTeam(consultant,teamId);
+        clientTeamService.assignConsultantToTeam(consultant, teamId);
     }
 
     @Test(expected = NoMatchException.class)
     public void throwNoMatchExceptionWhenAssigningTeamToNonExistingCandidate() throws Exception {
         Mockito.when(clientTeamRepository.findById(clientId)).thenReturn(Optional.empty());
-        clientTeamService.assignConsultantToTeam(consultant,clientId);
+        clientTeamService.assignConsultantToTeam(consultant, clientId);
     }
 
     @Test
     public void returnAssignedClientOfTeam() {
         Mockito.when(clientTeamRepository.findByConsultantId(consultantId)).thenReturn(Optional.ofNullable(clientTeam1));
         Optional<ClientTeam> assignedTeamOfConsultant = clientTeamService.getAssignedTeamOfConsultant(consultantId);
-        Assert.assertEquals(clientTeam1,assignedTeamOfConsultant.get());
+        Assert.assertEquals(clientTeam1, assignedTeamOfConsultant.get());
+    }
+
+    @Test
+    public void unassignConsultantFromTeam() {
+        clientTeam1.getConsultants().add(consultant);
+        Mockito.when(clientTeamRepository.findByConsultantId(consultantId)).thenReturn(Optional.ofNullable(clientTeam1));
+        consultant.setId(consultantId);
+        clientTeamService.unassignConsultantFromTeam(consultant);
+        Assert.assertFalse(clientTeam1.getConsultants().contains(consultant));
+    }
+
+    @Test
+    public void returnTeamByGivenName() throws NoMatchException {
+        String teamName = "Team name";
+        clientTeam1.setName(teamName);
+        Mockito.when(clientTeamRepository.findTeamByName(teamName)).thenReturn(Optional.ofNullable(clientTeam1));
+        ClientTeam clientTeamByName = clientTeamService.getClientTeamByName(teamName);
+        Assert.assertEquals(clientTeam1,clientTeamByName);
+    }
+
+    @Test(expected = NoMatchException.class)
+    public void throwExceptionWhenNoTeamExistsWithGivenName() throws NoMatchException {
+        String teamName = "Team name";
+        clientTeam1.setName(teamName);
+        String searchName = "Search name";
+        Mockito.when(clientTeamRepository.findTeamByName(searchName)).thenReturn(Optional.empty());
+        ClientTeam clientTeamByName = clientTeamService.getClientTeamByName(searchName);
     }
 }

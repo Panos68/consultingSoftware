@@ -155,7 +155,7 @@ public class ConsultantService {
             Contract terminatedContract = contractService.terminateActiveContract(terminatedDate, existingConsultant);
             Contract emptyContract = contractService.createEmptyContract(terminatedContract.getEndDate());
             existingConsultant.getContracts().add(emptyContract);
-            clientTeamService.unassignedConsultantFromTeam(existingConsultant);
+            clientTeamService.unassignConsultantFromTeam(existingConsultant);
             consultantRepository.saveAndFlush(existingConsultant);
         }
     }
