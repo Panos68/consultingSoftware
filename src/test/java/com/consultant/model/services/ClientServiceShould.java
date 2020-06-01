@@ -77,6 +77,8 @@ public class ClientServiceShould {
 
     @Test
     public void saveToRepositoryWhenCreatingClient() throws NoMatchException {
+        Mockito.when(clientRepository.saveAndFlush(Mockito.any())).thenReturn(client1);
+
         clientService.create(clientDTO1);
 
         verify(clientRepository, times(1)).saveAndFlush(Mockito.any());

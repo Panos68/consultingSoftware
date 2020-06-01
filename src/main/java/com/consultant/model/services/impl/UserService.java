@@ -28,7 +28,7 @@ public class UserService implements BasicOperationsService<UserDTO> {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,ConsultantService consultantService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ConsultantService consultantService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.consultantService = consultantService;
@@ -50,7 +50,7 @@ public class UserService implements BasicOperationsService<UserDTO> {
     }
 
     @Override
-    public void create(UserDTO userDTO) throws EntityAlreadyExists {
+    public Long create(UserDTO userDTO) throws EntityAlreadyExists {
         Optional<User> existingUser = userRepository.findByUsername(userDTO.getUsername());
         if (existingUser.isPresent()) {
             throw new EntityAlreadyExists("User already exists");
@@ -58,7 +58,7 @@ public class UserService implements BasicOperationsService<UserDTO> {
         final User user = UserMapper.INSTANCE.userDTOToUser(userDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        userRepository.saveAndFlush(user);
+        return userRepository.saveAndFlush(user).getId();
     }
 
     @Override

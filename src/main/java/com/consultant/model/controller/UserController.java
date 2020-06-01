@@ -36,17 +36,17 @@ public class UserController {
         Collection<? extends GrantedAuthority> grantedAuthorities = userDetailsService.authenticateUserAndReturnAuthorities(userDTO);
         final String token = jwtTokenUtil.generateToken(userDTO.getUsername());
         User authenticationUser = userDetailsService.getAuthenticationUser(userDTO.getUsername());
-        return ResponseEntity.ok(new JwtResponse(token, grantedAuthorities,userDTO.getUsername(),authenticationUser.getId()));
+        return ResponseEntity.ok(new JwtResponse(token, grantedAuthorities, userDTO.getUsername(), authenticationUser.getId()));
     }
 
     @GetMapping
-    public ResponseEntity<Set<UserDTO>> getAllUsers(){
+    public ResponseEntity<Set<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAll());
     }
 
     @PostMapping
-    public void createUser(@RequestBody UserDTO userDTO) throws Exception {
-        userService.create(userDTO);
+    public Long createUser(@RequestBody UserDTO userDTO) throws Exception {
+        return userService.create(userDTO);
     }
 
     @PutMapping

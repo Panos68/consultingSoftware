@@ -25,8 +25,8 @@ public class CandidateController {
     }
 
     @PostMapping
-    public void createCandidate(@RequestBody CandidateDTO candidateDTO) throws Exception {
-        candidateService.create(candidateDTO);
+    public Long createCandidate(@RequestBody CandidateDTO candidateDTO) throws Exception {
+        return candidateService.create(candidateDTO);
     }
 
     @PutMapping

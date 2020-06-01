@@ -36,11 +36,12 @@ public class ClientTeamService implements BasicOperationsService<ClientTeamDTO> 
     }
 
     @Override
-    public void create(ClientTeamDTO clientTeamDTO) throws NoMatchException {
+    public Long create(ClientTeamDTO clientTeamDTO) throws NoMatchException {
         ClientTeam clientTeam = AbstractClientMapper.INSTANCE.clientTeamDTOToClientTeam(clientTeamDTO);
         clientTeam.setDeleted(false);
 
         assignTeamToClient(clientTeamDTO.getClientId(), clientTeam);
+        return null;
     }
 
     @Override

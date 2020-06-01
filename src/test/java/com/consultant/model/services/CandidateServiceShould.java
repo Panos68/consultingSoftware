@@ -71,6 +71,7 @@ public class CandidateServiceShould {
     public void saveToRepositoryWhenCreatingCandidate() throws Exception {
         candidateDTO = new CandidateDTO();
         candidateDTO.setId(candidateId);
+        Mockito.when(candidateRepository.saveAndFlush(Mockito.any())).thenReturn(candidate1);
         candidateService.create(candidateDTO);
 
         verify(candidateRepository, times(1)).saveAndFlush(candidate1);

@@ -36,10 +36,11 @@ public class VacationService implements BasicOperationsService<VacationDTO> {
     }
 
     @Override
-    public void create(VacationDTO vacationDTO) throws NoMatchException {
+    public Long create(VacationDTO vacationDTO) throws NoMatchException {
         Vacation vacation = VacationMapper.INSTANCE.vacationDTOToVacation(vacationDTO);
 
         userService.updateUserVacations(vacation);
+        return null;
     }
 
     @Override

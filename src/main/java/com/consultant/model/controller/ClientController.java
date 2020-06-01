@@ -25,8 +25,8 @@ public class ClientController {
     }
 
     @PostMapping
-    public void createClient(@RequestBody ClientDTO clientDTO) throws Exception {
-        clientService.create(clientDTO);
+    public Long createClient(@RequestBody ClientDTO clientDTO) throws Exception {
+        return clientService.create(clientDTO);
     }
 
     @PutMapping

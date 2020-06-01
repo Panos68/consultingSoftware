@@ -7,7 +7,7 @@ import java.util.Set;
 public interface BasicOperationsService<T> {
     Set<?> getAll();
 
-    void create(T objectDTO) throws NoMatchException;
+    Long create(T objectDTO) throws NoMatchException;
 
     void edit(T objectDTO) throws NoMatchException;
 

@@ -127,7 +127,7 @@ public class UtilizationByConsultantService {
         LocalDate earliestCalculatingDate = firstConsultantJoinedDTO.getDateJoined().plusMonths(1);
         LocalDate firstDayOfCalculatingMonth = LocalDate.of(earliestCalculatingDate.getYear(), earliestCalculatingDate.getMonthValue(), 1);
         utilizationRepository.deleteAll();
-        while (firstDayOfCalculatingMonth.isBefore(LocalDate.now())) {
+        while (!firstDayOfCalculatingMonth.isAfter(LocalDate.now())) {
             Utilization utilization = getUtilizationObject(firstDayOfCalculatingMonth);
             utilization.setDate(firstDayOfCalculatingMonth);
             calcCompleteUtil(firstDayOfCalculatingMonth, utilization);

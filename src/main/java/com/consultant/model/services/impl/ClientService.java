@@ -38,7 +38,7 @@ public class ClientService implements BasicOperationsService<ClientDTO> {
     }
 
     @Override
-    public void create(ClientDTO clientDTO) throws NoMatchException {
+    public Long create(ClientDTO clientDTO) throws NoMatchException {
         Optional<Client> existingClient = clientRepository.findByName(clientDTO.getName());
         if (existingClient.isPresent()) {
             throw new EntityAlreadyExists("Client company already exists");
@@ -46,7 +46,7 @@ public class ClientService implements BasicOperationsService<ClientDTO> {
         final Client client = AbstractClientMapper.INSTANCE.clientDTOToClient(clientDTO);
         client.setDeleted(false);
 
-        clientRepository.saveAndFlush(client);
+        return clientRepository.saveAndFlush(client).getId();
     }
 
     @Override

@@ -83,6 +83,7 @@ public class UserServiceShould {
     public void saveToRepositoryWhenCreatingUser() {
         userDTO = new UserDTO();
         userDTO.setId(userId);
+        Mockito.when(userRepository.saveAndFlush(Mockito.any())).thenReturn(user1);
 
         userService.create(userDTO);
 

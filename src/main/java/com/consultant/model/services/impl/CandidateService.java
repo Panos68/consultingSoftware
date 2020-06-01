@@ -40,14 +40,14 @@ public class CandidateService implements BasicOperationsService<CandidateDTO> {
     }
 
     @Override
-    public void create(CandidateDTO candidateDTO) throws NoMatchException {
+    public Long create(CandidateDTO candidateDTO) throws NoMatchException {
         Optional<Candidate> existingCandidate = candidateRepository.findByLinkedinUrl(candidateDTO.getLinkedinUrl());
         if (existingCandidate.isPresent()) {
             throw new EntityAlreadyExists("Candidate already exists");
         }
         Candidate candidate = CandidateMapper.INSTANCE.candidateDTOToCandidate( candidateDTO );
 
-        candidateRepository.saveAndFlush(candidate);
+        return candidateRepository.saveAndFlush(candidate).getId();
     }
 
     @Override
