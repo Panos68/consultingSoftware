@@ -8,11 +8,17 @@ import com.consultant.model.security.JwtUserDetailsService;
 import com.consultant.model.security.WrongValidationException;
 import com.consultant.model.services.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ResolvableType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -20,24 +26,28 @@ import java.util.Set;
 @RequestMapping("/user")
 public class UserController {
 
-    private JwtTokenUtil jwtTokenUtil;
-    private JwtUserDetailsService userDetailsService;
+//    private JwtTokenUtil jwtTokenUtil;
+//    private JwtUserDetailsService userDetailsService;
     private UserService userService;
 
     @Autowired
-    public UserController(JwtTokenUtil jwtTokenUtil, JwtUserDetailsService userDetailsService, UserService userService) {
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.userDetailsService = userDetailsService;
+    public UserController(
+//            JwtTokenUtil jwtTokenUtil,
+//                          JwtUserDetailsService userDetailsService,
+                          UserService userService) {
+//        this.jwtTokenUtil = jwtTokenUtil;
+//        this.userDetailsService = userDetailsService;
         this.userService = userService;
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserDTO userDTO) throws WrongValidationException {
-        Collection<? extends GrantedAuthority> grantedAuthorities = userDetailsService.authenticateUserAndReturnAuthorities(userDTO);
-        final String token = jwtTokenUtil.generateToken(userDTO.getUsername());
-        User authenticationUser = userDetailsService.getAuthenticationUser(userDTO.getUsername());
-        return ResponseEntity.ok(new JwtResponse(token, grantedAuthorities, userDTO.getUsername(), authenticationUser.getId()));
-    }
+//    @PostMapping("/authenticate")
+//    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserDTO userDTO) throws WrongValidationException {
+////        Collection<? extends GrantedAuthority> grantedAuthorities = userDetailsService.authenticateUserAndReturnAuthorities(userDTO);
+////        final String token = jwtTokenUtil.generateToken(userDTO.getUsername());
+////        User authenticationUser = userDetailsService.getAuthenticationUser(userDTO.getUsername());
+////        return ResponseEntity.ok(new JwtResponse(token, grantedAuthorities, userDTO.getUsername(), authenticationUser.getId()));
+//        return null;
+//    }
 
     @GetMapping
     public ResponseEntity<Set<UserDTO>> getAllUsers() {
