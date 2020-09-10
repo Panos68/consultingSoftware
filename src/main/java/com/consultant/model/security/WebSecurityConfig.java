@@ -10,7 +10,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SimpleSavedRequest;
 import org.springframework.security.web.session.SessionManagementFilter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -60,28 +66,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .deleteCookies("JSESSIONID").permitAll();
     }
 
-//    @Bean
-//    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oidcUserService() {
-//        final OAuth2UserService delegate = new DefaultOAuth2UserService();
-//
-//        return (userRequest) -> {
-//            // Delegate to the default implementation for loading a user
-//            OAuth2User oidcUser = delegate.loadUser(userRequest);
-//
-//            String email = oidcUser.getAttribute("email");
-//
-//            User existingUser = userService.getUserByEmail(email);
-//
-//            Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
-//            existingUser.getRoles().forEach(role -> {
-//                mappedAuthorities.add(new SimpleGrantedAuthority(role));
-//                System.out.println(role);
-//            });
-//
-//            oidcUser = new DefaultOAuth2User(mappedAuthorities, oidcUser.getAttributes(), "name");
-//
-//            return oidcUser;
-//        };
-//    }
+    @Bean
+    public RequestCache refererRequestCache() {
+
+        System.out.println("REQUEST CACHE");
+
+        return new HttpSessionRequestCache() {
+            @Override
+            public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
+                String referrer = request.getHeader("referer");
+                if (referrer != null) {
+                    request.getSession().setAttribute("SPRING_SECURITY_SAVED_REQUEST", new SimpleSavedRequest(referrer));
+                }
+            }
+        };
+    }
 
 }
