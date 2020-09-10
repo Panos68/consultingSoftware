@@ -51,6 +51,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .oauth2Login()
 
+
+//                .redirectionEndpoint()
+//                .baseUri("/oauth2/callback/*")
+//                .and()
+
                 // will be invoked after successful login
                 .successHandler(authenticationSuccessHandler)
                 .and()
