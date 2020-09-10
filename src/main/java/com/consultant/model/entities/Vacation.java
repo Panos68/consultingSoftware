@@ -29,7 +29,7 @@ public class Vacation {
     private Boolean isLongTerm;
 
     @Transient
-    private String userName;
+    private String email;
 
     @Transient
     private Long userId;

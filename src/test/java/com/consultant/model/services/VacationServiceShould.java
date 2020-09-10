@@ -21,9 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VacationServiceShould {
@@ -51,7 +49,7 @@ public class VacationServiceShould {
     @Before
     public void setUp() {
         vacationService = new VacationService(vacationRepository,userService);
-        user.setUsername("username");
+        user.setEmail("user@mirado.com");
         user.setId(1L);
 
         vacation1 = new Vacation();

@@ -1,7 +1,7 @@
-INSERT INTO `users` (`id`, `password`, `username`) VALUES ('1', '$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu', 'Admin');
-INSERT INTO `users` (`id`, `password`, `username`) VALUES ('2', '$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu', 'UserToEdit');
-INSERT INTO `users` (`id`, `password`, `username`) VALUES ('3', '$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu', 'UserToDelete');
-INSERT INTO `users` (`id`, `password`, `username`) VALUES ('4', '$2a$10$ztXW2.Uw7qMAgDwP.5xvi.r6GYBSm.DVDDOsB3AyC5DJVf1fXQsSu', 'NonAdminUser');
+INSERT INTO `users` (`id`, `email`) VALUES ('1', 'anna.wrang@mirado.com');
+INSERT INTO `users` (`id`, `email`) VALUES ('2', 'userToEdit@mirado.com');
+INSERT INTO `users` (`id`, `email`) VALUES ('3', 'userToDelete@mirado.com');
+INSERT INTO `users` (`id`, `email`) VALUES ('4', 'nonAdminUser@mirado.com');
 insert into `user_roles` values ('1','admin');
 insert into `user_roles` values ('4','user');
 
@@ -25,7 +25,6 @@ INSERT INTO `contracts` (`id`, `active`, `client_id`, `discount`,`price`, `signe
 INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `linkedin_url`, `location`, `role`, `source`) VALUES ('1', 'comment', 'company', 'consultant', 'no', 'MainLinkedIn', 'Stockholm', 'backend', 'source');
 INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `linkedin_url`, `location`, `role`, `source`) VALUES ('2', 'comment', 'company', 'consultant', 'no', 'EditLinkedIn', 'Stockholm', 'backend', 'source');
 INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `linkedin_url`, `location`, `role`, `source`) VALUES ('3', 'comment', 'company', 'consultant', 'no', 'DeleteLinkedIn', 'Stockholm', 'backend', 'source');
-
 
 INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('1', 'Brazil', '1');
 INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('2', 'EditVac', '1');

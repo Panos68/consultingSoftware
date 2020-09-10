@@ -83,7 +83,7 @@ public class VacationService implements BasicOperationsService<VacationDTO> {
     private void setUserDetailsOfVacation(Vacation vacation) {
         try {
             User user = userService.getUserByVacationId(vacation.getId());
-            vacation.setUserName(user.getUsername());
+            vacation.setEmail(user.getEmail());
             vacation.setUserId(user.getId());
         } catch (NoMatchException e) {
             e.printStackTrace();

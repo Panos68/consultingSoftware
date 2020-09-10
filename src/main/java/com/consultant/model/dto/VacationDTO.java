@@ -14,7 +14,7 @@ public class VacationDTO {
 
     private LocalDate endDate;
 
-    private String userName;
+    private String email;
 
     private Long userId;
 

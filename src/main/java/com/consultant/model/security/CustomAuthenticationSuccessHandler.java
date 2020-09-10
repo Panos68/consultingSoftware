@@ -1,12 +1,12 @@
 package com.consultant.model.security;
 
-import com.consultant.model.entities.Oauth2User;
-import com.consultant.model.entities.Oauth2UserInfo;
-import com.consultant.model.repositories.OauthUserRepository;
+import com.consultant.model.dto.Oauth2UserDTO;
+import com.consultant.model.entities.User;
+import com.consultant.model.exception.EmailMissingException;
+import com.consultant.model.exception.UnsupportedAuthenticationMethodException;
 import com.consultant.model.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Autowired
-    private OauthUserRepository oAuth2UserRepository;
+    private UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -31,41 +31,36 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         if (authentication.getPrincipal() instanceof OAuth2User) {
             OAuth2User principal = (OAuth2User) authentication.getPrincipal();
             processOAuth2User(principal);
+        } else {
+            throw new UnsupportedAuthenticationMethodException("Supported method for authentication is only Oauth2 using google");
         }
-
-        int i = 0;
     }
 
     private void processOAuth2User(OAuth2User oAuth2User) {
-        Oauth2UserInfo oauth2UserInfo = new Oauth2UserInfo(oAuth2User.getAttributes());
+        Oauth2UserDTO oauth2UserDTO = new Oauth2UserDTO(oAuth2User.getAttributes());
 
-        if (oauth2UserInfo.getEmail() == null) {
-            // TODO throw exception if email is not provided
+        if (oauth2UserDTO.getEmail() == null) {
+            throw new EmailMissingException("No email provided from the Oauth2 authentication service provider");
         }
 
-        Optional<Oauth2User> existingUser = oAuth2UserRepository.findByEmail(oauth2UserInfo.getEmail());
+        Optional<User> existingUser = userRepository.findByEmail(oauth2UserDTO.getEmail());
 
         if (!existingUser.isPresent()) {
-            registerNewUser(oauth2UserInfo);
+            registerNewUser(oauth2UserDTO);
         }
-
-        // TODO if present - update info? which info?
     }
 
-    private void registerNewUser(Oauth2UserInfo oauth2UserInfo) {
+    // TODO change language level to >Java 8
+    private void registerNewUser(Oauth2UserDTO oauth2UserDTO) {
 
         ArrayList<String> roles = new ArrayList<>();
         roles.add("user");
 
-        Oauth2User oauth2User = Oauth2User.builder()
-                .email(oauth2UserInfo.getEmail())
+        User user = User.builder()
+                .email(oauth2UserDTO.getEmail())
                 .roles(roles)
                 .build();
 
-        oAuth2UserRepository.save(oauth2User);
-
-        Optional<Oauth2User> byEmail = oAuth2UserRepository.findByEmail(oauth2User.getEmail());
-
-        int i = 2;
+        userRepository.save(user);
     }
 }

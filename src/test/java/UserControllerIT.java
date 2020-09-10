@@ -1,170 +1,111 @@
 import com.consultant.model.dto.UserDTO;
 import com.consultant.model.dto.VacationDTO;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class UserControllerIT extends AbstractControllerIT {
+@ExtendWith(SpringExtension.class)
+@ActiveProfiles(profiles = "test")
+@ContextConfiguration(classes = ConsultancyManagementApplication.class)
+@SpringBootTest(classes = {ConsultancyManagementApplication.class})
+@AutoConfigureMockMvc
+public class UserControllerIT {
 
-    @Test
-    public void testUserAuthentication() throws Exception {
-        JSONObject jsonObject = getUserAuthenticationResponseAsJson();
-        String jwtToken = String.valueOf(jsonObject.get("jwtToken"));
-        String admin = String.valueOf(jsonObject.getJSONArray("roles").getJSONObject(0).get("authority"));
+    @Autowired
+    ObjectMapper objectMapper;
 
-        assertFalse(jwtToken.isEmpty());
-        assertEquals("admin", admin);
-    }
-
-    @Test
-    public void testThatNonAdminUserHasNoAccess() throws JSONException {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("NonAdminUser");
-        userDTO.setPassword("123");
-
-        HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
-        ResponseEntity<String> authenticationResponse = restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
-
-        JSONObject jsonObject = new JSONObject(authenticationResponse.getBody());
-        String jwtToken = String.valueOf(jsonObject.get("jwtToken"));
-        headers.add("Authorization", "Bearer " + jwtToken);
-        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
-
-        try {
-            restTemplate.exchange(createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertEquals(HttpStatus.FORBIDDEN, ((HttpClientErrorException.Forbidden) e).getStatusCode());
-        }
-    }
+    @Autowired
+    private MockMvc mockMvc;
 
     @Test
-    public void testNonExistingUserAuthentication() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("NonExistingUser");
-        userDTO.setPassword("123");
-
-        HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
-        try {
-            restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertEquals(HttpStatus.UNAUTHORIZED, ((HttpClientErrorException.Unauthorized) e).getStatusCode());
-        }
-    }
-
-
-    @Test
-    public void testWrongCredentialsAuthentication() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUsername("Admin");
-        userDTO.setPassword("1234");
-        HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO, headers);
-
-        try {
-            restTemplate.exchange(createURLWithPort("/user/authenticate"), HttpMethod.POST, entity, String.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ((HttpServerErrorException.InternalServerError) e).getStatusCode());
-        }
-    }
-
-    @Test
-    public void testUserRetrieving() throws Exception {
-        addAuthorizationRequestToHeader();
-
-        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
-        Type type = new TypeToken<List<UserDTO>>() {}.getType();
-
-        List<UserDTO> userList = gson.fromJson(response.getBody(), type);
-
-        assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("Admin")));
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
-    }
-
-
-    @Test
-    public void testUserCreation() throws Exception {
-        UserDTO userDTO2 = new UserDTO();
-        userDTO2.setUsername("Test");
-        userDTO2.setPassword("123");
-
-        addAuthorizationRequestToHeader();
-
-        HttpEntity<UserDTO> entity = new HttpEntity<>(userDTO2, headers);
-        ResponseEntity<String> createUserResponse = restTemplate.exchange(
-                createURLWithPort("/user"), HttpMethod.POST, entity, String.class);
-
-        List<UserDTO> userList = getUserDTOS();
-
-        assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("Test")));
-        assertEquals(createUserResponse.getStatusCode(), HttpStatus.OK);
-    }
-
-    @Test
+    @WithMockUser(authorities = {"admin"}, username = "user@mirado.com")
     public void testUserDeletion() throws Exception {
-        addAuthorizationRequestToHeader();
+        Long userId = 3L;
 
-        HttpEntity<UserDTO> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> deleteUserResponse = restTemplate.exchange(
-                createURLWithPort("/user/3"), HttpMethod.DELETE, entity, String.class);
+        List<UserDTO> usersBefore = getUserDTOS();
 
-        List<UserDTO> userList = getUserDTOS();
+        mockMvc.perform(delete("/user/" + userId))
+                .andExpect(status().isOk());
 
-        HttpEntity<VacationDTO> getVacationsEntity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> vacationResponse = restTemplate.exchange(
-                createURLWithPort("/vacations"), HttpMethod.GET, getVacationsEntity, String.class);
+        List<UserDTO> usersAfter = getUserDTOS();
 
-        Type vacationType = new TypeToken<List<VacationDTO>>() {}.getType();
-        List<VacationDTO> vacationList = gson.fromJson(vacationResponse.getBody(), vacationType);
-        boolean userVacExists = vacationList.stream().anyMatch(vacationDTO -> vacationDTO.getDescription().equals("UserVac"));
+        String vacationsAsString = mockMvc.perform(get("/vacations"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-        assertFalse(userVacExists);
-        assertFalse(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("UserToDelete")));
-        assertEquals(deleteUserResponse.getStatusCode(), HttpStatus.OK);
+        VacationDTO[] vacationDTOS = objectMapper.readValue(vacationsAsString, VacationDTO[].class);
+        List<VacationDTO> vacations = List.of(vacationDTOS);
+
+        assertThat(vacations.stream().anyMatch(vacation -> vacation.getUserId().equals(userId))).isFalse();
+        assertThat(usersAfter.size()).isEqualTo(usersBefore.size() - 1);
     }
 
     @Test
-    public void testUserEditing() throws Exception {
-        addAuthorizationRequestToHeader();
+    @WithMockUser(authorities = {"admin"}, username = "admin@mirado.com")
+    public void testUserRetrieving() throws Exception {
 
-        UserDTO editedUser = new UserDTO();
-        editedUser.setId(2L);
-        editedUser.setUsername("EditedUser");
-        editedUser.setPassword("123");
+        String usersAsString = mockMvc.perform(get("/user"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-        HttpEntity<UserDTO> entity = new HttpEntity<>(editedUser, headers);
-        ResponseEntity<String> editUserResponse = restTemplate.exchange(
-                createURLWithPort("/user"), HttpMethod.PUT, entity, String.class);
+        UserDTO[] userDTOS = objectMapper.readValue(usersAsString, UserDTO[].class);
 
-        List<UserDTO> userList = getUserDTOS();
+        List<UserDTO> users = List.of(userDTOS);
 
-        assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("EditedUser")));
-        assertEquals(editUserResponse.getStatusCode(), HttpStatus.OK);
+        assertThat(users.stream().anyMatch(user -> user.getEmail().equals("admin@mirado.com"))).isTrue();
     }
 
-    private List<UserDTO> getUserDTOS() {
-        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
-        Type type = new TypeToken<List<UserDTO>>() {}.getType();
+    @Test
+    @WithMockUser(authorities = {"user"}, username = "user@mirado.com")
+    public void testThatNonAdminUserHasNoAccess() throws Exception {
 
-        return gson.fromJson(response.getBody(), type);
+        mockMvc.perform(delete("/user/1"))
+                .andExpect(status().isForbidden());
+    }
+//
+//    @Test
+//    public void testUserEditing() throws Exception {
+//        addAuthorizationRequestToHeader();
+//
+//        UserDTO editedUser = new UserDTO();
+//        editedUser.setId(2L);
+//        editedUser.setUsername("EditedUser");
+//        editedUser.setPassword("123");
+//
+//        HttpEntity<UserDTO> entity = new HttpEntity<>(editedUser, headers);
+//        ResponseEntity<String> editUserResponse = restTemplate.exchange(
+//                createURLWithPort("/user"), HttpMethod.PUT, entity, String.class);
+//
+//        List<UserDTO> userList = getUserDTOS();
+//
+//        assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("EditedUser")));
+//        assertEquals(editUserResponse.getStatusCode(), HttpStatus.OK);
+//    }
+
+    private List<UserDTO> getUserDTOS() throws Exception {
+
+        String responseBodyAsString = mockMvc.perform(get("/user"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        UserDTO[] users = objectMapper.readValue(responseBodyAsString, UserDTO[].class);
+
+        return List.of(users);
     }
 }
