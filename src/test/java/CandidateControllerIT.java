@@ -15,7 +15,9 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CandidateControllerIT extends AbstractControllerIT {
+public class CandidateControllerIT
+//        extends AbstractControllerIT
+{
 
 //    @Test
 //    public void testCandidateRetrieving() throws Exception {

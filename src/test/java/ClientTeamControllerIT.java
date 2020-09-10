@@ -16,7 +16,9 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ClientTeamControllerIT extends AbstractControllerIT {
+public class ClientTeamControllerIT
+//        extends AbstractControllerIT
+{
 
 //    @Test
 //    public void testClientTeamsRetrieving() throws Exception {

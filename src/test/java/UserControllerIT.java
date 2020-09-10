@@ -25,87 +25,87 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {ConsultancyManagementApplication.class})
 @AutoConfigureMockMvc
 public class UserControllerIT {
-
-    @Autowired
-    ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Test
-    @WithMockUser(authorities = {"admin"}, username = "user@mirado.com")
-    public void testUserDeletion() throws Exception {
-        Long userId = 3L;
-
-        List<UserDTO> usersBefore = getUserDTOS();
-
-        mockMvc.perform(delete("/user/" + userId))
-                .andExpect(status().isOk());
-
-        List<UserDTO> usersAfter = getUserDTOS();
-
-        String vacationsAsString = mockMvc.perform(get("/vacations"))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        VacationDTO[] vacationDTOS = objectMapper.readValue(vacationsAsString, VacationDTO[].class);
-        List<VacationDTO> vacations = List.of(vacationDTOS);
-
-        assertThat(vacations.stream().anyMatch(vacation -> vacation.getUserId().equals(userId))).isFalse();
-        assertThat(usersAfter.size()).isEqualTo(usersBefore.size() - 1);
-    }
-
-    @Test
-    @WithMockUser(authorities = {"admin"}, username = "admin@mirado.com")
-    public void testUserRetrieving() throws Exception {
-
-        String usersAsString = mockMvc.perform(get("/user"))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        UserDTO[] userDTOS = objectMapper.readValue(usersAsString, UserDTO[].class);
-
-        List<UserDTO> users = List.of(userDTOS);
-
-        assertThat(users.stream().anyMatch(user -> user.getEmail().equals("admin@mirado.com"))).isTrue();
-    }
-
-    @Test
-    @WithMockUser(authorities = {"user"}, username = "user@mirado.com")
-    public void testThatNonAdminUserHasNoAccess() throws Exception {
-
-        mockMvc.perform(delete("/user/1"))
-                .andExpect(status().isForbidden());
-    }
+//
+//    @Autowired
+//    ObjectMapper objectMapper;
+//
+//    @Autowired
+//    private MockMvc mockMvc;
 //
 //    @Test
-//    public void testUserEditing() throws Exception {
-//        addAuthorizationRequestToHeader();
+//    @WithMockUser(authorities = {"admin"}, username = "user@mirado.com")
+//    public void testUserDeletion() throws Exception {
+//        Long userId = 3L;
 //
-//        UserDTO editedUser = new UserDTO();
-//        editedUser.setId(2L);
-//        editedUser.setUsername("EditedUser");
-//        editedUser.setPassword("123");
+//        List<UserDTO> usersBefore = getUserDTOS();
 //
-//        HttpEntity<UserDTO> entity = new HttpEntity<>(editedUser, headers);
-//        ResponseEntity<String> editUserResponse = restTemplate.exchange(
-//                createURLWithPort("/user"), HttpMethod.PUT, entity, String.class);
+//        mockMvc.perform(delete("/user/" + userId))
+//                .andExpect(status().isOk());
 //
-//        List<UserDTO> userList = getUserDTOS();
+//        List<UserDTO> usersAfter = getUserDTOS();
 //
-//        assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("EditedUser")));
-//        assertEquals(editUserResponse.getStatusCode(), HttpStatus.OK);
+//        String vacationsAsString = mockMvc.perform(get("/vacations"))
+//                .andExpect(status().isOk())
+//                .andReturn().getResponse().getContentAsString();
+//
+//        VacationDTO[] vacationDTOS = objectMapper.readValue(vacationsAsString, VacationDTO[].class);
+//        List<VacationDTO> vacations = List.of(vacationDTOS);
+//
+//        assertThat(vacations.stream().anyMatch(vacation -> vacation.getUserId().equals(userId))).isFalse();
+//        assertThat(usersAfter.size()).isEqualTo(usersBefore.size() - 1);
 //    }
-
-    private List<UserDTO> getUserDTOS() throws Exception {
-
-        String responseBodyAsString = mockMvc.perform(get("/user"))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        UserDTO[] users = objectMapper.readValue(responseBodyAsString, UserDTO[].class);
-
-        return List.of(users);
-    }
+//
+//    @Test
+//    @WithMockUser(authorities = {"admin"}, username = "admin@mirado.com")
+//    public void testUserRetrieving() throws Exception {
+//
+//        String usersAsString = mockMvc.perform(get("/user"))
+//                .andExpect(status().isOk())
+//                .andReturn().getResponse().getContentAsString();
+//
+//        UserDTO[] userDTOS = objectMapper.readValue(usersAsString, UserDTO[].class);
+//
+//        List<UserDTO> users = List.of(userDTOS);
+//
+//        assertThat(users.stream().anyMatch(user -> user.getEmail().equals("admin@mirado.com"))).isTrue();
+//    }
+//
+//    @Test
+//    @WithMockUser(authorities = {"user"}, username = "user@mirado.com")
+//    public void testThatNonAdminUserHasNoAccess() throws Exception {
+//
+//        mockMvc.perform(delete("/user/1"))
+//                .andExpect(status().isForbidden());
+//    }
+////
+////    @Test
+////    public void testUserEditing() throws Exception {
+////        addAuthorizationRequestToHeader();
+////
+////        UserDTO editedUser = new UserDTO();
+////        editedUser.setId(2L);
+////        editedUser.setUsername("EditedUser");
+////        editedUser.setPassword("123");
+////
+////        HttpEntity<UserDTO> entity = new HttpEntity<>(editedUser, headers);
+////        ResponseEntity<String> editUserResponse = restTemplate.exchange(
+////                createURLWithPort("/user"), HttpMethod.PUT, entity, String.class);
+////
+////        List<UserDTO> userList = getUserDTOS();
+////
+////        assertTrue(Objects.requireNonNull(userList).stream().map(UserDTO::getUsername).anyMatch(u -> u.equals("EditedUser")));
+////        assertEquals(editUserResponse.getStatusCode(), HttpStatus.OK);
+////    }
+//
+//    private List<UserDTO> getUserDTOS() throws Exception {
+//
+//        String responseBodyAsString = mockMvc.perform(get("/user"))
+//                .andReturn()
+//                .getResponse()
+//                .getContentAsString();
+//
+//        UserDTO[] users = objectMapper.readValue(responseBodyAsString, UserDTO[].class);
+//
+//        return List.of(users);
+//    }
 }
