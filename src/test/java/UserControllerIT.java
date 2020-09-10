@@ -3,29 +3,40 @@ import com.consultant.model.dto.VacationDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles(profiles = "test")
 @ContextConfiguration(classes = ConsultancyManagementApplication.class)
 @SpringBootTest(classes = {ConsultancyManagementApplication.class})
 @AutoConfigureMockMvc
 public class UserControllerIT {
-//
+
 //    @Autowired
 //    ObjectMapper objectMapper;
 //
@@ -33,8 +44,30 @@ public class UserControllerIT {
 //    private MockMvc mockMvc;
 //
 //    @Test
-//    @WithMockUser(authorities = {"admin"}, username = "user@mirado.com")
+////    @WithMockUser(authorities = {"admin"}, username = "user@mirado.com")
 //    public void testUserDeletion() throws Exception {
+//
+//        Principal principal = mock(Principal.class);
+//        when(principal.getName()).thenReturn("user");
+//
+//        OAuth2AuthenticationToken token = mock(OAuth2AuthenticationToken.class);
+//
+//        when(token.getPrincipal().getAttribute("email")).thenReturn("admin@mirado.com");
+//
+//
+////        final var storedRequest = mock(OAuth2Request.class);
+//
+//
+//        final var userAuthentication = mock(Authentication.class);
+//        when(userAuthentication.getAuthorities()).thenReturn(Set.of(new SimpleGrantedAuthority("admin")));
+//        when(userAuthentication.getPrincipal()).thenReturn(principal);
+//
+//         OAuth2Authentication oauth2Authentication = new OAuth2Authentication(storedRequest, authentication);
+//
+//        SecurityContextHolder.getContext().setAuthentication(oauth2Authentication);
+//
+//
+//
 //        Long userId = 3L;
 //
 //        List<UserDTO> usersBefore = getUserDTOS();
