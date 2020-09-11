@@ -1,8 +1,10 @@
-INSERT INTO `users` (`id`, `email`) VALUES ('1', 'anna.wrang@mirado.com');
+INSERT INTO `users` (`id`, `email`) VALUES ('1', 'admin@mirado.com');
 INSERT INTO `users` (`id`, `email`) VALUES ('2', 'userToEdit@mirado.com');
 INSERT INTO `users` (`id`, `email`) VALUES ('3', 'userToDelete@mirado.com');
 INSERT INTO `users` (`id`, `email`) VALUES ('4', 'nonAdminUser@mirado.com');
 insert into `user_roles` values ('1','admin');
+insert into `user_roles` values ('2','user');
+insert into `user_roles` values ('3','user');
 insert into `user_roles` values ('4','user');
 
 INSERT INTO `clients` (`id`, `last_interacted_by`, `last_interacted_with`, `main_person_email`, `main_person_name`, `main_person_phone`, `name`,deleted) VALUES ('1', 'Joe', 'Michael', 'person@gmail.com', 'mainPerson', '123123123', 'MainClient',false);
