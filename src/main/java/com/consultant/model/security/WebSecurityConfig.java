@@ -25,6 +25,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+    @Autowired
+    private CustomLogoutSuccessHandler logoutSuccessHandler;
 
     @Bean
     CorsFilter corsFilter() {
@@ -62,7 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // logout
                 .logout().invalidateHttpSession(true)
                 .clearAuthentication(true)
-                .logoutSuccessUrl("/login?logout")
+                .logoutSuccessHandler(logoutSuccessHandler)
+//                .logoutSuccessUrl("/user/logout")
                 .deleteCookies("JSESSIONID").permitAll();
     }
 

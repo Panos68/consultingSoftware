@@ -51,6 +51,11 @@ public class UserController {
         userService.delete(id);
     }
 
+    @GetMapping(value = "/logout")
+    public void logoutUser() throws Exception {
+        System.out.println("logout");
+    }
+
     private void validateUserHasAdminRole() {
         String email = getCurrentUserEmail();
 
