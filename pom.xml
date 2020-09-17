@@ -45,12 +45,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock -->
-        <dependency>
-        <groupId>com.github.tomakehurst</groupId>
-        <artifactId>wiremock</artifactId>
-        <version>2.27.1</version>
-        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock &ndash;&gt;-->
+<!--        <dependency>-->
+<!--        <groupId>com.github.tomakehurst</groupId>-->
+<!--        <artifactId>wiremock</artifactId>-->
+<!--        <version>2.27.1</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.mapstruct</groupId>

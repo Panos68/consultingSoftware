@@ -30,5 +30,5 @@ INSERT INTO `candidates` (`id`, `comment`, `company`, `consultant`, `diverse`, `
 
 INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('1', 'Brazil', '1');
 INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('2', 'EditVac', '1');
-INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('3', 'DeleteVac', '1');
+INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('3', 'DeleteVac', '4');
 INSERT INTO `vacations` (`id`, `description`, `user_id`) VALUES ('4', 'UserVac', '3');

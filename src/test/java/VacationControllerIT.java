@@ -1,123 +1,149 @@
 import com.consultant.model.dto.UserDTO;
 import com.consultant.model.dto.VacationDTO;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VacationControllerIT
-//        extends AbstractControllerIT
-{
+public class VacationControllerIT extends AbstractControllerIT {
 
-//    @Test
-//    public void testVacationRetrieving() throws Exception {
-//        addAuthorizationRequestToHeader();
-//
-//        HttpEntity<VacationDTO> getVacationsEntity = new HttpEntity<>(null, headers);
-//        ResponseEntity<String> response = restTemplate.exchange(
-//                createURLWithPort("/vacations"), HttpMethod.GET, getVacationsEntity, String.class);
-//        Type type = new TypeToken<List<VacationDTO>>() {}.getType();
-//
-//        List<VacationDTO> vacationsList = gson.fromJson(response.getBody(), type);
-//
-//        assertTrue(Objects.requireNonNull(vacationsList).stream().map(VacationDTO::getDescription).anyMatch(u -> u.equals("Brazil")));
-//        assertEquals(response.getStatusCode(), HttpStatus.OK);
-//    }
-//
-//    @Test
-//    public void testVacationRetrievingForSpecificUser() throws Exception {
-//        addAuthorizationRequestToHeader();
-//
-//        HttpEntity<VacationDTO> getVacationsEntity = new HttpEntity<>(null, headers);
-//        ResponseEntity<String> response = restTemplate.exchange(
-//                createURLWithPort("/vacations/user/1"), HttpMethod.GET, getVacationsEntity, String.class);
-//        Type type = new TypeToken<List<VacationDTO>>() {}.getType();
-//
-//        List<VacationDTO> vacationsList = gson.fromJson(response.getBody(), type);
-//
-//        assertEquals(3, vacationsList.size());
-//        assertEquals(response.getStatusCode(), HttpStatus.OK);
-//    }
-//
-//
-//    @Test
-//    public void testVacationCreation() throws Exception {
-//        VacationDTO vacationDTO = new VacationDTO();
-//        vacationDTO.setDescription("Created");
-//        vacationDTO.setUserId(1L);
-//
-//        addAuthorizationRequestToHeader();
-//
-//        HttpEntity<VacationDTO> entity = new HttpEntity<>(vacationDTO, headers);
-//        ResponseEntity<String> createVacationResponse = restTemplate.exchange(
-//                createURLWithPort("/vacations"), HttpMethod.POST, entity, String.class);
-//
-//        List<VacationDTO> vacationsList = getVacationsDTOList();
-//
-//        HttpEntity<UserDTO> getUsersEntity = new HttpEntity<>(null, headers);
-//        ResponseEntity<String> userResponse = restTemplate.exchange(
-//                createURLWithPort("/user"), HttpMethod.GET, getUsersEntity, String.class);
-//        Type userType = new TypeToken<List<UserDTO>>() {}.getType();
-//
-//        List<UserDTO> userDTOList = gson.fromJson(userResponse.getBody(), userType);
-//        boolean consultantExistsForTeam = userDTOList.stream()
-//                .filter(userDTO -> userDTO.getId() == 1).map(UserDTO::getVacations)
-//                .flatMap(Collection::stream)
-//                .anyMatch(vacation -> vacation.getDescription().equals("Created"));
-//
-//        assertTrue(consultantExistsForTeam);
-//        assertTrue(Objects.requireNonNull(vacationsList).stream().map(VacationDTO::getDescription).anyMatch(u -> u.equals("Created")));
-//        assertEquals(createVacationResponse.getStatusCode(), HttpStatus.OK);
-//    }
-//
-//    @Test
-//    public void testVacationDeletion() throws Exception {
-//        addAuthorizationRequestToHeader();
-//
-//        HttpEntity<VacationDTO> entity = new HttpEntity<>(null, headers);
-//        ResponseEntity<String> deleteVacationResponse = restTemplate.exchange(
-//                createURLWithPort("/vacations/3"), HttpMethod.DELETE, entity, String.class);
-//
-//        List<VacationDTO> vacationsList = getVacationsDTOList();
-//
-//        assertFalse(Objects.requireNonNull(vacationsList).stream().map(VacationDTO::getDescription).anyMatch(u -> u.equals("DeleteVac")));
-//        assertEquals(deleteVacationResponse.getStatusCode(), HttpStatus.OK);
-//    }
-//
-//    @Test
-//    public void testVacationEditing() throws Exception {
-//        addAuthorizationRequestToHeader();
-//
-//        VacationDTO editedVacation = new VacationDTO();
-//        editedVacation.setId(2L);
-//        editedVacation.setDescription("EditedVacation");
-//
-//        HttpEntity<VacationDTO> entity = new HttpEntity<>(editedVacation, headers);
-//        ResponseEntity<String> editVacationResponse = restTemplate.exchange(
-//                createURLWithPort("/vacations"), HttpMethod.PUT, entity, String.class);
-//
-//        List<VacationDTO> vacationsList = getVacationsDTOList();
-//
-//        assertTrue(Objects.requireNonNull(vacationsList).stream().map(VacationDTO::getDescription).anyMatch(u -> u.equals("EditedVacation")));
-//        assertEquals(editVacationResponse.getStatusCode(), HttpStatus.OK);
-//    }
-//
-//    private List<VacationDTO> getVacationsDTOList() {
-//        HttpEntity<VacationDTO> getVacationsEntity = new HttpEntity<>(null, headers);
-//        ResponseEntity<String> response = restTemplate.exchange(
-//                createURLWithPort("/vacations"), HttpMethod.GET, getVacationsEntity, String.class);
-//
-//        Type type = new TypeToken<List<VacationDTO>>() {}.getType();
-//        return gson.fromJson(response.getBody(), type);
-//    }
+    @Test
+    public void testVacationRetrieving() throws Exception {
+        setupAuth(NON_ADMIN_EMAIL);
+
+        String responseBodyAsString = mockMvc.perform(get("/vacations")
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        VacationDTO[] vacationDTOS = objectMapper.readValue(responseBodyAsString, VacationDTO[].class);
+        List<VacationDTO> vacations = List.of(vacationDTOS);
+
+        assertThat(vacations.stream()
+                .map(VacationDTO::getDescription)
+                .anyMatch(u -> u.equals("Brazil")))
+                .isTrue();
+    }
+
+    @Test
+    public void testVacationRetrievingForSpecificUser() throws Exception {
+        setupAuth(NON_ADMIN_EMAIL);
+
+        String responseBodyAsString = mockMvc.perform(get("/vacations/user/1")
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        VacationDTO[] vacationDTOS = objectMapper.readValue(responseBodyAsString, VacationDTO[].class);
+        List<VacationDTO> vacations = List.of(vacationDTOS);
+
+        assertThat(vacations.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void testVacationCreation() throws Exception {
+        VacationDTO vacationDTO = new VacationDTO();
+        vacationDTO.setDescription("Created");
+        vacationDTO.setUserId(2L);
+
+        setupAuth(NON_ADMIN_EMAIL);
+
+        mockMvc.perform(post("/vacations")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(vacationDTO))
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<VacationDTO> vacations = getVacationsDTOList();
+
+        String usersAsString = mockMvc.perform(get("/user")
+                .session(session))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        UserDTO[] userDTOS = objectMapper.readValue(usersAsString, UserDTO[].class);
+        List<UserDTO> users = List.of(userDTOS);
+
+        boolean vacationExistsForUser = users.stream()
+                .filter(userDTO -> userDTO.getId() == 2)
+                .map(UserDTO::getVacations)
+                .flatMap(Collection::stream)
+                .anyMatch(vacation -> vacation.getDescription().equals("Created"));
+
+        assertThat(vacationExistsForUser).isTrue();
+        assertThat(vacations.stream()
+                .map(VacationDTO::getDescription)
+                .anyMatch(u -> u.equals("Created")))
+                .isTrue();
+    }
+
+    @Test
+    public void testVacationDeletion() throws Exception {
+        setupAuth(NON_ADMIN_EMAIL);
+
+        mockMvc.perform(delete("/vacations/3")
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<VacationDTO> vacations = getVacationsDTOList();
+
+        assertThat(vacations.stream()
+                .map(VacationDTO::getDescription)
+                .anyMatch(u -> u.equals("DeleteVac")))
+                .isFalse();
+    }
+
+    @Test
+    public void testVacationEditing() throws Exception {
+        setupAuth(NON_ADMIN_EMAIL);
+
+        VacationDTO editedVacation = new VacationDTO();
+        editedVacation.setId(2L);
+        editedVacation.setDescription("EditedVacation");
+
+        mockMvc.perform(put("/vacations")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(editedVacation))
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<VacationDTO> vacations = getVacationsDTOList();
+
+        assertThat(vacations.stream()
+                .map(VacationDTO::getDescription)
+                .anyMatch(u -> u.equals("EditedVacation")))
+                .isTrue();
+    }
+
+    private List<VacationDTO> getVacationsDTOList() throws Exception {
+        setupAuth(NON_ADMIN_EMAIL);
+
+        String vacationsAsString = mockMvc.perform(get("/vacations")
+                .session(session))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        VacationDTO[] vacationDTOS = objectMapper.readValue(vacationsAsString, VacationDTO[].class);
+        return List.of(vacationDTOS);
+    }
 }

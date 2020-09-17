@@ -10,13 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SimpleSavedRequest;
 import org.springframework.security.web.session.SessionManagementFilter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +19,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+
     @Autowired
     private CustomLogoutSuccessHandler logoutSuccessHandler;
 
@@ -57,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(authenticationSuccessHandler)
                 .and()
 
-                // if you want a 401 instead of redirect to google login (in example frontend then called google login)
+                // if you want a 401 instead of redirect to google login
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 
@@ -65,24 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .logoutSuccessHandler(logoutSuccessHandler)
-//                .logoutSuccessUrl("/user/logout")
                 .deleteCookies("JSESSIONID").permitAll();
-    }
-
-    @Bean
-    public RequestCache refererRequestCache() {
-
-        System.out.println("REQUEST CACHE");
-
-        return new HttpSessionRequestCache() {
-            @Override
-            public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
-                String referrer = request.getHeader("referer");
-                if (referrer != null) {
-                    request.getSession().setAttribute("SPRING_SECURITY_SAVED_REQUEST", new SimpleSavedRequest(referrer));
-                }
-            }
-        };
     }
 
 }

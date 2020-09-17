@@ -24,7 +24,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ClientTeamServiceShould {
 
-
     @Mock
     private ClientTeamRepository clientTeamRepository;
 

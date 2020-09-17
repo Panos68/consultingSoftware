@@ -41,7 +41,6 @@ public class UserController {
     @PutMapping
     public void editUser(@RequestBody UserDTO userDTO) throws Exception {
         validateUserHasAdminRole();
-
         userService.edit(userDTO);
     }
 
@@ -51,14 +50,8 @@ public class UserController {
         userService.delete(id);
     }
 
-    @GetMapping(value = "/logout")
-    public void logoutUser() throws Exception {
-        System.out.println("logout");
-    }
-
     private void validateUserHasAdminRole() {
         String email = getCurrentUserEmail();
-
         User user = userService.getUserByEmail(email);
 
         if (user.getRoles().stream().noneMatch(role -> role.equals("admin"))) {
