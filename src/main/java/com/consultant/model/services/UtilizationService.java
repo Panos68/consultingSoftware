@@ -226,7 +226,7 @@ public class UtilizationService {
     }
 
     private Optional<Vacation> getLongTermAbsenceForGivenDate(LocalDate calculatedMonthDate, ConsultantDTO consultantDTO) {
-        List<Vacation> vacationsOfConsultant = vacationService.getVacationsOfConsultant(consultantDTO.getId());
+        List<Vacation> vacationsOfConsultant = vacationService.getVacationsOfConsultant(consultantDTO.getUserId());
 
         return vacationsOfConsultant
                 .stream()

@@ -302,7 +302,7 @@ public class UtilizationServiceShould {
     public void returnZeroUtOnPartiallyAssignedPlusLongTermVacation() {
         consultantDTO.setDateJoined((LocalDate.of(2019, 12, 6)));
         consultantDTO.setDeleted(false);
-        consultantDTO.setId(1L);
+        consultantDTO.setUserId(1L);
         Vacation vacation = new Vacation();
         vacation.setIsLongTerm(true);
         vacation.setStartingDate(LocalDate.of(2020, 3, 1));
@@ -377,6 +377,7 @@ public class UtilizationServiceShould {
         consultantDTO.setDateJoined(localDate);
         consultantDTO.setDeleted(false);
         consultantDTO.setId(1L);
+        consultantDTO.setUserId(1L);
         consultantDTOS.add(consultantDTO);
     }
 }
