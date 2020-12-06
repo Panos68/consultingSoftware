@@ -9,7 +9,9 @@ import com.consultant.model.exception.NoMatchException;
 import com.consultant.model.mappers.UserMapper;
 import com.consultant.model.repositories.UserRepository;
 import com.consultant.model.services.BasicOperationsService;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class UserService implements BasicOperationsService<UserDTO> {
+public class UserService extends AbstractService implements BasicOperationsService<UserDTO> {
 
     private UserRepository userRepository;
 
@@ -90,9 +92,6 @@ public class UserService implements BasicOperationsService<UserDTO> {
     }
 
     private void updateUser(User existingUser, UserDTO userDTO) {
-        if (userDTO.getPassword() != null) {
-            existingUser.setPassword(userDTO.getPassword());
-        }
         existingUser.setRoles(userDTO.getRoles());
         existingUser.setUsername(userDTO.getUsername());
 
@@ -111,5 +110,19 @@ public class UserService implements BasicOperationsService<UserDTO> {
         }
 
         return existingUser.get();
+    }
+
+    public void updatePassword(Long id, String password) throws Exception {
+        if (Strings.isEmpty(password)) {
+            throw new Exception("Can't update to empty password");
+        }
+        UserDetails userInfo = getUserInfo();
+        User user = getExistingUserById(id);
+        if (user.getUsername().equals(userInfo.getUsername())) {
+            user.setPassword(passwordEncoder.encode(password));
+            userRepository.saveAndFlush(user);
+        } else {
+            throw new Exception("Can't update another user's password");
+        }
     }
 }

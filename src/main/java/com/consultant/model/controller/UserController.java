@@ -8,6 +8,7 @@ import com.consultant.model.security.JwtUserDetailsService;
 import com.consultant.model.security.WrongValidationException;
 import com.consultant.model.services.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
@@ -57,5 +58,12 @@ public class UserController {
     @DeleteMapping(value = "/{id}")
     public void deleteUser(@PathVariable Long id) throws Exception {
         userService.delete(id);
+    }
+
+    @PatchMapping(value = "{id}/password")
+    public ResponseEntity<String> updatePassword(@PathVariable Long id, @RequestParam String password) throws Exception {
+        userService.updatePassword(id, password);
+
+        return new ResponseEntity<>("Password successfully updated", HttpStatus.OK);
     }
 }
